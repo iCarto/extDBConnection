@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<plugin-config>
+	<depends plugin-name="com.iver.cit.gvsig"/>
+	<libraries library-dir="lib"/>
+	<resourceBundle name="text"/>
+	<extensions>
+		<extension class-name="es.udc.cartolab.gvsig.users.DBConnectionExtension" description="Connect DB" active="true">
+			<!-- <tool-bar name="NavTable">
+				<action-tool icon="images/table_refresh.png" tooltip="navigation_table"
+					action-command="NavTable" position="1"/>
+			</tool-bar> -->
+			<menu text="EIEL/connectToEIEL"
+				action-command="DBConnect"
+				position="01"/> 
+		</extension>
+		<extension class-name="es.udc.cartolab.gvsig.users.CreateUserExtension" description="New User" active="true">
+			<!-- <tool-bar name="NavTable">
+				<action-tool icon="images/table_refresh.png" tooltip="navigation_table"
+					action-command="NavTable" position="1"/>
+			</tool-bar> -->
+			<menu text="EIEL/manage_users/create_new_user"
+				action-command="NewUser"
+				position="1010"/> 
+		</extension>
+		<extension class-name="es.udc.cartolab.gvsig.users.ChangePassExtension" description="Change password" active="true">
+			<!-- <tool-bar name="NavTable">
+				<action-tool icon="images/table_refresh.png" tooltip="navigation_table"
+					action-command="NavTable" position="1"/>
+			</tool-bar> -->
+			<menu text="EIEL/manage_users/change_password"
+				action-command="CHPWD"
+				position="1000"/> 
+		</extension>
+		<extension class-name="es.udc.cartolab.gvsig.users.CloseSessionExtension" description="Change password" active="true">
+			<!-- <tool-bar name="NavTable">
+				<action-tool icon="images/table_refresh.png" tooltip="navigation_table"
+					action-command="NavTable" position="1"/>
+			</tool-bar> -->
+			<menu text="EIEL/close_session"
+				action-command="CLOSE"
+				position="1090"/> 
+		</extension>
+		<extension class-name="es.udc.cartolab.gvsig.users.DropUserExtension" description="Change password" active="true">
+			<!-- <tool-bar name="NavTable">
+				<action-tool icon="images/table_refresh.png" tooltip="navigation_table"
+					action-command="NavTable" position="1"/>
+			</tool-bar> -->
+			<menu text="EIEL/manage_users/drop_user"
+				action-command="DROP"
+				position="1020"/> 
+		</extension>
+	</extensions>
+</plugin-config>
