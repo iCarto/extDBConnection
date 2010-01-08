@@ -168,12 +168,12 @@ public class DBSession {
 	                                
 		String tipos[] = new String[1];
 		tipos[0] = "TABLE";
-		ResultSet tablas = metadataDB.getTables(null, null, tableName, tipos);
+		ResultSet tablas = metadataDB.getTables(null, this.schema, tableName, tipos);
 		tablas.next();
 		//String t = tablas.getString(tablas.findColumn( "TABLE_NAME" ));
 
-		ResultSet columnas = metadataDB.getColumns(null,null,tableName, "%");
-		ResultSet claves = metadataDB.getPrimaryKeys(null, null, tableName);
+		ResultSet columnas = metadataDB.getColumns(null,this.schema,tableName, "%");
+		ResultSet claves = metadataDB.getPrimaryKeys(null, this.schema, tableName);
 
 		//ResultSetMetaData aux = columnas.getMetaData();
 	                                
