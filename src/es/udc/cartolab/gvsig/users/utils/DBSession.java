@@ -41,6 +41,9 @@ public class DBSession {
 		this.port = port;
 		this.username = username;
 		this.password = password;
+		
+		ConfigFile file = ConfigFile.getInstance();
+		this.schema = file.getSchema();
 	}
 	/**
 	 * 

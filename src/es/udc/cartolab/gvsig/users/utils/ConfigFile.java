@@ -17,7 +17,7 @@ public class ConfigFile {
 	private static ConfigFile instance = null;
 	private String server;
 	private String database = "eiel_pontevedra_2009";
-	private String schema = "eiel2009_municipal";
+	private String schema = "";
 	private String username;
 	private String port;
 	
