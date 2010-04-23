@@ -55,15 +55,15 @@ public class ChangePassDialog extends JPanel implements IWindow, ActionListener 
 		GridBagLayout layout = new GridBagLayout();
 		setLayout(layout);
 
-		add(getNorthPanel(), new GridBagConstraints(0, 0, 1, 1, 0, 0, 
+		add(getNorthPanel(), new GridBagConstraints(0, 0, 1, 1, 0, 0,
 				GridBagConstraints.NORTH, GridBagConstraints.BOTH,
 				new Insets(0, 0, 0, 0), 0, 0));
 
-		add(getCenterPanel(), new GridBagConstraints(0, 1, 1, 1, 0, 1, 
+		add(getCenterPanel(), new GridBagConstraints(0, 1, 1, 1, 0, 1,
 				GridBagConstraints.CENTER, GridBagConstraints.BOTH,
 				new Insets(0, 0, 0, 0), 0, 0));
 
-		add(getSouthPanel(), new GridBagConstraints(0, 2, 1, 1, 10, 0, 
+		add(getSouthPanel(), new GridBagConstraints(0, 2, 1, 1, 10, 0,
 				GridBagConstraints.SOUTH, GridBagConstraints.BOTH,
 				new Insets(0, 0, 0, 0), 0, 0));
 
@@ -92,10 +92,10 @@ public class ChangePassDialog extends JPanel implements IWindow, ActionListener 
 	protected JPanel getCenterPanel() {
 		if (centerPanel == null) {
 			centerPanel = new JPanel();
-			FormPanel form = new FormPanel("changePass.jfrm");
+			FormPanel form = new FormPanel("forms/changePass.jfrm");
 			form.setFocusTraversalPolicyProvider(true);
 			centerPanel.add(form);
-			
+
 			JLabel currentPassLabel = form.getLabel("currentPassLabel");
 			currentPassLabel.setText(PluginServices.getText(this, "current_pass"));
 			JLabel newPassLabel = form.getLabel("newPassLabel");
@@ -135,7 +135,7 @@ public class ChangePassDialog extends JPanel implements IWindow, ActionListener 
 		if (event.getSource() == cancelButton) {
 			PluginServices.getMDIManager().closeWindow(this);
 		}
-		if (event.getSource() == okButton || event.getSource() instanceof JTextField) {
+		if ((event.getSource() == okButton) || (event.getSource() instanceof JTextField)) {
 			String currentPass = currentPassTF.getText();
 			String newPass = newPassTF.getText();
 			String newPass2 = reNewPassTF.getText();

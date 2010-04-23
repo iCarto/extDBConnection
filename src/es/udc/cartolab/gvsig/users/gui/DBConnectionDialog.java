@@ -21,9 +21,7 @@ import javax.swing.JTextField;
 import com.iver.andami.PluginServices;
 import com.iver.andami.ui.mdiManager.IWindow;
 import com.iver.andami.ui.mdiManager.WindowInfo;
-
 import com.iver.cit.gvsig.fmap.drivers.DBException;
-
 import com.jeta.forms.components.panel.FormPanel;
 
 import es.udc.cartolab.gvsig.users.utils.ConfigFile;
@@ -38,7 +36,7 @@ public class DBConnectionDialog extends JPanel implements IWindow, ActionListene
 	private JButton okButton;
 	private JButton cancelButton;
 	private JTextField serverTF, portTF, userTF, passTF;
-	
+
 	public static final String ID_SERVERTF = "serverTF";  //javax.swing.JTextField
 	public static final String ID_PORTTF = "portTF";  //javax.swing.JTextField
 	public static final String ID_USERTF = "userTF";  //javax.swing.JTextField
@@ -48,13 +46,13 @@ public class DBConnectionDialog extends JPanel implements IWindow, ActionListene
 	public static final String ID_USERL = "userLabel";
 	public static final String ID_PASSL = "passLabel";
 
-	
+
 	public DBConnectionDialog() {
 		init();
 	}
-	
+
 	public WindowInfo getWindowInfo() {
-		
+
 		if (viewInfo == null) {
 			viewInfo = new WindowInfo(WindowInfo.MODELESSDIALOG | WindowInfo.PALETTE);
 			viewInfo.setTitle(PluginServices.getText(this, "Login"));
@@ -63,7 +61,7 @@ public class DBConnectionDialog extends JPanel implements IWindow, ActionListene
 		}
 		return viewInfo;
 	}
-	
+
 	protected JPanel getNorthPanel() {
 
 		//Set header if any
@@ -81,12 +79,12 @@ public class DBConnectionDialog extends JPanel implements IWindow, ActionListene
 		}
 		return northPanel;
 	}
-	
+
 	protected JPanel getCenterPanel() {
 
 		if (centerPanel == null) {
 			centerPanel = new JPanel();
-			FormPanel form = new FormPanel("dbConnection.jfrm");
+			FormPanel form = new FormPanel("forms/dbConnection.jfrm");
 			form.setFocusTraversalPolicyProvider(true);
 			centerPanel.add(form);
 			serverTF = form.getTextField(ID_SERVERTF);
@@ -97,17 +95,17 @@ public class DBConnectionDialog extends JPanel implements IWindow, ActionListene
 			userTF.addActionListener(this);
 			passTF = form.getTextField(ID_PASSTF);
 			passTF.addActionListener(this);
-			
+
 			JLabel serverLabel = form.getLabel(ID_SERVERL);
 			JLabel portLabel = form.getLabel(ID_PORTL);
 			JLabel userLabel = form.getLabel(ID_USERL);
 			JLabel passLabel = form.getLabel(ID_PASSL);
-			
+
 			serverLabel.setText(PluginServices.getText(this, "server"));
 			portLabel.setText(PluginServices.getText(this, "port"));
 			userLabel.setText(PluginServices.getText(this, "user_name"));
 			passLabel.setText(PluginServices.getText(this, "eiel_pass"));
-			
+
 			DBSession dbs = DBSession.getCurrentSession();
 			if (dbs!=null) {
 				serverTF.setText(dbs.getServer());
@@ -119,11 +117,11 @@ public class DBConnectionDialog extends JPanel implements IWindow, ActionListene
 				portTF.setText(cf.getPort());
 				userTF.setText(cf.getUsername());
 			}
-			
+
 		}
 		return centerPanel;
 	}
-	
+
 	protected JPanel getSouthPanel() {
 
 		if (southPanel == null) {
@@ -140,31 +138,31 @@ public class DBConnectionDialog extends JPanel implements IWindow, ActionListene
 		}
 		return southPanel;
 	}
-	
+
 	private void init() {
-		
+
 		GridBagLayout layout = new GridBagLayout();
 		setLayout(layout);
-		
-		add(getNorthPanel(), new GridBagConstraints(0, 0, 1, 1, 0, 0, 
+
+		add(getNorthPanel(), new GridBagConstraints(0, 0, 1, 1, 0, 0,
 				GridBagConstraints.NORTH, GridBagConstraints.BOTH,
 				new Insets(0, 0, 0, 0), 0, 0));
-		
-		add(getCenterPanel(), new GridBagConstraints(0, 1, 1, 1, 0, 1, 
+
+		add(getCenterPanel(), new GridBagConstraints(0, 1, 1, 1, 0, 1,
 				GridBagConstraints.CENTER, GridBagConstraints.BOTH,
 				new Insets(0, 0, 0, 0), 0, 0));
-		
-		add(getSouthPanel(), new GridBagConstraints(0, 2, 1, 1, 10, 0, 
+
+		add(getSouthPanel(), new GridBagConstraints(0, 2, 1, 1, 10, 0,
 				GridBagConstraints.SOUTH, GridBagConstraints.BOTH,
 				new Insets(0, 0, 0, 0), 0, 0));
-		
+
 		//enables tabbing navigation
 		setFocusCycleRoot(true);
 	}
-	
+
 	public void actionPerformed(ActionEvent e) {
 
-		if (e.getSource() == okButton || e.getSource() instanceof JTextField) {
+		if ((e.getSource() == okButton) || (e.getSource() instanceof JTextField)) {
 			PluginServices.getMDIManager().setWaitCursor();
 			try {
 				String portS = portTF.getText().trim();
@@ -174,13 +172,13 @@ public class DBConnectionDialog extends JPanel implements IWindow, ActionListene
 				String password = passTF.getText();
 
 				DBSession dbc = DBSession.createConnection(server, port, username, password);
-				
+
 				ConfigFile cf = ConfigFile.getInstance();
 				dbc.changeDatabase(cf.getDatabase());
 				dbc.changeSchema(cf.getSchema());
-				
+
 				PluginServices.getMDIManager().closeWindow(this);
-				
+
 				//save config file
 				cf.setProperties(server, portS, dbc.getDatabase(), dbc.getSchema(), username);
 				PluginServices.getMDIManager().restoreCursor();
@@ -194,7 +192,7 @@ public class DBConnectionDialog extends JPanel implements IWindow, ActionListene
 				JOptionPane.showMessageDialog(this,
 						PluginServices.getText(this, "databaseConnectionError"),
 						PluginServices.getText(this, "connectionError"),
-					    JOptionPane.ERROR_MESSAGE);
+						JOptionPane.ERROR_MESSAGE);
 
 			} catch (NumberFormatException e2) {
 				PluginServices.getMDIManager().restoreCursor();
@@ -207,12 +205,12 @@ public class DBConnectionDialog extends JPanel implements IWindow, ActionListene
 				PluginServices.getMDIManager().restoreCursor();
 				System.out.println("No se pudo guardar el archivo: " + e3.getMessage());
 			} finally {
-				
+
 				passTF.setText("");
 			}
-			
+
 		}
-		
+
 		if (e.getSource() == cancelButton) {
 			PluginServices.getMDIManager().closeWindow(this);
 		}
