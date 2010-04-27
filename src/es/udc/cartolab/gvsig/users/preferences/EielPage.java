@@ -110,6 +110,10 @@ public class EielPage extends AbstractPreferencePage implements ActionListener {
 		return this;
 	}
 
+	public JTextField getLegendDirField () {
+		return this.legendDirField;
+	}
+	
 	public String getTitle() {
 		// TODO Auto-generated method stub
 		return PluginServices.getText(this, "EIEL");

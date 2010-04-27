@@ -1,5 +1,9 @@
 package es.udc.cartolab.gvsig.users;
 
+import java.io.File;
+
+import javax.swing.JTextField;
+
 import com.iver.andami.PluginServices;
 import com.iver.andami.plugins.Extension;
 import com.iver.andami.preferences.IPreference;
@@ -36,6 +40,11 @@ public class DBConnectionExtension extends Extension implements IPreferenceExten
 				execute(null);
 			}
 		}
+		
+		//Creating config Dir
+		String symbolsDirStr = System.getProperty("user.dir") + File.separator + "Leyendas";
+		File symbolsDir = new File(symbolsDirStr);
+		symbolsDir.mkdir();		
 	}
 
 	public boolean isEnabled() {
