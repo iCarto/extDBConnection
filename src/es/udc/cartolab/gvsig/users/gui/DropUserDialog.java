@@ -28,41 +28,41 @@ public class DropUserDialog extends JPanel implements IWindow, ActionListener {
 	private JButton okButton, cancelButton;
 	private JTextField userTF;
 	private WindowInfo viewInfo;
-	
+
 	public DropUserDialog() {
-		
+
 		GridBagLayout layout = new GridBagLayout();
 		setLayout(layout);
-		
-		add(getCenterPanel(), new GridBagConstraints(0, 0, 1, 1, 0, 1, 
+
+		add(getCenterPanel(), new GridBagConstraints(0, 0, 1, 1, 0, 1,
 				GridBagConstraints.CENTER, GridBagConstraints.BOTH,
 				new Insets(0, 0, 0, 0), 0, 0));
-		
-		add(getSouthPanel(), new GridBagConstraints(0, 1, 1, 1, 10, 0, 
+
+		add(getSouthPanel(), new GridBagConstraints(0, 1, 1, 1, 10, 0,
 				GridBagConstraints.SOUTH, GridBagConstraints.BOTH,
 				new Insets(0, 0, 0, 0), 0, 0));
-		
+
 		//enables tabbing navigation
 		setFocusCycleRoot(true);
 	}
-	
+
 	protected JPanel getCenterPanel() {
 
 		if (centerPanel == null) {
 			centerPanel = new JPanel();
-			FormPanel form = new FormPanel("dropUser.jfrm");
+			FormPanel form = new FormPanel("forms/dropUser.jfrm");
 			form.setFocusTraversalPolicyProvider(true);
 			centerPanel.add(form);
-			
+
 			userTF = form.getTextField("userTF");
 			userTF.addActionListener(this);
-			
+
 			JLabel userLabel = form.getLabel("userLabel");
 			userLabel.setText(PluginServices.getText(this, "user_name"));
 		}
 		return centerPanel;
 	}
-	
+
 	protected JPanel getSouthPanel() {
 
 		if (southPanel == null) {
@@ -79,7 +79,7 @@ public class DropUserDialog extends JPanel implements IWindow, ActionListener {
 		}
 		return southPanel;
 	}
-	
+
 	public WindowInfo getWindowInfo() {
 		if (viewInfo == null) {
 			viewInfo = new WindowInfo(WindowInfo.MODALDIALOG);
@@ -89,18 +89,18 @@ public class DropUserDialog extends JPanel implements IWindow, ActionListener {
 		}
 		return viewInfo;
 	}
-	
+
 	public void actionPerformed(ActionEvent event) {
 		// TODO Auto-generated method stub
 		if (event.getSource() == cancelButton) {
 			PluginServices.getMDIManager().closeWindow(this);
 		}
-		if (event.getSource() == okButton || event.getSource() == userTF) {
+		if ((event.getSource() == okButton) || (event.getSource() == userTF)) {
 			DBSession dbs = DBSession.getCurrentSession();
 			String username = userTF.getText();
 			if (dbs != null) {
 				try {
-					if (!username.equalsIgnoreCase(dbs.getUserName()) && !username.equalsIgnoreCase("postgres")) { 
+					if (!username.equalsIgnoreCase(dbs.getUserName()) && !username.equalsIgnoreCase("postgres")) {
 						if (EIELAdminUtils.existsUser(dbs.getJavaConnection(), username)) {
 							String message = PluginServices.getText(this, "dropping_user_question");
 							Object[] options = {PluginServices.getText(this, "ok"),
