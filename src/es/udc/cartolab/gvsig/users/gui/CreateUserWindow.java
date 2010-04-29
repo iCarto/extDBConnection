@@ -217,4 +217,9 @@ public class CreateUserWindow extends JPanel implements IWindow, ActionListener 
 		}
 	}
 
+	public Object getWindowProfile() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

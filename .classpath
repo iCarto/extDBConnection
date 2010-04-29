@@ -4,12 +4,13 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/appgvSIG"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/_fwAndami"/>
-	<classpathentry kind="src" path="/libCq CMS for java"/>
 	<classpathentry kind="src" path="/libDriverManager"/>
 	<classpathentry kind="src" path="/libFMap"/>
 	<classpathentry kind="src" path="/extJDBC"/>
 	<classpathentry kind="src" path="/libIverUtiles"/>
-	<classpathentry kind="lib" path="/_fwAndami/lib/beans.jar" sourcepath="/libUI/src"/>
 	<classpathentry kind="lib" path="lib/formsrt.jar"/>
+	<classpathentry kind="lib" path="/_fwAndami/lib/org.gvsig.ui.jar" sourcepath="/libUIComponent/src"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/libExceptions"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/libProjection"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

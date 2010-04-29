@@ -216,4 +216,9 @@ public class DBConnectionDialog extends JPanel implements IWindow, ActionListene
 		}
 	}
 
+	public Object getWindowProfile() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
