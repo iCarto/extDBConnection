@@ -32,8 +32,8 @@ public class DBSession {
 	private static DBSession instance = null;
 	private final String server, username, password;
 	private final int port;
-	private String database = "eiel_pontevedra_2009";
-	private String schema = "eiel2009_municipal";
+	private String database;
+	private String schema;
 	private EIELUser user;
 	private ConnectionWithParams conwp;
 
@@ -45,6 +45,7 @@ public class DBSession {
 
 		ConfigFile file = ConfigFile.getInstance();
 		this.schema = file.getSchema();
+		this.database = file.getDatabase();
 	}
 	/**
 	 * 
@@ -82,10 +83,8 @@ public class DBSession {
 
 	private static void connect() throws DBException {
 		try {
-			//String dburl = "jdbc:postgresql://"+instance.server+":"+instance.port+"/"+instance.database;
 			instance.conwp = SingleVectorialDBConnectionManager.instance().getConnection("PostGIS JDBC Driver",
-					instance.username, instance.password, "eiel_pontevedra", instance.server, (new Integer(instance.port)).toString(), instance.database, true);
-			//instance.connection = ConnectionFactory.createConnection(dburl, instance.username, instance.password);
+					instance.username, instance.password, "ELLE_connection", instance.server, (new Integer(instance.port)).toString(), instance.database, true);
 			instance.user = new EIELUser(instance.username, instance.password, ((ConnectionJDBC) instance.conwp.getConnection()).getConnection());
 		} catch (DBException e) {
 			if (instance!=null) {
