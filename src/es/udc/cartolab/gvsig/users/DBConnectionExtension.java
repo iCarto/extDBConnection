@@ -1,16 +1,11 @@
 package es.udc.cartolab.gvsig.users;
 
-import java.awt.Color;
 import java.io.File;
-
-import javax.swing.ImageIcon;
 
 import com.iver.andami.PluginServices;
 import com.iver.andami.plugins.Extension;
 import com.iver.andami.preferences.IPreference;
 import com.iver.andami.preferences.IPreferenceExtension;
-import com.iver.cit.gvsig.About;
-import com.iver.cit.gvsig.gui.panels.FPanelAbout;
 import com.iver.utiles.XMLEntity;
 
 import es.udc.cartolab.gvsig.users.gui.DBConnectionDialog;
@@ -20,25 +15,15 @@ import es.udc.cartolab.gvsig.users.preferences.EielPage;
 public class DBConnectionExtension extends Extension implements IPreferenceExtension {
 
 	public static EielPage eielPreferencesPage = new EielPage();
-	private final String imagePath = "gvSIG/extensiones/es.udc.cartolab.gvsig.users/images/header.png";
 
 	public void execute(String actionCommand) {
 
-		//with header image (Pontevedra)
-		ImageIcon icon = new ImageIcon(imagePath);
-		Color bgColor = new Color(36, 46, 109);
-		DBConnectionDialog dialog = new DBConnectionDialog(icon, bgColor);
-
 		//without header image
-		//		DBConnectionDialog dialog = new DBConnectionDialog();
+		DBConnectionDialog dialog = new DBConnectionDialog();
 		dialog.openWindow();
 	}
 
 	public void initialize() {
-		About about=(About)PluginServices.getExtension(About.class);
-		FPanelAbout panelAbout=about.getAboutPanel();
-		java.net.URL aboutURL = this.getClass().getResource("/about.htm");
-		panelAbout.addAboutUrl("OGE", aboutURL);
 
 		//poner if
 		PluginServices ps = PluginServices.getPluginServices(this);

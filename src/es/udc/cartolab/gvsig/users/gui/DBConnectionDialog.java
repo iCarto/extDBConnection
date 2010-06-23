@@ -122,6 +122,9 @@ public class DBConnectionDialog extends AbstractGVWindow {
 		if (headerImg != null) {
 			maxHeight = INIT_MAX_HEIGHT + headerImg.getIconHeight();
 			minHeight = INIT_MIN_HEIGHT + headerImg.getIconHeight();
+		} else {
+			maxHeight = INIT_MAX_HEIGHT;
+			minHeight = INIT_MIN_HEIGHT;
 		}
 		return super.getNorthPanel(headerImg, bgColor);
 	}

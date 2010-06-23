@@ -9,7 +9,7 @@
 				<action-tool icon="images/table_refresh.png" tooltip="navigation_table"
 					action-command="NavTable" position="1"/>
 			</tool-bar> -->
-			<menu text="EIEL/connectToEIEL"
+			<menu text="ELLE/connectToEIEL"
 				action-command="DBConnect"
 				position="01"/> 
 		</extension>
@@ -18,7 +18,7 @@
 				<action-tool icon="images/table_refresh.png" tooltip="navigation_table"
 					action-command="NavTable" position="1"/>
 			</tool-bar> -->
-			<menu text="EIEL/manage_users/create_new_user"
+			<menu text="ELLE/manage_users/create_new_user"
 				action-command="NewUser"
 				position="1010"/> 
 		</extension>
@@ -27,7 +27,7 @@
 				<action-tool icon="images/table_refresh.png" tooltip="navigation_table"
 					action-command="NavTable" position="1"/>
 			</tool-bar> -->
-			<menu text="EIEL/manage_users/change_password"
+			<menu text="ELLE/manage_users/change_password"
 				action-command="CHPWD"
 				position="1000"/> 
 		</extension>
@@ -36,7 +36,7 @@
 				<action-tool icon="images/table_refresh.png" tooltip="navigation_table"
 					action-command="NavTable" position="1"/>
 			</tool-bar> -->
-			<menu text="EIEL/close_session"
+			<menu text="ELLE/close_session"
 				action-command="CLOSE"
 				position="1090"/> 
 		</extension>
@@ -45,7 +45,7 @@
 				<action-tool icon="images/table_refresh.png" tooltip="navigation_table"
 					action-command="NavTable" position="1"/>
 			</tool-bar> -->
-			<menu text="EIEL/manage_users/drop_user"
+			<menu text="ELLE/manage_users/drop_user"
 				action-command="DROP"
 				position="1020"/> 
 		</extension>
