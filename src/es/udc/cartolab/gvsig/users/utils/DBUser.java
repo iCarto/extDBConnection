@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class EIELUser {
+public class DBUser {
 
 	/* roles */
 	private final String adminRole = "administrador";
@@ -19,7 +19,7 @@ public class EIELUser {
 	private boolean isAdmin = false;
 	private boolean isEIEL = false;
 	
-	public EIELUser(String username, String password, Connection con) {
+	public DBUser(String username, String password, Connection con) {
 		this.username = username;
 		this.password = password;
 		try {

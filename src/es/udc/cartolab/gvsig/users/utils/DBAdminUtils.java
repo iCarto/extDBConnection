@@ -6,9 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class EIELAdminUtils {
+public class DBAdminUtils {
 	
-	private EIELAdminUtils() {
+	private DBAdminUtils() {
 		
 	}
 	/**

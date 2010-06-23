@@ -34,7 +34,7 @@ public class DBSession {
 	private final int port;
 	private String database;
 	private String schema;
-	private EIELUser user;
+	private DBUser user;
 	private ConnectionWithParams conwp;
 
 	private DBSession(String server, int port, String username, String password) {
@@ -85,7 +85,7 @@ public class DBSession {
 		try {
 			instance.conwp = SingleVectorialDBConnectionManager.instance().getConnection("PostGIS JDBC Driver",
 					instance.username, instance.password, "ELLE_connection", instance.server, (new Integer(instance.port)).toString(), instance.database, true);
-			instance.user = new EIELUser(instance.username, instance.password, ((ConnectionJDBC) instance.conwp.getConnection()).getConnection());
+			instance.user = new DBUser(instance.username, instance.password, ((ConnectionJDBC) instance.conwp.getConnection()).getConnection());
 		} catch (DBException e) {
 			if (instance!=null) {
 				if (instance.conwp != null) {
@@ -141,7 +141,7 @@ public class DBSession {
 
 	}
 
-	public EIELUser getEIELUser() {
+	public DBUser getEIELUser() {
 		return user;
 	}
 
