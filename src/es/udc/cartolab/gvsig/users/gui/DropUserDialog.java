@@ -20,7 +20,7 @@ import com.iver.andami.ui.mdiManager.WindowInfo;
 import com.jeta.forms.components.panel.FormPanel;
 
 import es.udc.cartolab.gvsig.users.utils.DBSession;
-import es.udc.cartolab.gvsig.users.utils.EIELAdminUtils;
+import es.udc.cartolab.gvsig.users.utils.DBAdminUtils;
 
 public class DropUserDialog extends JPanel implements IWindow, ActionListener {
 
@@ -101,7 +101,7 @@ public class DropUserDialog extends JPanel implements IWindow, ActionListener {
 			if (dbs != null) {
 				try {
 					if (!username.equalsIgnoreCase(dbs.getUserName()) && !username.equalsIgnoreCase("postgres")) {
-						if (EIELAdminUtils.existsUser(dbs.getJavaConnection(), username)) {
+						if (DBAdminUtils.existsUser(dbs.getJavaConnection(), username)) {
 							String message = PluginServices.getText(this, "dropping_user_question");
 							Object[] options = {PluginServices.getText(this, "ok"),
 									PluginServices.getText(this, "cancel")};
@@ -114,7 +114,7 @@ public class DropUserDialog extends JPanel implements IWindow, ActionListener {
 									options,
 									options[1]);
 							if (n==0) {
-								EIELAdminUtils.dropUser(dbs.getJavaConnection(), username);
+								DBAdminUtils.dropUser(dbs.getJavaConnection(), username);
 								dbs.getJavaConnection().commit();
 							}
 						} else {

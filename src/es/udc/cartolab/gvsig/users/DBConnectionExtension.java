@@ -20,7 +20,7 @@ import es.udc.cartolab.gvsig.users.preferences.EielPage;
 public class DBConnectionExtension extends Extension implements IPreferenceExtension {
 
 	public static EielPage eielPreferencesPage = new EielPage();
-	private final String imagePath = "gvSIG/extensiones/es.udc.cartolab.gvsig.users/images/header_cartolab.png";
+	private final String imagePath = "gvSIG/extensiones/es.udc.cartolab.gvsig.users/images/header.png";
 
 	public void execute(String actionCommand) {
 
@@ -31,7 +31,7 @@ public class DBConnectionExtension extends Extension implements IPreferenceExten
 
 		//without header image
 		//		DBConnectionDialog dialog = new DBConnectionDialog();
-		PluginServices.getMDIManager().addCentredWindow(dialog);
+		dialog.openWindow();
 	}
 
 	public void initialize() {

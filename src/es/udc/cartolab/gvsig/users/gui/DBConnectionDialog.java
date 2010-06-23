@@ -1,17 +1,10 @@
 package es.udc.cartolab.gvsig.users.gui;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -20,27 +13,23 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import com.iver.andami.PluginServices;
-import com.iver.andami.ui.mdiManager.IWindow;
-import com.iver.andami.ui.mdiManager.WindowInfo;
 import com.iver.cit.gvsig.fmap.drivers.DBException;
 import com.jeta.forms.components.panel.FormPanel;
 
 import es.udc.cartolab.gvsig.users.utils.ConfigFile;
 import es.udc.cartolab.gvsig.users.utils.DBSession;
 
-public class DBConnectionDialog extends JPanel implements IWindow, ActionListener {
+public class DBConnectionDialog extends AbstractGVWindow {
 
-	private int minHeight = 175;
-	private int maxHeight = 350;
-	private int width = 425;
+	private final static int INIT_MIN_HEIGHT = 175;
+	private final static int INIT_MAX_HEIGHT = 350;
+
+	private int minHeight;
+	private int maxHeight;
 
 
-	WindowInfo viewInfo = null;
-	private JPanel northPanel = null;
 	private JPanel centerPanel = null;
-	private JPanel southPanel = null;
-	private JButton okButton;
-	private JButton cancelButton;
+
 	private JCheckBox advCHB;
 	private JTextField serverTF, userTF, passTF, schemaTF, dbTF, portTF;
 	private JComponent advForm;
@@ -62,46 +51,16 @@ public class DBConnectionDialog extends JPanel implements IWindow, ActionListene
 
 
 	public DBConnectionDialog(ImageIcon headerImg, Color bgColor) {
-		getWindowInfo(); //avoid a NullPointerException
-		init(headerImg, bgColor);
+		super(425, INIT_MIN_HEIGHT, headerImg, bgColor);
+		setTitle(PluginServices.getText(this, "Login"));
 	}
 
 	public DBConnectionDialog() {
 		this(null, null);
 	}
 
-	public WindowInfo getWindowInfo() {
 
-		if (viewInfo == null) {
-			viewInfo = new WindowInfo(WindowInfo.MODELESSDIALOG | WindowInfo.PALETTE);
-			viewInfo.setTitle(PluginServices.getText(this, "Login"));
-			viewInfo.setWidth(width);
-			viewInfo.setHeight(400);
-		}
-		return viewInfo;
-	}
-
-	protected JPanel getNorthPanel(ImageIcon headerImg, Color bgColor) {
-
-		if (northPanel == null) {
-			northPanel = new JPanel();
-			//Set header if any
-			if (headerImg != null && bgColor != null) {
-				northPanel.setBackground(bgColor);
-				JLabel icon = new JLabel();
-				icon.setIcon(headerImg);
-				northPanel.add(icon, BorderLayout.WEST);
-				minHeight += headerImg.getIconHeight();
-				maxHeight += headerImg.getIconHeight();
-				if (headerImg.getIconWidth() > width) {
-					width = headerImg.getIconWidth();
-					viewInfo.setWidth(width);
-				}
-			}
-		}
-		return northPanel;
-	}
-
+	@Override
 	protected JPanel getCenterPanel() {
 
 		if (centerPanel == null) {
@@ -141,6 +100,7 @@ public class DBConnectionDialog extends JPanel implements IWindow, ActionListene
 				dbTF.setText(dbs.getDatabase());
 				schemaTF.setText(dbs.getSchema());
 				advCHB.setSelected(false);
+				showAdvancedProperties(false);
 			} else {
 				ConfigFile cf = ConfigFile.getInstance();
 				serverTF.setText(cf.getServer());
@@ -157,99 +117,19 @@ public class DBConnectionDialog extends JPanel implements IWindow, ActionListene
 		return centerPanel;
 	}
 
-	protected JPanel getSouthPanel() {
-
-		if (southPanel == null) {
-			southPanel = new JPanel();
-			FlowLayout layout = new FlowLayout();
-			layout.setAlignment(FlowLayout.RIGHT);
-			southPanel.setLayout(layout);
-			okButton = new JButton(PluginServices.getText(this, "ok"));
-			cancelButton = new JButton(PluginServices.getText(this, "cancel"));
-			okButton.addActionListener(this);
-			cancelButton.addActionListener(this);
-			southPanel.add(okButton);
-			southPanel.add(cancelButton);
+	@Override
+	protected JPanel getNorthPanel(ImageIcon headerImg, Color bgColor) {
+		if (headerImg != null) {
+			maxHeight = INIT_MAX_HEIGHT + headerImg.getIconHeight();
+			minHeight = INIT_MIN_HEIGHT + headerImg.getIconHeight();
 		}
-		return southPanel;
+		return super.getNorthPanel(headerImg, bgColor);
 	}
 
-	private void init(ImageIcon headerImg, Color bgColor) {
 
-		GridBagLayout layout = new GridBagLayout();
-		setLayout(layout);
-
-		add(getNorthPanel(headerImg, bgColor), new GridBagConstraints(0, 0, 1, 1, 0, 0,
-				GridBagConstraints.NORTH, GridBagConstraints.BOTH,
-				new Insets(0, 0, 0, 0), 0, 0));
-
-		add(getCenterPanel(), new GridBagConstraints(0, 1, 1, 1, 0, 1,
-				GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-				new Insets(0, 0, 0, 0), 0, 0));
-
-		add(getSouthPanel(), new GridBagConstraints(0, 2, 1, 1, 10, 0,
-				GridBagConstraints.SOUTH, GridBagConstraints.BOTH,
-				new Insets(0, 0, 0, 0), 0, 0));
-
-		//enables tabbing navigation
-		setFocusCycleRoot(true);
-	}
-
+	@Override
 	public void actionPerformed(ActionEvent e) {
-
-		if ((e.getSource() == okButton) || (e.getSource() instanceof JTextField)) {
-			PluginServices.getMDIManager().setWaitCursor();
-			try {
-				String portS = portTF.getText().trim();
-				int port = Integer.parseInt(portS);
-				String server = serverTF.getText().trim();
-				String username = userTF.getText().trim();
-				String password = passTF.getText();
-
-				DBSession dbc = DBSession.createConnection(server, port, username, password);
-
-				ConfigFile cf = ConfigFile.getInstance();
-				dbc.changeDatabase(cf.getDatabase());
-				dbc.changeSchema(cf.getSchema());
-
-				PluginServices.getMDIManager().closeWindow(this);
-
-				//save config file
-				cf.setProperties(server, portS, dbc.getDatabase(), dbc.getSchema(), username);
-				PluginServices.getMDIManager().restoreCursor();
-				String title = " " + String.format(PluginServices.getText(this, "connectedTitle"), username, server);
-				PluginServices.getMainFrame().setTitle(title);
-
-			} catch (DBException e1) {
-				// Login error
-				e1.printStackTrace();
-				PluginServices.getMDIManager().restoreCursor();
-				JOptionPane.showMessageDialog(this,
-						PluginServices.getText(this, "databaseConnectionError"),
-						PluginServices.getText(this, "connectionError"),
-						JOptionPane.ERROR_MESSAGE);
-
-			} catch (NumberFormatException e2) {
-				PluginServices.getMDIManager().restoreCursor();
-				JOptionPane.showMessageDialog(this,
-						PluginServices.getText(this, "portError"),
-						PluginServices.getText(this, "dataError"),
-						JOptionPane.ERROR_MESSAGE);
-			} catch (IOException e3) {
-				//TODO show error in log
-				PluginServices.getMDIManager().restoreCursor();
-				System.out.println("No se pudo guardar el archivo: " + e3.getMessage());
-			} finally {
-
-				passTF.setText("");
-			}
-
-		}
-
-		if (e.getSource() == cancelButton) {
-			PluginServices.getMDIManager().closeWindow(this);
-		}
-
+		super.actionPerformed(e);
 		if (e.getSource() == advCHB) {
 			showAdvancedProperties(advCHB.isSelected());
 		}
@@ -262,13 +142,56 @@ public class DBConnectionDialog extends JPanel implements IWindow, ActionListene
 		} else {
 			height = minHeight;
 		}
-		viewInfo.setHeight(height);
+		setHeight(height);
 		advForm.setVisible(show);
 	}
 
-	public Object getWindowProfile() {
-		// TODO Auto-generated method stub
-		return null;
+	@Override
+	protected void onOK() {
+		PluginServices.getMDIManager().setWaitCursor();
+		try {
+			String portS = portTF.getText().trim();
+			int port = Integer.parseInt(portS);
+			String server = serverTF.getText().trim();
+			String username = userTF.getText().trim();
+			String password = passTF.getText();
+
+			DBSession dbc = DBSession.createConnection(server, port, username, password);
+
+			ConfigFile cf = ConfigFile.getInstance();
+			dbc.changeDatabase(cf.getDatabase());
+			dbc.changeSchema(cf.getSchema());
+
+			closeWindow();
+
+			//save config file
+			cf.setProperties(server, portS, dbc.getDatabase(), dbc.getSchema(), username);
+			PluginServices.getMDIManager().restoreCursor();
+			String title = " " + String.format(PluginServices.getText(this, "connectedTitle"), username, server);
+			PluginServices.getMainFrame().setTitle(title);
+
+		} catch (DBException e1) {
+			// Login error
+			e1.printStackTrace();
+			PluginServices.getMDIManager().restoreCursor();
+			JOptionPane.showMessageDialog(this,
+					PluginServices.getText(this, "databaseConnectionError"),
+					PluginServices.getText(this, "connectionError"),
+					JOptionPane.ERROR_MESSAGE);
+
+		} catch (NumberFormatException e2) {
+			PluginServices.getMDIManager().restoreCursor();
+			JOptionPane.showMessageDialog(this,
+					PluginServices.getText(this, "portError"),
+					PluginServices.getText(this, "dataError"),
+					JOptionPane.ERROR_MESSAGE);
+		} catch (IOException e3) {
+			//TODO show error in log
+			PluginServices.getMDIManager().restoreCursor();
+			System.out.println("No se pudo guardar el archivo: " + e3.getMessage());
+		} finally {
+			passTF.setText("");
+		}
 	}
 
 }
