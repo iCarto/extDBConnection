@@ -1,6 +1,9 @@
 package es.udc.cartolab.gvsig.users;
 
+import java.awt.Color;
 import java.io.File;
+
+import javax.swing.ImageIcon;
 
 import com.iver.andami.PluginServices;
 import com.iver.andami.plugins.Extension;
@@ -17,10 +20,17 @@ import es.udc.cartolab.gvsig.users.preferences.EielPage;
 public class DBConnectionExtension extends Extension implements IPreferenceExtension {
 
 	public static EielPage eielPreferencesPage = new EielPage();
+	private final String imagePath = "gvSIG/extensiones/es.udc.cartolab.gvsig.users/images/header_cartolab.png";
 
 	public void execute(String actionCommand) {
-		// TODO Auto-generated method stub
-		DBConnectionDialog dialog = new DBConnectionDialog();
+
+		//with header image (Pontevedra)
+		ImageIcon icon = new ImageIcon(imagePath);
+		Color bgColor = new Color(36, 46, 109);
+		DBConnectionDialog dialog = new DBConnectionDialog(icon, bgColor);
+
+		//without header image
+		//		DBConnectionDialog dialog = new DBConnectionDialog();
 		PluginServices.getMDIManager().addCentredWindow(dialog);
 	}
 
