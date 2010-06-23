@@ -213,10 +213,14 @@ public class DBSession {
 		}
 
 		/*buscamos clave primaria y la añadimos a la definicion de la capa*/
+		//OJO, esta solución no vale con claves primarias de más de una columna!!!
 		while(claves.next()) {
 			dbLayerDef.setFieldID(claves.getString("Column_Name"));
 		}
 
+		if (dbLayerDef.getFieldID() == null) {
+			dbLayerDef.setFieldID("gid");
+		}
 
 		PostGISWriter writer = new PostGISWriter();
 
@@ -261,6 +265,26 @@ public class DBSession {
 	public String[][] getTable(String tableName, String schema, String whereClause,
 			String[] orderBy, boolean desc) throws SQLException {
 
+		Connection con = ((ConnectionJDBC) conwp.getConnection()).getConnection();
+
+		DatabaseMetaData metadataDB = con.getMetaData();
+
+		ResultSet columns = metadataDB.getColumns(null,null,tableName, "%");
+		List<String> fieldNames = new ArrayList<String>();
+
+		while (columns.next()) {
+			fieldNames.add(columns.getString("Column_Name"));
+		}
+
+		return getTable(tableName, schema, fieldNames.toArray(new String[0]), whereClause,
+				orderBy, desc);
+	}
+
+
+	public String[][] getTable(String tableName, String schema, String[] fieldNames, String whereClause,
+			String[] orderBy, boolean desc) throws SQLException {
+		Connection con = ((ConnectionJDBC) conwp.getConnection()).getConnection();
+
 		if (whereClause == null) {
 			whereClause = "";
 		}
@@ -273,22 +297,13 @@ public class DBSession {
 			numFieldsOrder = orderBy.length;
 		}
 
-		Connection con = ((ConnectionJDBC) conwp.getConnection()).getConnection();
-		DatabaseMetaData metadataDB = con.getMetaData();
-
-		ResultSet columns = metadataDB.getColumns(null,null,tableName, "%");
-		List<String> fieldNames = new ArrayList<String>();
-
-		while (columns.next()) {
-			fieldNames.add(columns.getString("Column_Name"));
-		}
 
 		String query = "SELECT ";
-		for (int i=0; i<fieldNames.size()-1; i++) {
-			query = query + fieldNames.get(i) + ", ";
+		for (int i=0; i<fieldNames.length-1; i++) {
+			query = query + fieldNames[i] + ", ";
 		}
 
-		query = query + fieldNames.get(fieldNames.size()-1) + " FROM " + schema + "." + tableName;
+		query = query + fieldNames[fieldNames.length-1] + " FROM " + schema + "." + tableName;
 
 		List<String> whereValues = new ArrayList<String>();
 
@@ -334,31 +349,21 @@ public class DBSession {
 
 		ResultSet rs = stat.executeQuery();
 
-		String text = "";
+		ArrayList<String[]> rows = new ArrayList<String[]>();
 		while (rs.next()) {
-			for (int i=0; i<fieldNames.size(); i++) {
-				String val = rs.getString(fieldNames.get(i));
+			String[] row = new String[fieldNames.length];
+			for (int i=0; i<fieldNames.length; i++) {
+				String val = rs.getString(fieldNames[i]);
 				if (val == null || val.compareTo("")==0) {
 					val = " ";
 				}
-				text = text + val + "|";
+				row[i] = val;
 			}
-			text = text + "|#|";
-			//text = text + rs.getString(fieldNames[fieldNames.length-1]);
+			rows.add(row);
 		}
 		rs.close();
 
-		String[][] result;
-		if (!text.equals("")) {
-			String[] aux = text.split("\\|#\\|");
-			result = new String[aux.length][];
-			for (int i=0; i<aux.length; i++) {
-				result[i] = aux[i].split("\\|");
-			}
-		} else {
-			result = new String[0][0];
-		}
-		return result;
+		return rows.toArray(new String[0][0]);
 
 	}
 
