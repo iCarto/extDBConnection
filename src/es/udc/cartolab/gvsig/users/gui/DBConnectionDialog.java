@@ -8,11 +8,12 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.IOException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -29,26 +30,44 @@ import es.udc.cartolab.gvsig.users.utils.DBSession;
 
 public class DBConnectionDialog extends JPanel implements IWindow, ActionListener {
 
+	private int minHeight = 175;
+	private int maxHeight = 350;
+	private int width = 425;
+
+
 	WindowInfo viewInfo = null;
 	private JPanel northPanel = null;
 	private JPanel centerPanel = null;
 	private JPanel southPanel = null;
 	private JButton okButton;
 	private JButton cancelButton;
-	private JTextField serverTF, portTF, userTF, passTF;
+	private JCheckBox advCHB;
+	private JTextField serverTF, userTF, passTF, schemaTF, dbTF, portTF;
+	private JComponent advForm;
 
 	public static final String ID_SERVERTF = "serverTF";  //javax.swing.JTextField
 	public static final String ID_PORTTF = "portTF";  //javax.swing.JTextField
 	public static final String ID_USERTF = "userTF";  //javax.swing.JTextField
 	public static final String ID_PASSTF = "passTF";  //javax.swing.JPasswordField
+	public static final String ID_DBTF = "dbTF";
+	public static final String ID_SCHEMATF = "schemaTF";
+	public static final String ID_ADVF = "advancedForm";
+	public static final String ID_ADVCHB = "advancedCHB";
 	public static final String ID_SERVERL = "serverLabel";
 	public static final String ID_PORTL = "portLabel";
 	public static final String ID_USERL = "userLabel";
 	public static final String ID_PASSL = "passLabel";
+	public static final String ID_DBL = "dbLabel";
+	public static final String ID_SCHEMAL = "schemaLabel";
 
+
+	public DBConnectionDialog(ImageIcon headerImg, Color bgColor) {
+		getWindowInfo(); //avoid a NullPointerException
+		init(headerImg, bgColor);
+	}
 
 	public DBConnectionDialog() {
-		init();
+		this(null, null);
 	}
 
 	public WindowInfo getWindowInfo() {
@@ -56,25 +75,28 @@ public class DBConnectionDialog extends JPanel implements IWindow, ActionListene
 		if (viewInfo == null) {
 			viewInfo = new WindowInfo(WindowInfo.MODELESSDIALOG | WindowInfo.PALETTE);
 			viewInfo.setTitle(PluginServices.getText(this, "Login"));
-			viewInfo.setWidth(425);
-			viewInfo.setHeight(275);
+			viewInfo.setWidth(width);
+			viewInfo.setHeight(400);
 		}
 		return viewInfo;
 	}
 
-	protected JPanel getNorthPanel() {
+	protected JPanel getNorthPanel(ImageIcon headerImg, Color bgColor) {
 
-		//Set header if any
-		//Current header (Pontevedra) size: 425x79
 		if (northPanel == null) {
 			northPanel = new JPanel();
-			File iconPath = new File("gvSIG/extensiones/es.udc.cartolab.gvsig.elle/images/header.png");
-			if (iconPath.exists()) {
-				northPanel.setBackground(new Color(36, 46, 109));
-				ImageIcon logo = new ImageIcon(iconPath.getAbsolutePath());
+			//Set header if any
+			if (headerImg != null && bgColor != null) {
+				northPanel.setBackground(bgColor);
 				JLabel icon = new JLabel();
-				icon.setIcon(logo);
+				icon.setIcon(headerImg);
 				northPanel.add(icon, BorderLayout.WEST);
+				minHeight += headerImg.getIconHeight();
+				maxHeight += headerImg.getIconHeight();
+				if (headerImg.getIconWidth() > width) {
+					width = headerImg.getIconWidth();
+					viewInfo.setWidth(width);
+				}
 			}
 		}
 		return northPanel;
@@ -95,6 +117,11 @@ public class DBConnectionDialog extends JPanel implements IWindow, ActionListene
 			userTF.addActionListener(this);
 			passTF = form.getTextField(ID_PASSTF);
 			passTF.addActionListener(this);
+			dbTF = form.getTextField(ID_DBTF);
+			schemaTF = form.getTextField(ID_SCHEMATF);
+			advForm = (JComponent) form.getComponentByName(ID_ADVF);
+			advCHB = form.getCheckBox(ID_ADVCHB);
+			advCHB.addActionListener(this);
 
 			JLabel serverLabel = form.getLabel(ID_SERVERL);
 			JLabel portLabel = form.getLabel(ID_PORTL);
@@ -109,13 +136,21 @@ public class DBConnectionDialog extends JPanel implements IWindow, ActionListene
 			DBSession dbs = DBSession.getCurrentSession();
 			if (dbs!=null) {
 				serverTF.setText(dbs.getServer());
-				portTF.setText((new Integer(dbs.getPort())).toString());
+				portTF.setText(Integer.toString(dbs.getPort()));
 				userTF.setText(dbs.getUserName());
+				dbTF.setText(dbs.getDatabase());
+				schemaTF.setText(dbs.getSchema());
+				advCHB.setSelected(false);
 			} else {
 				ConfigFile cf = ConfigFile.getInstance();
 				serverTF.setText(cf.getServer());
 				portTF.setText(cf.getPort());
 				userTF.setText(cf.getUsername());
+				schemaTF.setText(cf.getSchema());
+				dbTF.setText(cf.getDatabase());
+				boolean showAdvProp = !cf.fileExists();
+				showAdvancedProperties(showAdvProp);
+				advCHB.setSelected(showAdvProp);
 			}
 
 		}
@@ -139,12 +174,12 @@ public class DBConnectionDialog extends JPanel implements IWindow, ActionListene
 		return southPanel;
 	}
 
-	private void init() {
+	private void init(ImageIcon headerImg, Color bgColor) {
 
 		GridBagLayout layout = new GridBagLayout();
 		setLayout(layout);
 
-		add(getNorthPanel(), new GridBagConstraints(0, 0, 1, 1, 0, 0,
+		add(getNorthPanel(headerImg, bgColor), new GridBagConstraints(0, 0, 1, 1, 0, 0,
 				GridBagConstraints.NORTH, GridBagConstraints.BOTH,
 				new Insets(0, 0, 0, 0), 0, 0));
 
@@ -166,7 +201,7 @@ public class DBConnectionDialog extends JPanel implements IWindow, ActionListene
 			PluginServices.getMDIManager().setWaitCursor();
 			try {
 				String portS = portTF.getText().trim();
-				int port = new Integer(portS).intValue();
+				int port = Integer.parseInt(portS);
 				String server = serverTF.getText().trim();
 				String username = userTF.getText().trim();
 				String password = passTF.getText();
@@ -214,6 +249,21 @@ public class DBConnectionDialog extends JPanel implements IWindow, ActionListene
 		if (e.getSource() == cancelButton) {
 			PluginServices.getMDIManager().closeWindow(this);
 		}
+
+		if (e.getSource() == advCHB) {
+			showAdvancedProperties(advCHB.isSelected());
+		}
+	}
+
+	private void showAdvancedProperties(boolean show) {
+		int height;
+		if (show) {
+			height = maxHeight;
+		} else {
+			height = minHeight;
+		}
+		viewInfo.setHeight(height);
+		advForm.setVisible(show);
 	}
 
 	public Object getWindowProfile() {

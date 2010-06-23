@@ -7,8 +7,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import com.iver.andami.Launcher;
-
 
 
 public class ConfigFile {
@@ -16,12 +14,13 @@ public class ConfigFile {
 	private String preferencesFile;
 	private static ConfigFile instance = null;
 	private String server;
-	private String database = "eiel_pontevedra_2009";
-	private String schema = "";
+	private String database;
+	private String schema;
 	private String username;
 	private String port;
-	
-	
+
+	private boolean fileExists = true;
+
 	private ConfigFile() {
 		String dir = System.getProperty("user.dir");
 		if (dir.endsWith(File.separator)) {
@@ -29,7 +28,7 @@ public class ConfigFile {
 		} else {
 			preferencesFile = dir + File.separator + "dbconnection.cfg";
 		}
-		
+
 		try {
 			getProperties();
 		} catch (IOException e) {
@@ -37,14 +36,14 @@ public class ConfigFile {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static ConfigFile getInstance() {
 		if (instance == null) {
 			instance = new ConfigFile();
 		}
 		return instance;
 	}
-	
+
 	private void getProperties() throws IOException {
 		File configFile = new File(preferencesFile);
 		String line;
@@ -93,34 +92,38 @@ public class ConfigFile {
 			server = "";
 			port = "";
 			username = "";
-		} 
+			schema = "";
+			database = "";
+			fileExists = false;
+		}
 	}
-	
+
 	public String getServer() {
 		return server;
 	}
-	
+
 	public String getPort() {
 		return port;
 	}
-	
+
 	public String getDatabase() {
 		return database;
 	}
-	
+
 	public String getSchema() {
 		return schema;
 	}
-	
+
 	public String getUsername() {
 		return username;
 	}
-	
+
 	private void saveProperties() throws IOException {
 		//save the file
 		File configFile = new File(preferencesFile);
 		if (!configFile.exists()) {
 			configFile.createNewFile();
+			fileExists = true;
 		}
 		if (configFile.canWrite()) {
 			FileWriter fileWriter = new FileWriter(configFile);
@@ -134,21 +137,25 @@ public class ConfigFile {
 			for (int i = 0; i<lines.length; i++) {
 				fileWriter.write(lines[i]+"\n");
 			}
-			fileWriter.flush();	
+			fileWriter.flush();
 		} else {
 			throw new IOException("The file can not be edited");
 		}
 	}
-	
-	public void setProperties(String server, String port, 
-		String database, String schema, String username) throws IOException {
-		
+
+	public void setProperties(String server, String port,
+			String database, String schema, String username) throws IOException {
+
 		this.server = server;
 		this.port = port;
 		this.database = database;
 		this.schema = schema;
 		this.username = username;
-		
+
 		saveProperties();
+	}
+
+	public boolean fileExists() {
+		return fileExists;
 	}
 }
