@@ -82,15 +82,21 @@ public class DBConnectionDialog extends AbstractGVWindow {
 			advCHB = form.getCheckBox(ID_ADVCHB);
 			advCHB.addActionListener(this);
 
+			//localization
 			JLabel serverLabel = form.getLabel(ID_SERVERL);
 			JLabel portLabel = form.getLabel(ID_PORTL);
 			JLabel userLabel = form.getLabel(ID_USERL);
 			JLabel passLabel = form.getLabel(ID_PASSL);
+			JLabel schemaLabel = form.getLabel(ID_SCHEMAL);
+			JLabel dbLabel = form.getLabel(ID_DBL);
 
 			serverLabel.setText(PluginServices.getText(this, "server"));
 			portLabel.setText(PluginServices.getText(this, "port"));
 			userLabel.setText(PluginServices.getText(this, "user_name"));
-			passLabel.setText(PluginServices.getText(this, "eiel_pass"));
+			passLabel.setText(PluginServices.getText(this, "user_pass"));
+			schemaLabel.setText(PluginServices.getText(this, "schema"));
+			dbLabel.setText(PluginServices.getText(this, "data_base"));
+			advCHB.setText(PluginServices.getText(this, "advanced_options"));
 
 			DBSession dbs = DBSession.getCurrentSession();
 			if (dbs!=null) {
