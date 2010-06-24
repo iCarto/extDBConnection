@@ -26,7 +26,7 @@ public class CreateUserWindow extends AbstractGVWindow {
 	JButton okButton, cancelButton;
 	JTextField userTF, passTF, repassTF;
 	//JCheckBox adminCHB;
-	JComboBox typeCB;
+	protected JComboBox typeCB;
 
 
 	public CreateUserWindow() {
@@ -55,15 +55,14 @@ public class CreateUserWindow extends AbstractGVWindow {
 			JLabel userLabel = form.getLabel("userLabel");
 			userLabel.setText(PluginServices.getText(this, "user_name"));
 			JLabel passLabel = form.getLabel("passLabel");
-			passLabel.setText(PluginServices.getText(this, "eiel_pass"));
+			passLabel.setText(PluginServices.getText(this, "user_pass"));
 			JLabel repassLabel = form.getLabel("repassLabel");
-			repassLabel.setText(PluginServices.getText(this, "retype_eiel_pass"));
+			repassLabel.setText(PluginServices.getText(this, "retype_user_pass"));
 			JLabel typeLabel = form.getLabel("typeLabel");
 			typeLabel.setText(PluginServices.getText(this, "user_type"));
 
 			//adminCHB.setText(PluginServices.getText(this, "create_admin"));
 			typeCB.addItem(PluginServices.getText(this, "create_guest"));
-			typeCB.addItem(PluginServices.getText(this, "create_eiel"));
 			typeCB.addItem(PluginServices.getText(this, "create_admin"));
 		}
 		return centerPanel;
@@ -106,17 +105,7 @@ public class CreateUserWindow extends AbstractGVWindow {
 							closeWindow();
 							try {
 								DBAdminUtils.createUser(con, username, pass1);
-								switch (typeCB.getSelectedIndex()) {
-								case 0 : //Guest
-									DBAdminUtils.grantRole(con, username, "guest");
-									break;
-								case 1 : //EIEL user
-									DBAdminUtils.grantRole(con, username, "eiel");
-									break;
-								case 2 : //Admin
-									DBAdminUtils.grantRole(con, username, "administrador");
-									break;
-								}
+								grantRole(con, username);
 								//force db commit
 								con.commit();
 							} catch (SQLException e2) {
@@ -138,6 +127,19 @@ public class CreateUserWindow extends AbstractGVWindow {
 						PluginServices.getText(this, "creating_user_error"),
 						JOptionPane.ERROR_MESSAGE);
 			}
+		}
+	}
+
+	protected void grantRole(Connection con, String username) throws SQLException {
+		// TODO Auto-generated method stub
+		int selectedIndex = typeCB.getSelectedIndex();
+		switch (selectedIndex) {
+		case 0 : //Guest
+			DBAdminUtils.grantRole(con, username, "guest");
+			break;
+		case 1 : //Admin
+			DBAdminUtils.grantRole(con, username, "administrador");
+			break;
 		}
 	}
 

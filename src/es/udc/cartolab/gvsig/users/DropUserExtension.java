@@ -26,7 +26,7 @@ public class DropUserExtension extends Extension {
 	public boolean isVisible() {
 		DBSession session = DBSession.getCurrentSession();
 		if (session != null) {
-			return session.getEIELUser().isAdmin();
+			return session.getDBUser().isAdmin();
 		}
 		return false;
 	}

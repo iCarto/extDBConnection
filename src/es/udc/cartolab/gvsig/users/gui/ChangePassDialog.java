@@ -48,7 +48,7 @@ public class ChangePassDialog extends AbstractGVWindow {
 			JLabel newPassLabel = form.getLabel("newPassLabel");
 			newPassLabel.setText(PluginServices.getText(this, "new_pass"));
 			JLabel reNewPassLabel = form.getLabel("reNewPassLabel");
-			reNewPassLabel.setText(PluginServices.getText(this, "retype_eiel_pass"));
+			reNewPassLabel.setText(PluginServices.getText(this, "retype_user_pass"));
 
 			currentPassTF = form.getTextField("currentPassTF");
 			currentPassTF.addActionListener(this);
@@ -68,7 +68,7 @@ public class ChangePassDialog extends AbstractGVWindow {
 		if (newPass.equals(newPass2)) {
 			DBSession dbs = DBSession.getCurrentSession();
 			if (dbs!=null) {
-				DBUser user = dbs.getEIELUser();
+				DBUser user = dbs.getDBUser();
 				try {
 					if (user.checkPassword(currentPass)) {
 						user.changePassword(newPass);

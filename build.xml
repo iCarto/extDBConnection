@@ -1,6 +1,6 @@
 <project name="extUsers" default="generate-without-source" basedir=".">
     <description>
-    	Users management and DB Connection for EIEL
+    	Users management and DB Connection extension
     </description>
   <!-- set global properties for this build -->
   <property name="src" location="src"/>

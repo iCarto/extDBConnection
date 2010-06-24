@@ -141,7 +141,7 @@ public class DBSession {
 
 	}
 
-	public DBUser getEIELUser() {
+	public DBUser getDBUser() {
 		return user;
 	}
 

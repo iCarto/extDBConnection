@@ -25,7 +25,7 @@ public class UsersPreferencePage extends AbstractPreferencePage {
 	private boolean panelStarted;
 
 	/**
-	 * Creates a new panel containing the EIEL preferences settings.
+	 * Creates a new panel containing the db connection preferences settings.
 	 *
 	 */
 	public UsersPreferencePage() {
