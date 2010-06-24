@@ -9,12 +9,12 @@ import com.iver.andami.preferences.IPreferenceExtension;
 import com.iver.utiles.XMLEntity;
 
 import es.udc.cartolab.gvsig.users.gui.DBConnectionDialog;
-import es.udc.cartolab.gvsig.users.preferences.EielPage;
+import es.udc.cartolab.gvsig.users.preferences.UsersPreferencePage;
 
 
 public class DBConnectionExtension extends Extension implements IPreferenceExtension {
 
-	public static EielPage eielPreferencesPage = new EielPage();
+	public static UsersPreferencePage usersPreferencesPage = new UsersPreferencePage();
 
 	public void execute(String actionCommand) {
 
@@ -28,8 +28,8 @@ public class DBConnectionExtension extends Extension implements IPreferenceExten
 		//poner if
 		PluginServices ps = PluginServices.getPluginServices(this);
 		XMLEntity xml = ps.getPersistentXML();
-		if (xml.contains(EielPage.CONNECT_DB_AT_STARTUP_KEY_NAME)) {
-			if (xml.getBooleanProperty(EielPage.CONNECT_DB_AT_STARTUP_KEY_NAME)) {
+		if (xml.contains(UsersPreferencePage.CONNECT_DB_AT_STARTUP_KEY_NAME)) {
+			if (xml.getBooleanProperty(UsersPreferencePage.CONNECT_DB_AT_STARTUP_KEY_NAME)) {
 				execute(null);
 			}
 		}
@@ -53,7 +53,7 @@ public class DBConnectionExtension extends Extension implements IPreferenceExten
 	public IPreference[] getPreferencesPages() {
 		// TODO Auto-generated method stub
 		IPreference[] preferences=new IPreference[1];
-		preferences[0]=eielPreferencesPage;
+		preferences[0]=usersPreferencesPage;
 		return preferences;
 	}
 
