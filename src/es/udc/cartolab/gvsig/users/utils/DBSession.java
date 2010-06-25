@@ -361,8 +361,8 @@ public class DBSession {
 			String[] row = new String[fieldNames.length];
 			for (int i=0; i<fieldNames.length; i++) {
 				String val = rs.getString(fieldNames[i]);
-				if (val == null || val.compareTo("")==0) {
-					val = " ";
+				if (val == null) {
+					val = "";
 				}
 				row[i] = val;
 			}
