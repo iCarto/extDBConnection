@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -262,21 +263,27 @@ public class DBSession {
 
 	/* GET TABLE */
 
-	public String[][] getTable(String tableName, String schema, String whereClause,
-			String[] orderBy, boolean desc) throws SQLException {
+	private String[] getColumnNames(String tablename, String schema) throws SQLException {
 
 		Connection con = ((ConnectionJDBC) conwp.getConnection()).getConnection();
 
-		DatabaseMetaData metadataDB = con.getMetaData();
-
-		ResultSet columns = metadataDB.getColumns(null,null,tableName, "%");
-		List<String> fieldNames = new ArrayList<String>();
-
-		while (columns.next()) {
-			fieldNames.add(columns.getString("Column_Name"));
+		String query = "SELECT * FROM " + schema + "." + tablename + " LIMIT 1";
+		Statement st = con.createStatement();
+		ResultSet resultSet = st.executeQuery(query);
+		ResultSetMetaData md = resultSet.getMetaData();
+		String[] cols = new String[md.getColumnCount()];
+		for (int i=0; i<md.getColumnCount(); i++) {
+			cols[i] = md.getColumnLabel(i+1);
 		}
+		return cols;
+	}
 
-		return getTable(tableName, schema, fieldNames.toArray(new String[0]), whereClause,
+	public String[][] getTable(String tableName, String schema, String whereClause,
+			String[] orderBy, boolean desc) throws SQLException {
+
+		String[] columnNames = getColumnNames(tableName, schema);
+
+		return getTable(tableName, schema, columnNames, whereClause,
 				orderBy, desc);
 	}
 
