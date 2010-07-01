@@ -82,6 +82,23 @@ public class DBSession {
 		return con;
 	}
 
+	/**
+	 * To be used only when there's any error (SQLException) that is not handled by gvSIG
+	 * @return the session
+	 * @throws DBException
+	 */
+	public static DBSession reconnect() throws DBException {
+		if (instance!=null) {
+			String server = instance.server;
+			int port = instance.port;
+			String database = instance.database;
+			String username = instance.username;
+			String pass = instance.password;
+			return createConnection(server, port, database, username, pass);
+		}
+		return null;
+	}
+
 	private static void connect() throws DBException {
 		try {
 			instance.conwp = SingleVectorialDBConnectionManager.instance().getConnection("PostGIS JDBC Driver",
@@ -276,6 +293,20 @@ public class DBSession {
 			cols[i] = md.getColumnLabel(i+1);
 		}
 		return cols;
+	}
+
+	private int getColumnType(String tablename, String schema, String column) throws SQLException {
+
+		Connection con = ((ConnectionJDBC) conwp.getConnection()).getConnection();
+
+		DatabaseMetaData meta = con.getMetaData();
+		ResultSet rsColumns = meta.getColumns(null, schema, tablename, column);
+		while (rsColumns.next()) {
+			if (column.equalsIgnoreCase(rsColumns.getString("COLUMN_NAME"))) {
+				return rsColumns.getInt("COLUMN_TYPE");
+			}
+		}
+		return -1;
 	}
 
 	public String[][] getTable(String tableName, String schema, String whereClause,
@@ -489,4 +520,85 @@ public class DBSession {
 		return result;
 	}
 
+	/**
+	 * Be careful!
+	 * @param table
+	 * @param whereClause
+	 * @throws SQLException
+	 */
+	public void deleteRows(String schema, String table, String whereClause) throws SQLException {
+
+		Connection con = ((ConnectionJDBC) conwp.getConnection()).getConnection();
+
+		String sql = "DELETE FROM " + schema + "." + table + " " +  whereClause;
+
+		Statement statement = con.createStatement();
+		statement.executeUpdate(sql);
+		con.commit();
+	}
+
+	public void insertRow(String schema, String table, Object[] values) throws SQLException {
+
+		String[] columns = getColumnNames(table, schema);
+		insertRow(schema, table, columns, values);
+	}
+
+	public void insertRow(String schema, String table, String[] columns, Object[] values) throws SQLException {
+
+		Connection con = ((ConnectionJDBC) conwp.getConnection()).getConnection();
+
+		if (columns.length == values.length) {
+			String sql = "INSERT INTO " + schema + "." + table + " (";
+			for (String col : columns) {
+				sql = sql + col + ", ";
+			}
+			sql = sql.substring(0, sql.length()-2) + ") VALUES (";
+			for (int i=0; i<columns.length; i++) {
+				sql = sql + "?, ";
+			}
+			sql = sql.substring(0, sql.length()-2) + ")";
+
+			PreparedStatement statement = con.prepareStatement(sql);
+
+			for (int i=0; i<columns.length; i++) {
+				statement.setObject(i+1, values[i]);
+			}
+
+			statement.executeUpdate();
+			con.commit();
+
+		}
+
+	}
+	/**
+	 * Be careful!
+	 * @param schema
+	 * @param tablename
+	 * @param fields
+	 * @param values
+	 * @param whereClause
+	 * @throws SQLException
+	 */
+	public void updateRows(String schema, String tablename, String[] columns,
+			Object[] values, String whereClause) throws SQLException {
+
+		Connection con =((ConnectionJDBC) conwp.getConnection()).getConnection();
+
+		if (columns.length == values.length) {
+			String sql = "UPDATE " + schema + "." + tablename + " SET ";
+			for (String column : columns) {
+				sql = sql + column + "=?, ";
+			}
+			sql = sql.substring(0, sql.length()-2) + " " + whereClause;
+
+			PreparedStatement statement = con.prepareStatement(sql);
+			for (int i=0; i<values.length; i++) {
+				statement.setObject(i+1, values[i]);
+			}
+
+			statement.executeUpdate();
+			con.commit();
+		}
+
+	}
 }
