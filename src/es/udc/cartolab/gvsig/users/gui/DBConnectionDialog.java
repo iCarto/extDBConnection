@@ -164,17 +164,16 @@ public class DBConnectionDialog extends AbstractGVWindow {
 			String server = serverTF.getText().trim();
 			String username = userTF.getText().trim();
 			String password = passTF.getText();
+			String schema = schemaTF.getText();
+			String database = dbTF.getText();
 
-			DBSession dbc = DBSession.createConnection(server, port, username, password);
-
-			ConfigFile cf = ConfigFile.getInstance();
-			dbc.changeDatabase(cf.getDatabase());
-			dbc.changeSchema(cf.getSchema());
+			DBSession dbc = DBSession.createConnection(server, port, database, schema, username, password);
 
 			closeWindow();
 
 			//save config file
-			cf.setProperties(server, portS, dbc.getDatabase(), dbc.getSchema(), username);
+			ConfigFile cf = ConfigFile.getInstance();
+			cf.setProperties(server, portS, database, schema, username);
 			PluginServices.getMDIManager().restoreCursor();
 			String title = " " + String.format(PluginServices.getText(this, "connectedTitle"), username, server);
 			PluginServices.getMainFrame().setTitle(title);

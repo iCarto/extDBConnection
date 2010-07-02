@@ -28,8 +28,6 @@ import com.iver.cit.gvsig.fmap.layers.LayerFactory;
 
 public class DBSession {
 
-	/** datos de la BD ¿mandarlos a archivos de configuracion? **/
-
 	private static DBSession instance = null;
 	private final String server, username, password;
 	private final int port;
@@ -38,15 +36,15 @@ public class DBSession {
 	private DBUser user;
 	private ConnectionWithParams conwp;
 
-	private DBSession(String server, int port, String username, String password) {
+	private DBSession(String server, int port, String database, String schema, String username, String password) {
 		this.server = server;
 		this.port = port;
 		this.username = username;
 		this.password = password;
 
-		ConfigFile file = ConfigFile.getInstance();
-		this.schema = file.getSchema();
-		this.database = file.getDatabase();
+		this.database = database;
+		this.schema = schema;
+
 	}
 	/**
 	 * 
@@ -60,26 +58,21 @@ public class DBSession {
 	 * Creates a new DB Connection or changes the current one.
 	 * @param server
 	 * @param port
+	 * @param database
+	 * @param schema
 	 * @param username
 	 * @param password
 	 * @return the connection
 	 * @throws DBException if there's any problem (server error or login error)
 	 */
-	public static DBSession createConnection(String server, int port,
+	public static DBSession createConnection(String server, int port, String database, String schema,
 			String username, String password) throws DBException {
 		if (instance != null) {
 			instance.close();
 		}
-		instance = new DBSession(server, port, username, password);
+		instance = new DBSession(server, port, database, schema, username, password);
 		connect();
 		return instance;
-	}
-
-	public static DBSession createConnection(String server, int port,
-			String database, String username, String password) throws DBException {
-		DBSession con = createConnection(server, port, username, password);
-		instance.database = database;
-		return con;
 	}
 
 	/**
@@ -94,7 +87,8 @@ public class DBSession {
 			String database = instance.database;
 			String username = instance.username;
 			String pass = instance.password;
-			return createConnection(server, port, database, username, pass);
+			String schema = instance.schema;
+			return createConnection(server, port, database, schema, username, pass);
 		}
 		return null;
 	}
@@ -138,10 +132,6 @@ public class DBSession {
 
 	public void changeSchema(String schema) {
 		this.schema = schema;
-	}
-
-	public void changeDatabase(String database) {
-		this.database = database;
 	}
 
 	public Connection getJavaConnection() {
@@ -599,6 +589,27 @@ public class DBSession {
 			statement.executeUpdate();
 			con.commit();
 		}
+
+	}
+
+	public boolean tableExists(String schema, String tablename) throws SQLException {
+
+		Connection con =((ConnectionJDBC) conwp.getConnection()).getConnection();
+
+		String query = "select count(*) as count from pg_tables where schemaname='" + schema + "' and tablename='" + tablename + "'";
+
+		Statement stat = con.createStatement();
+		ResultSet rs = stat.executeQuery(query);
+
+		while (rs.next()) {
+			int count = rs.getInt("count");
+			if (count!=1) {
+				return false;
+			} else {
+				return true;
+			}
+		}
+		return false;
 
 	}
 }
