@@ -8,21 +8,17 @@ import java.sql.Statement;
 
 public class DBUser {
 
-	/* roles */
-	private final String adminRole = "administrador";
 
 	private String username;
 	private String password;
 	private String userid;
-	private boolean isSuper = false;
 	private boolean isAdmin = false;
 
 	public DBUser(String username, String password, Connection con) {
 		this.username = username;
 		this.password = password;
 		try {
-			isSuper = checkSuper(con);
-			isAdmin = checkRole(con, adminRole);
+			isAdmin = checkSuper(con);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -47,7 +43,7 @@ public class DBUser {
 
 	private boolean checkRole(Connection con, String role) throws SQLException {
 
-		boolean isRole = isSuper || isAdmin;
+		boolean isRole = isAdmin;
 		if (!isRole) {
 			Statement stat = con.createStatement();
 			String query = "SELECT member FROM pg_auth_members WHERE member='" +
@@ -85,6 +81,26 @@ public class DBUser {
 		stat.close();
 
 		con.commit();
+
+	}
+
+	public boolean canCreateTable(String schema) throws SQLException {
+
+		DBSession dbs = DBSession.getCurrentSession();
+		Connection con = dbs.getJavaConnection();
+
+		String query = "SELECT has_schema_privilege('" + schema + "', 'create') as can_create";
+		Statement stat = con.createStatement();
+
+		//		PreparedStatement stat = con.prepareStatement(query);
+		//		stat.setString(1, schema);
+		ResultSet rs = stat.executeQuery(query);
+
+		while (rs.next()) {
+			return rs.getBoolean("can_create");
+		}
+
+		return false;
 
 	}
 }
