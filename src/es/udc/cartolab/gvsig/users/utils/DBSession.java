@@ -417,7 +417,7 @@ public class DBSession {
 
 	/* GET DISTINCT VALUES FROM A COLUMN */
 
-	public String[] getDistinctValues(String tableName, String schema, String fieldName, boolean sorted, boolean desc) throws SQLException {
+	public String[] getDistinctValues(String tableName, String schema, String fieldName, boolean sorted, boolean desc, String whereClause) throws SQLException {
 
 		Connection con = ((ConnectionJDBC) conwp.getConnection()).getConnection();
 
@@ -427,7 +427,11 @@ public class DBSession {
 			schema = this.schema;
 		}
 
-		String query = "SELECT DISTINCT " + fieldName + " FROM " + schema + "." + tableName;
+		if (whereClause == null) {
+			whereClause = "";
+		}
+
+		String query = "SELECT DISTINCT " + fieldName + " FROM " + schema + "." + tableName + " " + whereClause;
 
 		if (sorted) {
 			query = query + " ORDER BY " + fieldName;
@@ -454,12 +458,16 @@ public class DBSession {
 
 	}
 
+	public String[] getDistinctValues(String tableName, String schema, String fieldName, boolean sorted, boolean desc) throws SQLException {
+		return getDistinctValues(tableName, schema, fieldName, sorted, desc, null);
+	}
+
 	public String[] getDistinctValues(String tableName, String schema, String fieldName) throws SQLException {
-		return getDistinctValues(tableName, schema, fieldName, false, false);
+		return getDistinctValues(tableName, schema, fieldName, false, false, null);
 	}
 
 	public String[] getDistinctValues(String tableName, String fieldName) throws SQLException {
-		return getDistinctValues(tableName, schema, fieldName, false, false);
+		return getDistinctValues(tableName, schema, fieldName, false, false, null);
 	}
 
 	public String[] getTables(boolean onlyGeospatial) throws SQLException {
