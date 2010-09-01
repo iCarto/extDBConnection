@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import com.iver.andami.PluginServices;
+import com.iver.cit.gvsig.fmap.drivers.DBException;
 import com.jeta.forms.components.panel.FormPanel;
 
 import es.udc.cartolab.gvsig.users.utils.DBAdminUtils;
@@ -114,11 +115,19 @@ public class CreateUserWindow extends AbstractGVWindow {
 										String.format(message, e2.getMessage()),
 										PluginServices.getText(this, "creating_user_error"),
 										JOptionPane.ERROR_MESSAGE);
+								try {
+									dbs = DBSession.reconnect();
+								} catch (DBException e) {
+									e.printStackTrace();
+								}
 							}
 						}
 					} catch (SQLException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
+						try {
+							dbs = DBSession.reconnect();
+						} catch (DBException e) {
+							e.printStackTrace();
+						}
 					}
 				}
 			} else {

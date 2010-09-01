@@ -17,10 +17,11 @@ import javax.swing.JTextField;
 import com.iver.andami.PluginServices;
 import com.iver.andami.ui.mdiManager.IWindow;
 import com.iver.andami.ui.mdiManager.WindowInfo;
+import com.iver.cit.gvsig.fmap.drivers.DBException;
 import com.jeta.forms.components.panel.FormPanel;
 
-import es.udc.cartolab.gvsig.users.utils.DBSession;
 import es.udc.cartolab.gvsig.users.utils.DBAdminUtils;
+import es.udc.cartolab.gvsig.users.utils.DBSession;
 
 public class DropUserDialog extends JPanel implements IWindow, ActionListener {
 
@@ -137,7 +138,12 @@ public class DropUserDialog extends JPanel implements IWindow, ActionListener {
 							PluginServices.getText(this, String.format(message, e.getMessage())),
 							PluginServices.getText(this, PluginServices.getText(this, "dropping_user_error")),
 							JOptionPane.ERROR_MESSAGE);
-					e.printStackTrace();
+					try {
+						dbs = DBSession.reconnect();
+					} catch (DBException e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					}
 				}
 			}
 		}
