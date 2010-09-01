@@ -86,21 +86,29 @@ public class DBUser {
 
 	public boolean canCreateTable(String schema) throws SQLException {
 
+		return canPerform(schema, "create");
+
+	}
+
+	public boolean canReadSchema(String schema) throws SQLException {
+
+		return canPerform(schema, "usage");
+
+	}
+
+	private boolean canPerform(String schema, String privilege) throws SQLException {
 		DBSession dbs = DBSession.getCurrentSession();
 		Connection con = dbs.getJavaConnection();
 
-		String query = "SELECT has_schema_privilege('" + schema + "', 'create') as can_create";
+		String query = "SELECT has_schema_privilege('" + schema + "', 'privilege') as can_do";
 		Statement stat = con.createStatement();
 
-		//		PreparedStatement stat = con.prepareStatement(query);
-		//		stat.setString(1, schema);
 		ResultSet rs = stat.executeQuery(query);
 
 		while (rs.next()) {
-			return rs.getBoolean("can_create");
+			return rs.getBoolean("can_do");
 		}
 
 		return false;
-
 	}
 }
