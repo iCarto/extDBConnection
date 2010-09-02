@@ -100,7 +100,7 @@ public class DBUser {
 		DBSession dbs = DBSession.getCurrentSession();
 		Connection con = dbs.getJavaConnection();
 
-		String query = "SELECT has_schema_privilege('" + schema + "', 'privilege') as can_do";
+		String query = "SELECT has_schema_privilege('" + schema + "', '" + privilege + "') as can_do";
 		Statement stat = con.createStatement();
 
 		ResultSet rs = stat.executeQuery(query);
