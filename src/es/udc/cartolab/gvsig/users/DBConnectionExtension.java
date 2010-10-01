@@ -6,10 +6,12 @@ import com.iver.andami.PluginServices;
 import com.iver.andami.plugins.Extension;
 import com.iver.andami.preferences.IPreference;
 import com.iver.andami.preferences.IPreferenceExtension;
+import com.iver.cit.gvsig.fmap.drivers.DBException;
 import com.iver.utiles.XMLEntity;
 
 import es.udc.cartolab.gvsig.users.gui.DBConnectionDialog;
 import es.udc.cartolab.gvsig.users.preferences.UsersPreferencePage;
+import es.udc.cartolab.gvsig.users.utils.DBSession;
 
 
 public class DBConnectionExtension extends Extension implements IPreferenceExtension {
@@ -55,6 +57,18 @@ public class DBConnectionExtension extends Extension implements IPreferenceExten
 		IPreference[] preferences=new IPreference[1];
 		preferences[0]=usersPreferencesPage;
 		return preferences;
+	}
+
+	public void terminate() {
+		DBSession dbs = DBSession.getCurrentSession();
+		if (dbs != null) {
+			try {
+				dbs.close();
+			} catch (DBException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 }
