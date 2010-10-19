@@ -5,46 +5,36 @@
 	<resourceBundle name="text"/>
 	<extensions>
 		<extension class-name="es.udc.cartolab.gvsig.users.DBConnectionExtension" description="Connect DB" active="true">
-			<!-- <tool-bar name="NavTable">
-				<action-tool icon="images/table_refresh.png" tooltip="navigation_table"
-					action-command="NavTable" position="1"/>
-			</tool-bar> -->
+			<tool-bar name="DBConnection">
+				<action-tool icon="DBConnect" tooltip="connectToDB"
+					action-command="DBConnect" position="1"/>
+			</tool-bar>
 			<menu text="data_base_menu/connectToDB"
+				icon="DBConnect"
 				action-command="DBConnect"
-				position="01"/> 
+				position="1"/> 
 		</extension>
 		<extension class-name="es.udc.cartolab.gvsig.users.CreateUserExtension" description="New User" active="true">
-			<!-- <tool-bar name="NavTable">
-				<action-tool icon="images/table_refresh.png" tooltip="navigation_table"
-					action-command="NavTable" position="1"/>
-			</tool-bar> -->
 			<menu text="data_base_menu/manage_users/create_new_user"
 				action-command="NewUser"
 				position="1010"/> 
 		</extension>
 		<extension class-name="es.udc.cartolab.gvsig.users.ChangePassExtension" description="Change password" active="true">
-			<!-- <tool-bar name="NavTable">
-				<action-tool icon="images/table_refresh.png" tooltip="navigation_table"
-					action-command="NavTable" position="1"/>
-			</tool-bar> -->
 			<menu text="data_base_menu/manage_users/change_password"
 				action-command="CHPWD"
 				position="1000"/> 
 		</extension>
 		<extension class-name="es.udc.cartolab.gvsig.users.CloseSessionExtension" description="Change password" active="true">
-			<!-- <tool-bar name="NavTable">
-				<action-tool icon="images/table_refresh.png" tooltip="navigation_table"
-					action-command="NavTable" position="1"/>
-			</tool-bar> -->
+			<tool-bar name="DBConnection">
+				<action-tool icon="DBClose" tooltip="close_session"
+					action-command="CLOSE" position="2"/>
+			</tool-bar>
 			<menu text="data_base_menu/close_session"
+				icon="DBClose"
 				action-command="CLOSE"
 				position="1090"/> 
 		</extension>
 		<extension class-name="es.udc.cartolab.gvsig.users.DropUserExtension" description="Change password" active="true">
-			<!-- <tool-bar name="NavTable">
-				<action-tool icon="images/table_refresh.png" tooltip="navigation_table"
-					action-command="NavTable" position="1"/>
-			</tool-bar> -->
 			<menu text="data_base_menu/manage_users/drop_user"
 				action-command="DROP"
 				position="1020"/> 

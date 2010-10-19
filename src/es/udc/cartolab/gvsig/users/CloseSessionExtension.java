@@ -1,5 +1,6 @@
 package es.udc.cartolab.gvsig.users;
 
+import com.iver.andami.PluginServices;
 import com.iver.andami.plugins.Extension;
 import com.iver.cit.gvsig.fmap.drivers.DBException;
 
@@ -20,7 +21,10 @@ public class CloseSessionExtension extends Extension {
 	}
 
 	public void initialize() {
-		
+		PluginServices.getIconTheme().registerDefault(
+				"DBClose",
+				this.getClass().getClassLoader().getResource("images/sessiondisc.png")
+			);
 	}
 
 	public boolean isEnabled() {

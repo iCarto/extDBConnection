@@ -40,6 +40,12 @@ public class DBConnectionExtension extends Extension implements IPreferenceExten
 		String symbolsDirStr = System.getProperty("user.dir") + File.separator + "Leyendas";
 		File symbolsDir = new File(symbolsDirStr);
 		symbolsDir.mkdir();
+
+		//icon
+		PluginServices.getIconTheme().registerDefault(
+				"DBConnect",
+				this.getClass().getClassLoader().getResource("images/sessionconnect.png")
+			);
 	}
 
 	public boolean isEnabled() {
