@@ -42,6 +42,10 @@ public class DBConnectionExtension extends Extension implements IPreferenceExten
 		symbolsDir.mkdir();
 
 		//icon
+		registerIcons();
+	}
+
+	protected void registerIcons() {
 		PluginServices.getIconTheme().registerDefault(
 				"DBConnect",
 				this.getClass().getClassLoader().getResource("images/sessionconnect.png")

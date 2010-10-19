@@ -21,6 +21,10 @@ public class CloseSessionExtension extends Extension {
 	}
 
 	public void initialize() {
+		registerIcons();
+	}
+
+	protected void registerIcons() {
 		PluginServices.getIconTheme().registerDefault(
 				"DBClose",
 				this.getClass().getClassLoader().getResource("images/sessiondisc.png")
