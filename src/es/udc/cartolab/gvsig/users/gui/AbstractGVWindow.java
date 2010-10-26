@@ -18,6 +18,7 @@ package es.udc.cartolab.gvsig.users.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -133,6 +134,7 @@ public abstract class AbstractGVWindow extends JPanel implements IWindow, Action
 		PluginServices.getMDIManager().addCentredWindow(this);
 		getRootPane().setDefaultButton(okButton);
 		getRootPane().setFocusTraversalPolicyProvider(true);
+		getDefaultFocusComponent().requestFocusInWindow();
 	}
 
 	protected abstract JPanel getCenterPanel();
@@ -162,4 +164,6 @@ public abstract class AbstractGVWindow extends JPanel implements IWindow, Action
 		this.title = title;
 		viewInfo.setTitle(title);
 	}
+
+	protected abstract Component getDefaultFocusComponent();
 }

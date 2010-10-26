@@ -17,6 +17,7 @@
 package es.udc.cartolab.gvsig.users.gui;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.sql.SQLException;
 
 import javax.swing.ImageIcon;
@@ -112,6 +113,11 @@ public class ChangePassDialog extends AbstractGVWindow {
 					PluginServices.getText(this, "dataError"),
 					JOptionPane.ERROR_MESSAGE);
 		}
+	}
+
+	@Override
+	protected Component getDefaultFocusComponent() {
+		return currentPassTF;
 	}
 
 }

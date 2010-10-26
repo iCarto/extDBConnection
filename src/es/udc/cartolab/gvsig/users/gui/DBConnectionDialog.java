@@ -17,6 +17,7 @@
 package es.udc.cartolab.gvsig.users.gui;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 
@@ -130,6 +131,8 @@ public class DBConnectionDialog extends AbstractGVWindow {
 				advCHB.setSelected(showAdvProp);
 			}
 
+			passTF.requestFocusInWindow();
+
 		}
 		return centerPanel;
 	}
@@ -211,6 +214,10 @@ public class DBConnectionDialog extends AbstractGVWindow {
 		} finally {
 			passTF.setText("");
 		}
+	}
+
+	protected Component getDefaultFocusComponent() {
+		return passTF;
 	}
 
 }

@@ -17,6 +17,7 @@
 package es.udc.cartolab.gvsig.users.gui;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -165,6 +166,10 @@ public class CreateUserWindow extends AbstractGVWindow {
 			DBAdminUtils.grantRole(con, username, "administrador");
 			break;
 		}
+	}
+
+	protected Component getDefaultFocusComponent() {
+		return userTF;
 	}
 
 }
