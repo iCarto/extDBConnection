@@ -1,16 +1,16 @@
 /*
  * Copyright (c) 2010. CartoLab, Universidad de A Coruña
- * 
+ *
  * This file is part of extDBConnection
- * 
+ *
  * extDBConnection is free software: you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation, either
  * version 3 of the License, or any later version.
- * 
+ *
  * extDBConnection is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with extDBConnection.
  * If not, see <http://www.gnu.org/licenses/>.
 */
@@ -85,13 +85,9 @@ public class DBConnectionDialog extends AbstractGVWindow {
 			form.setFocusTraversalPolicyProvider(true);
 			centerPanel.add(form);
 			serverTF = form.getTextField(ID_SERVERTF);
-			serverTF.addActionListener(this);
 			portTF = form.getTextField(ID_PORTTF);
-			portTF.addActionListener(this);
 			userTF = form.getTextField(ID_USERTF);
-			userTF.addActionListener(this);
 			passTF = form.getTextField(ID_PASSTF);
-			passTF.addActionListener(this);
 			dbTF = form.getTextField(ID_DBTF);
 			schemaTF = form.getTextField(ID_SCHEMATF);
 			advForm = (JComponent) form.getComponentByName(ID_ADVF);

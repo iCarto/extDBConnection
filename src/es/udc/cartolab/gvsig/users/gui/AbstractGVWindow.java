@@ -1,16 +1,16 @@
 /*
  * Copyright (c) 2010. CartoLab, Universidad de A Coruña
- * 
+ *
  * This file is part of extDBConnection
- * 
+ *
  * extDBConnection is free software: you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation, either
  * version 3 of the License, or any later version.
- * 
+ *
  * extDBConnection is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with extDBConnection.
  * If not, see <http://www.gnu.org/licenses/>.
 */
@@ -29,7 +29,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 
 import com.iver.andami.PluginServices;
 import com.iver.andami.ui.mdiManager.IWindow;
@@ -132,6 +131,7 @@ public abstract class AbstractGVWindow extends JPanel implements IWindow, Action
 
 	public void openWindow() {
 		PluginServices.getMDIManager().addCentredWindow(this);
+		getRootPane().setDefaultButton(okButton);
 	}
 
 	protected abstract JPanel getCenterPanel();
@@ -139,7 +139,7 @@ public abstract class AbstractGVWindow extends JPanel implements IWindow, Action
 	protected abstract void onOK();
 
 	public void actionPerformed(ActionEvent e) {
-		if ((e.getSource() == okButton || e.getSource() instanceof JTextField)) {
+		if (e.getSource() == okButton) {
 			onOK();
 		}
 		if (e.getSource() == cancelButton) {
