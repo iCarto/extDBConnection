@@ -132,6 +132,7 @@ public abstract class AbstractGVWindow extends JPanel implements IWindow, Action
 	public void openWindow() {
 		PluginServices.getMDIManager().addCentredWindow(this);
 		getRootPane().setDefaultButton(okButton);
+		getRootPane().setFocusTraversalPolicyProvider(true);
 	}
 
 	protected abstract JPanel getCenterPanel();

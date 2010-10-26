@@ -82,7 +82,6 @@ public class DBConnectionDialog extends AbstractGVWindow {
 		if (centerPanel == null) {
 			centerPanel = new JPanel();
 			FormPanel form = new FormPanel("forms/dbConnection.jfrm");
-			form.setFocusTraversalPolicyProvider(true);
 			centerPanel.add(form);
 			serverTF = form.getTextField(ID_SERVERTF);
 			portTF = form.getTextField(ID_PORTTF);

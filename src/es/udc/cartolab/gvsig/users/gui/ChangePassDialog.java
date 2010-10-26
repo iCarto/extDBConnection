@@ -57,7 +57,6 @@ public class ChangePassDialog extends AbstractGVWindow {
 		if (centerPanel == null) {
 			centerPanel = new JPanel();
 			FormPanel form = new FormPanel("forms/changePass.jfrm");
-			form.setFocusTraversalPolicyProvider(true);
 			centerPanel.add(form);
 
 			JLabel currentPassLabel = form.getLabel("currentPassLabel");
