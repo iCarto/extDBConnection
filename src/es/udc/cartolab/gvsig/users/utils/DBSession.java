@@ -519,10 +519,16 @@ public class DBSession {
 
 	public String[] getColumns(String table) throws SQLException {
 
+		return getColumns(null, table);
+
+	}
+
+	public String[] getColumns(String schema, String table) throws SQLException {
+
 		Connection con = ((ConnectionJDBC) conwp.getConnection()).getConnection();
 		DatabaseMetaData metadataDB = con.getMetaData();
 
-		ResultSet columns = metadataDB.getColumns(null,null,table, "%");
+		ResultSet columns = metadataDB.getColumns(null,schema,table, "%");
 		List <String> cols = new ArrayList<String>();
 		while (columns.next()) {
 			cols.add(columns.getString("Column_name"));
