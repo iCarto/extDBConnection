@@ -1,16 +1,16 @@
 /*
  * Copyright (c) 2010. CartoLab, Universidad de A Coruña
- * 
+ *
  * This file is part of extDBConnection
- * 
+ *
  * extDBConnection is free software: you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation, either
  * version 3 of the License, or any later version.
- * 
+ *
  * extDBConnection is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with extDBConnection.
  * If not, see <http://www.gnu.org/licenses/>.
 */
@@ -63,7 +63,7 @@ public class DBSession {
 
 	}
 	/**
-	 * 
+	 *
 	 * @return the DB Connection or null if there isn't any
 	 */
 	public static DBSession getCurrentSession() {
@@ -195,12 +195,12 @@ public class DBSession {
 
 		String tipos[] = new String[1];
 		tipos[0] = "TABLE";
-		ResultSet tablas = metadataDB.getTables(null, this.schema, tableName, tipos);
+		ResultSet tablas = metadataDB.getTables(null, schema, tableName, tipos);
 		tablas.next();
 		//String t = tablas.getString(tablas.findColumn( "TABLE_NAME" ));
 
-		ResultSet columnas = metadataDB.getColumns(null,this.schema,tableName, "%");
-		ResultSet claves = metadataDB.getPrimaryKeys(null, this.schema, tableName);
+		ResultSet columnas = metadataDB.getColumns(null,schema,tableName, "%");
+		ResultSet claves = metadataDB.getPrimaryKeys(null, schema, tableName);
 
 		//ResultSetMetaData aux = columnas.getMetaData();
 
