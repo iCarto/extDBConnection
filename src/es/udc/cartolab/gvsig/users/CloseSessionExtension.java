@@ -16,16 +16,9 @@
 */
 package es.udc.cartolab.gvsig.users;
 
-import javax.swing.JOptionPane;
-
-import com.iver.andami.Launcher;
-import com.iver.andami.Launcher.TerminationProcess;
 import com.iver.andami.PluginServices;
 import com.iver.andami.plugins.Extension;
-import com.iver.andami.ui.wizard.UnsavedDataPanel;
-import com.iver.cit.gvsig.ProjectExtension;
 import com.iver.cit.gvsig.fmap.drivers.DBException;
-import com.iver.cit.gvsig.project.Project;
 
 import es.udc.cartolab.gvsig.users.utils.DBSession;
 
@@ -36,13 +29,10 @@ public class CloseSessionExtension extends Extension {
 		if (dbs!=null) {
 			try {
 
-				if (!askSave()) {
+				if (!dbs.askSave()) {
 					return;
 				}
 				dbs.close();
-
-				ProjectExtension pExt = (ProjectExtension) PluginServices.getExtension(ProjectExtension.class);
-				pExt.execute("NUEVO");
 
 			} catch (DBException e) {
 				// TODO Auto-generated catch block
@@ -51,32 +41,7 @@ public class CloseSessionExtension extends Extension {
 		}
 	}
 
-	private boolean askSave() {
 
-		ProjectExtension pExt = (ProjectExtension) PluginServices.getExtension(ProjectExtension.class);
-		Project p = pExt.getProject();
-
-		if (p != null && p.hasChanged()) {
-			TerminationProcess process = Launcher.getTerminationProcess();
-			UnsavedDataPanel panel = process.getUnsavedDataPanel();
-			panel.setHeaderText(PluginServices.getText(this, "Select_resources_to_save_before_closing_current_project"));
-			panel.setAcceptText(
-					PluginServices.getText(this, "save_resources"),
-					PluginServices.getText(this, "Save_the_selected_resources_and_close_current_project"));
-			panel.setCancelText(
-					PluginServices.getText(this, "Dont_close"),
-					PluginServices.getText(this, "Return_to_current_project"));
-			int closeCurrProj = process.manageUnsavedData();
-			if (closeCurrProj==JOptionPane.NO_OPTION) {
-				// the user chose to return to current project
-				return false;
-			} else if (closeCurrProj==JOptionPane.YES_OPTION) {
-				//trick to avoid ask twice for modified data
-				p.setModified(false);
-			}
-		}
-		return true;
-	}
 
 
 	public void initialize() {

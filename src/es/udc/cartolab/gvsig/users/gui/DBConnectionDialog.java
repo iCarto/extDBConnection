@@ -169,10 +169,42 @@ public class DBConnectionDialog extends AbstractGVWindow {
 		advForm.setVisible(show);
 	}
 
+
+	private void saveConfig(String server, String portS, String database, String schema, String username) throws IOException {
+		//save config file
+		ConfigFile cf = ConfigFile.getInstance();
+		cf.setProperties(server, portS, database, schema, username);
+		PluginServices.getMDIManager().restoreCursor();
+		String title = " " + String.format(PluginServices.getText(this, "connectedTitle"), username, server);
+		PluginServices.getMainFrame().setTitle(title);
+	}
+
+
+	private boolean activeSession() throws DBException {
+
+		DBSession dbs = DBSession.getCurrentSession();
+		if (dbs!= null) {
+			if (!dbs.askSave()) {
+				return false;
+			}
+			dbs.close();
+		}
+		return true;
+
+	}
+
+
 	@Override
 	protected void onOK() {
-		PluginServices.getMDIManager().setWaitCursor();
+
 		try {
+
+			if (!activeSession()) {
+				return;
+			}
+
+			PluginServices.getMDIManager().setWaitCursor();
+
 			String portS = portTF.getText().trim();
 			int port = Integer.parseInt(portS);
 			String server = serverTF.getText().trim();
@@ -185,12 +217,7 @@ public class DBConnectionDialog extends AbstractGVWindow {
 
 			closeWindow();
 
-			//save config file
-			ConfigFile cf = ConfigFile.getInstance();
-			cf.setProperties(server, portS, database, schema, username);
-			PluginServices.getMDIManager().restoreCursor();
-			String title = " " + String.format(PluginServices.getText(this, "connectedTitle"), username, server);
-			PluginServices.getMainFrame().setTitle(title);
+			saveConfig(server, portS, database, schema, username);
 
 		} catch (DBException e1) {
 			// Login error
