@@ -172,8 +172,6 @@ public class DBSession {
 		instance = null;
 
 		//
-		ProjectExtension pExt = (ProjectExtension) PluginServices.getExtension(ProjectExtension.class);
-		pExt.execute("NUEVO");
 
 	}
 

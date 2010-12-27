@@ -30,6 +30,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import com.iver.andami.PluginServices;
+import com.iver.cit.gvsig.ProjectExtension;
 import com.iver.cit.gvsig.fmap.drivers.DBException;
 import com.jeta.forms.components.panel.FormPanel;
 
@@ -188,6 +189,9 @@ public class DBConnectionDialog extends AbstractGVWindow {
 				return false;
 			}
 			dbs.close();
+
+			ProjectExtension pExt = (ProjectExtension) PluginServices.getExtension(ProjectExtension.class);
+			pExt.execute("NUEVO");
 		}
 		return true;
 

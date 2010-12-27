@@ -18,6 +18,7 @@ package es.udc.cartolab.gvsig.users;
 
 import com.iver.andami.PluginServices;
 import com.iver.andami.plugins.Extension;
+import com.iver.cit.gvsig.ProjectExtension;
 import com.iver.cit.gvsig.fmap.drivers.DBException;
 
 import es.udc.cartolab.gvsig.users.utils.DBSession;
@@ -33,6 +34,9 @@ public class CloseSessionExtension extends Extension {
 					return;
 				}
 				dbs.close();
+
+				ProjectExtension pExt = (ProjectExtension) PluginServices.getExtension(ProjectExtension.class);
+				pExt.execute("NUEVO");
 
 			} catch (DBException e) {
 				// TODO Auto-generated catch block
