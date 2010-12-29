@@ -78,7 +78,6 @@ public class DBConnectionDialog extends AbstractGVWindow {
 	}
 
 
-	@Override
 	protected JPanel getCenterPanel() {
 
 		if (centerPanel == null) {
@@ -138,7 +137,6 @@ public class DBConnectionDialog extends AbstractGVWindow {
 		return centerPanel;
 	}
 
-	@Override
 	protected JPanel getNorthPanel(ImageIcon headerImg, Color bgColor) {
 		if (headerImg != null) {
 			maxHeight = INIT_MAX_HEIGHT + headerImg.getIconHeight();
@@ -151,7 +149,6 @@ public class DBConnectionDialog extends AbstractGVWindow {
 	}
 
 
-	@Override
 	public void actionPerformed(ActionEvent e) {
 		super.actionPerformed(e);
 		if (e.getSource() == advCHB) {
@@ -198,7 +195,6 @@ public class DBConnectionDialog extends AbstractGVWindow {
 	}
 
 
-	@Override
 	protected void onOK() {
 
 		try {

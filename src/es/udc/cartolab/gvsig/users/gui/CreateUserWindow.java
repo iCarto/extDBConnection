@@ -56,7 +56,6 @@ public class CreateUserWindow extends AbstractGVWindow {
 		setTitle(PluginServices.getText(this, "new_user"));
 	}
 
-	@Override
 	protected JPanel getCenterPanel() {
 		if (centerPanel == null) {
 			centerPanel = new JPanel();
@@ -85,7 +84,6 @@ public class CreateUserWindow extends AbstractGVWindow {
 		return centerPanel;
 	}
 
-	@Override
 	protected void onOK() {
 		String username = userTF.getText();
 		String pass1 = passTF.getText();

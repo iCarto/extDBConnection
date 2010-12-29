@@ -53,7 +53,6 @@ public class ChangePassDialog extends AbstractGVWindow {
 		this(null, null);
 	}
 
-	@Override
 	protected JPanel getCenterPanel() {
 		if (centerPanel == null) {
 			centerPanel = new JPanel();
@@ -74,7 +73,6 @@ public class ChangePassDialog extends AbstractGVWindow {
 		return centerPanel;
 	}
 
-	@Override
 	protected void onOK() {
 		String currentPass = currentPassTF.getText();
 		String newPass = newPassTF.getText();
@@ -115,7 +113,6 @@ public class ChangePassDialog extends AbstractGVWindow {
 		}
 	}
 
-	@Override
 	protected Component getDefaultFocusComponent() {
 		return currentPassTF;
 	}

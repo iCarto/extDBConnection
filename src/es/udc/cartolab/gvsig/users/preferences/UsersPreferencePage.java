@@ -52,13 +52,11 @@ public class UsersPreferencePage extends AbstractPreferencePage {
 	}
 
 
-	@Override
 	public void setChangesApplied() {
 		// TODO Auto-generated method stub
 		setChanged(false);
 	}
 
-	@Override
 	public void storeValues() throws StoreException {
 		// TODO Auto-generated method stub
 		PluginServices ps = PluginServices.getPluginServices(this);
