@@ -44,7 +44,6 @@ import com.iver.cit.gvsig.fmap.drivers.FieldDescription;
 import com.iver.cit.gvsig.fmap.drivers.IVectorialJDBCDriver;
 import com.iver.cit.gvsig.fmap.drivers.db.utils.ConnectionWithParams;
 import com.iver.cit.gvsig.fmap.drivers.db.utils.SingleVectorialDBConnectionManager;
-import com.iver.cit.gvsig.fmap.drivers.jdbc.postgis.PostGISWriter;
 import com.iver.cit.gvsig.fmap.layers.FLayer;
 import com.iver.cit.gvsig.fmap.layers.LayerFactory;
 import com.iver.cit.gvsig.project.Project;
@@ -256,10 +255,7 @@ public class DBSession {
 			dbLayerDef.setFieldID("gid");
 		}
 
-		PostGISWriter writer = new PostGISWriter();
-
-		writer.setWriteAll(false);
-		writer.setCreateTable(false);
+		dbLayerDef.setSRID_EPSG(projection.getAbrev());
 
 		Driver drv;
 		FLayer lyr = null;
@@ -271,7 +267,7 @@ public class DBSession {
 
 			lyr =  LayerFactory.createDBLayer(dbDriver, layerName, projection);
 			/*asignamos proyección a la capa y al ViewPort*/
-			dbLayerDef.setSRID_EPSG(projection.getAbrev());
+//			dbLayerDef.setSRID_EPSG(projection.getAbrev());
 		} catch (DriverLoadException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
