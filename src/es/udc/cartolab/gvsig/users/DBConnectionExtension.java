@@ -1,16 +1,16 @@
 /*
  * Copyright (c) 2010. CartoLab, Universidad de A Coruña
- * 
+ *
  * This file is part of extDBConnection
- * 
+ *
  * extDBConnection is free software: you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation, either
  * version 3 of the License, or any later version.
- * 
+ *
  * extDBConnection is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with extDBConnection.
  * If not, see <http://www.gnu.org/licenses/>.
 */
@@ -42,15 +42,6 @@ public class DBConnectionExtension extends Extension implements IPreferenceExten
 	}
 
 	public void initialize() {
-
-		//poner if
-		PluginServices ps = PluginServices.getPluginServices(this);
-		XMLEntity xml = ps.getPersistentXML();
-		if (xml.contains(UsersPreferencePage.CONNECT_DB_AT_STARTUP_KEY_NAME)) {
-			if (xml.getBooleanProperty(UsersPreferencePage.CONNECT_DB_AT_STARTUP_KEY_NAME)) {
-				execute(null);
-			}
-		}
 
 		//Creating config Dir
 		String symbolsDirStr = System.getProperty("user.dir") + File.separator + "Leyendas";
@@ -95,6 +86,19 @@ public class DBConnectionExtension extends Extension implements IPreferenceExten
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public void postInitialize() {
+
+		//poner if
+		PluginServices ps = PluginServices.getPluginServices(this);
+		XMLEntity xml = ps.getPersistentXML();
+		if (xml.contains(UsersPreferencePage.CONNECT_DB_AT_STARTUP_KEY_NAME)) {
+			if (xml.getBooleanProperty(UsersPreferencePage.CONNECT_DB_AT_STARTUP_KEY_NAME)) {
+				execute(null);
+			}
+		}
+
 	}
 
 }
