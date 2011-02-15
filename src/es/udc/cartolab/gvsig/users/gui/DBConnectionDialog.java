@@ -13,15 +13,13 @@
  *
  * You should have received a copy of the GNU General Public License along with extDBConnection.
  * If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 package es.udc.cartolab.gvsig.users.gui;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 
-import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -45,17 +43,16 @@ public class DBConnectionDialog extends AbstractGVWindow {
 	private int minHeight;
 	private int maxHeight;
 
-
 	private JPanel centerPanel = null;
 
 	private JCheckBox advCHB;
 	private JTextField serverTF, userTF, passTF, schemaTF, dbTF, portTF;
 	private JComponent advForm;
 
-	public static final String ID_SERVERTF = "serverTF";  //javax.swing.JTextField
-	public static final String ID_PORTTF = "portTF";  //javax.swing.JTextField
-	public static final String ID_USERTF = "userTF";  //javax.swing.JTextField
-	public static final String ID_PASSTF = "passTF";  //javax.swing.JPasswordField
+	public static final String ID_SERVERTF = "serverTF"; // javax.swing.JTextField
+	public static final String ID_PORTTF = "portTF"; // javax.swing.JTextField
+	public static final String ID_USERTF = "userTF"; // javax.swing.JTextField
+	public static final String ID_PASSTF = "passTF"; // javax.swing.JPasswordField
 	public static final String ID_DBTF = "dbTF";
 	public static final String ID_SCHEMATF = "schemaTF";
 	public static final String ID_ADVF = "advancedForm";
@@ -67,16 +64,10 @@ public class DBConnectionDialog extends AbstractGVWindow {
 	public static final String ID_DBL = "dbLabel";
 	public static final String ID_SCHEMAL = "schemaLabel";
 
-
-	public DBConnectionDialog(ImageIcon headerImg, Color bgColor) {
-		super(425, INIT_MIN_HEIGHT, headerImg, bgColor);
+	public DBConnectionDialog() {
+		super(425, INIT_MIN_HEIGHT);
 		setTitle(PluginServices.getText(this, "Login"));
 	}
-
-	public DBConnectionDialog() {
-		this(null, null);
-	}
-
 
 	protected JPanel getCenterPanel() {
 
@@ -94,7 +85,7 @@ public class DBConnectionDialog extends AbstractGVWindow {
 			advCHB = form.getCheckBox(ID_ADVCHB);
 			advCHB.addActionListener(this);
 
-			//localization
+			// localization
 			JLabel serverLabel = form.getLabel(ID_SERVERL);
 			JLabel portLabel = form.getLabel(ID_PORTL);
 			JLabel userLabel = form.getLabel(ID_USERL);
@@ -111,7 +102,7 @@ public class DBConnectionDialog extends AbstractGVWindow {
 			advCHB.setText(PluginServices.getText(this, "advanced_options"));
 
 			DBSession dbs = DBSession.getCurrentSession();
-			if (dbs!=null) {
+			if (dbs != null) {
 				serverTF.setText(dbs.getServer());
 				portTF.setText(Integer.toString(dbs.getPort()));
 				userTF.setText(dbs.getUserName());
@@ -137,7 +128,7 @@ public class DBConnectionDialog extends AbstractGVWindow {
 		return centerPanel;
 	}
 
-	protected JPanel getNorthPanel(ImageIcon headerImg, Color bgColor) {
+	protected JPanel getNorthPanel() {
 		if (headerImg != null) {
 			maxHeight = INIT_MAX_HEIGHT + headerImg.getIconHeight();
 			minHeight = INIT_MIN_HEIGHT + headerImg.getIconHeight();
@@ -145,9 +136,8 @@ public class DBConnectionDialog extends AbstractGVWindow {
 			maxHeight = INIT_MAX_HEIGHT;
 			minHeight = INIT_MIN_HEIGHT;
 		}
-		return super.getNorthPanel(headerImg, bgColor);
+		return super.getNorthPanel();
 	}
-
 
 	public void actionPerformed(ActionEvent e) {
 		super.actionPerformed(e);
@@ -167,33 +157,34 @@ public class DBConnectionDialog extends AbstractGVWindow {
 		advForm.setVisible(show);
 	}
 
-
-	private void saveConfig(String server, String portS, String database, String schema, String username) throws IOException {
-		//save config file
+	private void saveConfig(String server, String portS, String database,
+			String schema, String username) throws IOException {
+		// save config file
 		ConfigFile cf = ConfigFile.getInstance();
 		cf.setProperties(server, portS, database, schema, username);
 		PluginServices.getMDIManager().restoreCursor();
-		String title = " " + String.format(PluginServices.getText(this, "connectedTitle"), username, server);
+		String title = " "
+				+ String.format(PluginServices.getText(this, "connectedTitle"),
+						username, server);
 		PluginServices.getMainFrame().setTitle(title);
 	}
-
 
 	private boolean activeSession() throws DBException {
 
 		DBSession dbs = DBSession.getCurrentSession();
-		if (dbs!= null) {
+		if (dbs != null) {
 			if (!dbs.askSave()) {
 				return false;
 			}
 			dbs.close();
 
-			ProjectExtension pExt = (ProjectExtension) PluginServices.getExtension(ProjectExtension.class);
+			ProjectExtension pExt = (ProjectExtension) PluginServices
+					.getExtension(ProjectExtension.class);
 			pExt.execute("NUEVO");
 		}
 		return true;
 
 	}
-
 
 	protected void onOK() {
 
@@ -213,7 +204,8 @@ public class DBConnectionDialog extends AbstractGVWindow {
 			String schema = schemaTF.getText();
 			String database = dbTF.getText();
 
-			DBSession dbc = DBSession.createConnection(server, port, database, schema, username, password);
+			DBSession dbc = DBSession.createConnection(server, port, database,
+					schema, username, password);
 
 			closeWindow();
 
@@ -235,9 +227,10 @@ public class DBConnectionDialog extends AbstractGVWindow {
 					PluginServices.getText(this, "dataError"),
 					JOptionPane.ERROR_MESSAGE);
 		} catch (IOException e3) {
-			//TODO show error in log
+			// TODO show error in log
 			PluginServices.getMDIManager().restoreCursor();
-			System.out.println("No se pudo guardar el archivo: " + e3.getMessage());
+			System.out.println("No se pudo guardar el archivo: "
+					+ e3.getMessage());
 		} finally {
 			passTF.setText("");
 		}

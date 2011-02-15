@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with extDBConnection.
  * If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 package es.udc.cartolab.gvsig.users.gui;
 
 import java.awt.BorderLayout;
@@ -35,7 +35,11 @@ import com.iver.andami.PluginServices;
 import com.iver.andami.ui.mdiManager.IWindow;
 import com.iver.andami.ui.mdiManager.WindowInfo;
 
-public abstract class AbstractGVWindow extends JPanel implements IWindow, ActionListener {
+public abstract class AbstractGVWindow extends JPanel implements IWindow,
+		ActionListener {
+
+	protected static ImageIcon headerImg = null;
+	protected static Color headerBgColor = null;
 
 	private int height, width;
 	WindowInfo viewInfo = null;
@@ -45,39 +49,52 @@ public abstract class AbstractGVWindow extends JPanel implements IWindow, Action
 	private JButton cancelButton;
 	private String title = "Abstract window";
 
-	public AbstractGVWindow(int width, int height) {
-		this(width, height, null, null);
+	public static void setHeader(ImageIcon headerImage) {
+		headerImg = headerImage;
 	}
 
-	public AbstractGVWindow(int width, int height, ImageIcon headerImg, Color headerBgColor) {
+	public static void setHeaderColor(Color headerColor) {
+		headerBgColor = headerColor;
+	}
 
+	public AbstractGVWindow(int width, int height) {
 		this.height = height;
 		this.width = width;
-		getWindowInfo(); //to avoid a NullPointerException
+		getWindowInfo(); // to avoid a NullPointerException
 
 		GridBagLayout layout = new GridBagLayout();
 		setLayout(layout);
 
-		add(getNorthPanel(headerImg, headerBgColor), new GridBagConstraints(0, 0, 1, 1, 0, 0,
-				GridBagConstraints.NORTH, GridBagConstraints.BOTH,
-				new Insets(0, 0, 0, 0), 0, 0));
+		add(getNorthPanel(), new GridBagConstraints(0, 0, 1, 1, 0, 0,
+				GridBagConstraints.NORTH, GridBagConstraints.BOTH, new Insets(
+						0, 0, 0, 0), 0, 0));
 
 		add(getCenterPanel(), new GridBagConstraints(0, 1, 1, 1, 0, 1,
-				GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-				new Insets(0, 0, 0, 0), 0, 0));
+				GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(
+						0, 0, 0, 0), 0, 0));
 
 		add(getSouthPanel(), new GridBagConstraints(0, 2, 1, 1, 10, 0,
-				GridBagConstraints.SOUTH, GridBagConstraints.BOTH,
-				new Insets(0, 0, 0, 0), 0, 0));
+				GridBagConstraints.SOUTH, GridBagConstraints.BOTH, new Insets(
+						0, 0, 0, 0), 0, 0));
 
-		//enables tabbing navigation
+		// enables tabbing navigation
 		setFocusCycleRoot(true);
+	}
+
+	public AbstractGVWindow(int width, int height, ImageIcon headerImg,
+			Color headerBgColor) {
+		this(width, height);
+
+		setHeader(headerImg);
+		setHeaderColor(headerBgColor);
+
 	}
 
 	public WindowInfo getWindowInfo() {
 		// TODO Auto-generated method stub
 		if (viewInfo == null) {
-			viewInfo = new WindowInfo(WindowInfo.MODELESSDIALOG | WindowInfo.PALETTE);
+			viewInfo = new WindowInfo(WindowInfo.MODELESSDIALOG
+					| WindowInfo.PALETTE);
 			viewInfo.setTitle(title);
 			viewInfo.setWidth(width);
 			viewInfo.setHeight(height);
@@ -90,13 +107,13 @@ public abstract class AbstractGVWindow extends JPanel implements IWindow, Action
 		return null;
 	}
 
-	protected JPanel getNorthPanel(ImageIcon headerImg, Color bgColor) {
+	protected JPanel getNorthPanel() {
 
 		if (northPanel == null) {
 			northPanel = new JPanel();
-			//Set header if any
-			if (headerImg != null && bgColor != null) {
-				northPanel.setBackground(bgColor);
+			// Set header if any
+			if (headerImg != null && headerBgColor != null) {
+				northPanel.setBackground(headerBgColor);
 				JLabel icon = new JLabel();
 				icon.setIcon(headerImg);
 				northPanel.add(icon, BorderLayout.WEST);

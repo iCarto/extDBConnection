@@ -13,14 +13,12 @@
  *
  * You should have received a copy of the GNU General Public License along with extDBConnection.
  * If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 package es.udc.cartolab.gvsig.users.gui;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.sql.SQLException;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -44,13 +42,9 @@ public class ChangePassDialog extends AbstractGVWindow {
 	JButton okButton, cancelButton;
 	JTextField currentPassTF, newPassTF, reNewPassTF;
 
-	public ChangePassDialog(ImageIcon headerImage, Color headerBgColor) {
-		super(425, 160, headerImage, headerBgColor);
-		setTitle(PluginServices.getText(this, "change_password"));
-	}
-
 	public ChangePassDialog() {
-		this(null, null);
+		super(425, 160);
+		setTitle(PluginServices.getText(this, "change_password"));
 	}
 
 	protected JPanel getCenterPanel() {
@@ -60,11 +54,13 @@ public class ChangePassDialog extends AbstractGVWindow {
 			centerPanel.add(form);
 
 			JLabel currentPassLabel = form.getLabel("currentPassLabel");
-			currentPassLabel.setText(PluginServices.getText(this, "current_pass"));
+			currentPassLabel.setText(PluginServices.getText(this,
+					"current_pass"));
 			JLabel newPassLabel = form.getLabel("newPassLabel");
 			newPassLabel.setText(PluginServices.getText(this, "new_pass"));
 			JLabel reNewPassLabel = form.getLabel("reNewPassLabel");
-			reNewPassLabel.setText(PluginServices.getText(this, "retype_user_pass"));
+			reNewPassLabel.setText(PluginServices.getText(this,
+					"retype_user_pass"));
 
 			currentPassTF = form.getTextField("currentPassTF");
 			newPassTF = form.getTextField("newPassTF");
@@ -79,7 +75,7 @@ public class ChangePassDialog extends AbstractGVWindow {
 		String newPass2 = reNewPassTF.getText();
 		if (newPass.equals(newPass2)) {
 			DBSession dbs = DBSession.getCurrentSession();
-			if (dbs!=null) {
+			if (dbs != null) {
 				DBUser user = dbs.getDBUser();
 				try {
 					if (user.checkPassword(currentPass)) {
