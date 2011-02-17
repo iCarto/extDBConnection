@@ -95,7 +95,7 @@ public class UsersPreferencePage extends AbstractPreferencePage {
 
 	public String getTitle() {
 		// TODO Auto-generated method stub
-		return "users";
+		return PluginServices.getText(this, "dbconnection");
 	}
 
 	public void initializeDefaults() {
