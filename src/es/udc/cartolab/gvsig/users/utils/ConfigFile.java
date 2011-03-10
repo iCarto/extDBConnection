@@ -38,7 +38,10 @@ public class ConfigFile {
 	private boolean fileExists = true;
 
 	private ConfigFile() {
-		String dir = System.getProperty("user.dir");
+		String dir = System.getProperty("gvSIG.confDir");
+		if (dir == null) {
+			dir = System.getProperty("user.dir");
+		}
 		if (dir.endsWith(File.separator)) {
 			preferencesFile = dir + "dbconnection.cfg";
 		} else {
