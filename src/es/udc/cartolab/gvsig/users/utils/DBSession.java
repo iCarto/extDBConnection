@@ -358,7 +358,7 @@ public class DBSession {
 		List<String> whereValues = new ArrayList<String>();
 
 		if (whereClause.compareTo("")==0) {
-			query = query + " WHERE 1";
+			query = query + " WHERE true";
 		} else {
 
 			int quoteIdx = whereClause.indexOf('\'');
