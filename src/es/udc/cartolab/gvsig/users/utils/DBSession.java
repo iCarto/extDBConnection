@@ -145,6 +145,10 @@ public class DBSession {
 		return username;
 	}
 
+	public String getPassword() {
+	    return password;
+	}
+	
 	public String getDatabase() {
 		return database;
 	}
