@@ -43,7 +43,7 @@ import com.iver.cit.gvsig.fmap.drivers.DBLayerDefinition;
 import com.iver.cit.gvsig.fmap.drivers.FieldDescription;
 import com.iver.cit.gvsig.fmap.drivers.IVectorialJDBCDriver;
 import com.iver.cit.gvsig.fmap.drivers.db.utils.ConnectionWithParams;
-import com.iver.cit.gvsig.fmap.drivers.db.utils.SingleDBConnectionManager;
+import com.iver.cit.gvsig.fmap.drivers.db.utils.SingleVectorialDBConnectionManager;
 import com.iver.cit.gvsig.fmap.layers.FLayer;
 import com.iver.cit.gvsig.fmap.layers.LayerFactory;
 import com.iver.cit.gvsig.project.Project;
@@ -118,13 +118,13 @@ public class DBSession {
 
 	private static void connect() throws DBException {
 		try {
-		    instance.conwp = SingleDBConnectionManager.instance().getConnection("PostGIS JDBC Driver",
-					instance.username, instance.password, "ELLE_connection", instance.server, (new Integer(instance.port)).toString(), instance.database, instance.schema, true);
+			instance.conwp = SingleVectorialDBConnectionManager.instance().getConnection("PostGIS JDBC Driver",
+					instance.username, instance.password, "ELLE_connection", instance.server, (new Integer(instance.port)).toString(), instance.database, true);
 			instance.user = new DBUser(instance.username, instance.password, ((ConnectionJDBC) instance.conwp.getConnection()).getConnection());
 		} catch (DBException e) {
 			if (instance!=null) {
 				if (instance.conwp != null) {
-					SingleDBConnectionManager.instance().closeAndRemove(instance.conwp);
+					SingleVectorialDBConnectionManager.instance().closeAndRemove(instance.conwp);
 				}
 			}
 			instance = null;
@@ -165,7 +165,7 @@ public class DBSession {
 
 		user = null;
 		if (conwp!=null) {
-			SingleDBConnectionManager.instance().closeAndRemove(conwp);
+			SingleVectorialDBConnectionManager.instance().closeAndRemove(conwp);
 			conwp = null;
 		}
 		instance = null;
