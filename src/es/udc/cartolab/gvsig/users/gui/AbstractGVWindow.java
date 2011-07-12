@@ -103,8 +103,12 @@ public abstract class AbstractGVWindow extends JPanel implements IWindow,
 	}
 
 	public Object getWindowProfile() {
-		// TODO Auto-generated method stub
-		return null;
+	    /* fpuga: Maybe it should be a DIALOG_PROFILE, but a bug in DockingSkin, makes
+	     * that if we use that the window is not correctly resized when the checkbox of
+	     * advanced option in dbconnectiondialog is pressed
+	     */
+	    
+		return WindowInfo.EDITOR_PROFILE;
 	}
 
 	protected JPanel getNorthPanel() {

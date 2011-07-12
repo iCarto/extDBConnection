@@ -167,7 +167,7 @@ public class DropUserDialog extends JPanel implements IWindow, ActionListener {
 
 	public Object getWindowProfile() {
 		// TODO Auto-generated method stub
-		return null;
+		return WindowInfo.DIALOG_PROFILE;
 	}
 
 
