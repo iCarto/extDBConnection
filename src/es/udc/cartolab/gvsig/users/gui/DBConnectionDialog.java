@@ -49,9 +49,9 @@ public class DBConnectionDialog extends AbstractGVWindow {
 	private JTextField serverTF, userTF, passTF, schemaTF, dbTF, portTF;
 	private JComponent advForm;
 
-	public static final String ID_SERVERTF = "serverTF"; // javax.swing.JTextField
-	public static final String ID_PORTTF = "portTF"; // javax.swing.JTextField
-	public static final String ID_USERTF = "userTF"; // javax.swing.JTextField
+    public static final String ID_SERVERTF = "serverTF";
+    public static final String ID_PORTTF = "portTF";
+    public static final String ID_USERTF = "userTF";
 	public static final String ID_PASSTF = "passTF"; // javax.swing.JPasswordField
 	public static final String ID_DBTF = "dbTF";
 	public static final String ID_SCHEMATF = "schemaTF";
@@ -69,6 +69,7 @@ public class DBConnectionDialog extends AbstractGVWindow {
 		setTitle(PluginServices.getText(this, "Login"));
 	}
 
+	@Override
 	protected JPanel getCenterPanel() {
 
 		if (centerPanel == null) {
@@ -111,13 +112,17 @@ public class DBConnectionDialog extends AbstractGVWindow {
 				advCHB.setSelected(false);
 				showAdvancedProperties(false);
 			} else {
-				ConfigFile cf = ConfigFile.getInstance();
+				final ConfigFile cf = ConfigFile.getInstance();
 				serverTF.setText(cf.getServer());
-				portTF.setText(cf.getPort());
+		if (cf.getPort().trim().isEmpty()) {
+		    portTF.setText("5432");
+		} else {
+		    portTF.setText(cf.getPort());
+		}
 				userTF.setText(cf.getUsername());
 				schemaTF.setText(cf.getSchema());
 				dbTF.setText(cf.getDatabase());
-				boolean showAdvProp = !cf.fileExists();
+		boolean showAdvProp = !cf.fileExists();
 				showAdvancedProperties(showAdvProp);
 				advCHB.setSelected(showAdvProp);
 			}
@@ -128,6 +133,7 @@ public class DBConnectionDialog extends AbstractGVWindow {
 		return centerPanel;
 	}
 
+	@Override
 	protected JPanel getNorthPanel() {
 		if (headerImg != null) {
 			maxHeight = INIT_MAX_HEIGHT + headerImg.getIconHeight();
@@ -139,6 +145,7 @@ public class DBConnectionDialog extends AbstractGVWindow {
 		return super.getNorthPanel();
 	}
 
+	@Override
 	public void actionPerformed(ActionEvent e) {
 		super.actionPerformed(e);
 		if (e.getSource() == advCHB) {
@@ -186,6 +193,7 @@ public class DBConnectionDialog extends AbstractGVWindow {
 
 	}
 
+	@Override
 	protected void onOK() {
 
 		try {
@@ -204,7 +212,7 @@ public class DBConnectionDialog extends AbstractGVWindow {
 			String schema = schemaTF.getText();
 			String database = dbTF.getText();
 
-			DBSession dbc = DBSession.createConnection(server, port, database,
+	    DBSession.createConnection(server, port, database,
 					schema, username, password);
 
 			closeWindow();
@@ -227,15 +235,14 @@ public class DBConnectionDialog extends AbstractGVWindow {
 					PluginServices.getText(this, "dataError"),
 					JOptionPane.ERROR_MESSAGE);
 		} catch (IOException e3) {
-			// TODO show error in log
 			PluginServices.getMDIManager().restoreCursor();
-			System.out.println("No se pudo guardar el archivo: "
-					+ e3.getMessage());
+	    PluginServices.getLogger().error(e3);
 		} finally {
 			passTF.setText("");
 		}
 	}
 
+	@Override
 	protected Component getDefaultFocusComponent() {
 		return passTF;
 	}
