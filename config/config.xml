@@ -5,7 +5,7 @@
 	<resourceBundle name="text"/>
 	<extensions>
 		<extension class-name="es.udc.cartolab.gvsig.users.DBConnectionExtension" description="Connect DB" active="true">
-			<tool-bar name="DBConnection">
+			<tool-bar name="dbconnection">
 				<action-tool icon="DBConnect" tooltip="connectToDB"
 					action-command="DBConnect" position="1"/>
 			</tool-bar>
@@ -25,7 +25,7 @@
 				position="1000"/> 
 		</extension>
 		<extension class-name="es.udc.cartolab.gvsig.users.CloseSessionExtension" description="Change password" active="true">
-			<tool-bar name="DBConnection">
+			<tool-bar name="dbconnection">
 				<action-tool icon="DBClose" tooltip="close_session"
 					action-command="CLOSE" position="2"/>
 			</tool-bar>
