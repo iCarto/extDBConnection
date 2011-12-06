@@ -41,13 +41,13 @@ public abstract class AbstractGVWindow extends JPanel implements IWindow,
 	protected static ImageIcon headerImg = null;
 	protected static Color headerBgColor = null;
 
-	private int height, width;
-	WindowInfo viewInfo = null;
+    protected int height, width;
+    protected WindowInfo viewInfo = null;
 	JPanel northPanel = null;
 	JPanel southPanel = null;
 	private JButton okButton;
 	private JButton cancelButton;
-	private String title = "Abstract window";
+    protected String title = "Abstract window";
 
 	public static void setHeader(ImageIcon headerImage) {
 		headerImg = headerImage;
