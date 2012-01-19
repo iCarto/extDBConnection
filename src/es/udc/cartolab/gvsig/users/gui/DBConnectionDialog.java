@@ -218,7 +218,7 @@ public class DBConnectionDialog extends AbstractGVWindow {
 			closeWindow();
 
 			saveConfig(server, portS, database, schema, username);
-
+			PluginServices.getMainFrame().enableControls();
 		} catch (DBException e1) {
 			// Login error
 			e1.printStackTrace();
