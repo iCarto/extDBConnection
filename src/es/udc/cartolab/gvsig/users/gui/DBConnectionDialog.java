@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010. CartoLab, Universidad de A Coruña
+ * Copyright (c) 2010 - 2012. CartoLab. Fundación de Inteniería Civil de Galicia.
  *
  * This file is part of extDBConnection
  *
@@ -18,7 +18,6 @@ package es.udc.cartolab.gvsig.users.gui;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -30,13 +29,23 @@ import javax.swing.JTextField;
 import com.iver.andami.PluginServices;
 import com.iver.cit.gvsig.ProjectExtension;
 import com.iver.cit.gvsig.fmap.drivers.DBException;
+import com.iver.utiles.XMLEntity;
 import com.jeta.forms.components.panel.FormPanel;
 
-import es.udc.cartolab.gvsig.users.utils.ConfigFile;
 import es.udc.cartolab.gvsig.users.utils.DBSession;
 
+/**
+ * @author Javier Estévez
+ * @author Francisco Puga <fpuga@cartolab.es>
+ *
+ */
 public class DBConnectionDialog extends AbstractGVWindow {
 
+	private static final String SCHEMA_PROPERTY_NAME = "schema";
+	private static final String DATABASE_PROPERTY_NAME = "database";
+	private static final String USER_PROPERTY_NAME = "user";
+	private static final String PORT_PROPERTY_NAME = "port";
+	private static final String HOST_PROPERTY_NAME = "host";
 	private final static int INIT_MIN_HEIGHT = 175;
 	private final static int INIT_MAX_HEIGHT = 350;
 
@@ -84,6 +93,7 @@ public class DBConnectionDialog extends AbstractGVWindow {
 			schemaTF = form.getTextField(ID_SCHEMATF);
 			advForm = (JComponent) form.getComponentByName(ID_ADVF);
 			advCHB = form.getCheckBox(ID_ADVCHB);
+	    showAdvancedProperties(false);
 			advCHB.addActionListener(this);
 
 			// localization
@@ -95,10 +105,10 @@ public class DBConnectionDialog extends AbstractGVWindow {
 			JLabel dbLabel = form.getLabel(ID_DBL);
 
 			serverLabel.setText(PluginServices.getText(this, "server"));
-			portLabel.setText(PluginServices.getText(this, "port"));
+	    portLabel.setText(PluginServices.getText(this, "host"));
 			userLabel.setText(PluginServices.getText(this, "user_name"));
 			passLabel.setText(PluginServices.getText(this, "user_pass"));
-			schemaLabel.setText(PluginServices.getText(this, "schema"));
+	    schemaLabel.setText(PluginServices.getText(this, "schema"));
 			dbLabel.setText(PluginServices.getText(this, "data_base"));
 			advCHB.setText(PluginServices.getText(this, "advanced_options"));
 
@@ -110,21 +120,8 @@ public class DBConnectionDialog extends AbstractGVWindow {
 				dbTF.setText(dbs.getDatabase());
 				schemaTF.setText(dbs.getSchema());
 				advCHB.setSelected(false);
-				showAdvancedProperties(false);
 			} else {
-				final ConfigFile cf = ConfigFile.getInstance();
-				serverTF.setText(cf.getServer());
-		if (cf.getPort().trim().isEmpty()) {
-		    portTF.setText("5432");
-		} else {
-		    portTF.setText(cf.getPort());
-		}
-				userTF.setText(cf.getUsername());
-				schemaTF.setText(cf.getSchema());
-				dbTF.setText(cf.getDatabase());
-		boolean showAdvProp = !cf.fileExists();
-				showAdvancedProperties(showAdvProp);
-				advCHB.setSelected(showAdvProp);
+		fillDialogFromPluginPersistence();
 			}
 
 			passTF.requestFocusInWindow();
@@ -132,6 +129,45 @@ public class DBConnectionDialog extends AbstractGVWindow {
 		}
 		return centerPanel;
 	}
+
+    private void fillDialogFromPluginPersistence() {
+	XMLEntity xml = PluginServices.getPluginServices(this)
+		.getPersistentXML();
+
+	if (xml.contains(HOST_PROPERTY_NAME) && xml.contains(PORT_PROPERTY_NAME)
+		&& xml.contains(DATABASE_PROPERTY_NAME) && xml.contains(USER_PROPERTY_NAME)
+		&& xml.contains(SCHEMA_PROPERTY_NAME)) {
+	    serverTF.setText(xml.getStringProperty(HOST_PROPERTY_NAME));
+	    portTF.setText(xml.getStringProperty(PORT_PROPERTY_NAME));
+	    dbTF.setText(xml.getStringProperty(DATABASE_PROPERTY_NAME));
+	    userTF.setText(xml.getStringProperty(USER_PROPERTY_NAME));
+	    schemaTF.setText(xml.getStringProperty(SCHEMA_PROPERTY_NAME));
+	} else {
+	    showAdvancedProperties(true);
+	    advCHB.setSelected(true);
+	}
+    }
+
+    private void saveConfig(String host, String port, String database,
+	    String schema, String user) {
+	// TODO: fpuga: If in the future we will want save more than one
+	// configuration this approach is not valid. Whe should store each
+	// connection in a different XMLEntity and in the main XMLEntity store a
+	// "lastConnectionUsed" value
+
+	XMLEntity xml = PluginServices.getPluginServices(this)
+		.getPersistentXML();
+	xml.putProperty(HOST_PROPERTY_NAME, host);
+	xml.putProperty(PORT_PROPERTY_NAME, port);
+	xml.putProperty(DATABASE_PROPERTY_NAME, database);
+	xml.putProperty(USER_PROPERTY_NAME, user);
+	xml.putProperty(SCHEMA_PROPERTY_NAME, schema);
+	PluginServices.getMDIManager().restoreCursor();
+	String title = " "
+		+ String.format(PluginServices.getText(this, "connectedTitle"),
+			user, host);
+	PluginServices.getMainFrame().setTitle(title);
+    }
 
 	@Override
 	protected JPanel getNorthPanel() {
@@ -164,17 +200,7 @@ public class DBConnectionDialog extends AbstractGVWindow {
 		advForm.setVisible(show);
 	}
 
-	private void saveConfig(String server, String portS, String database,
-			String schema, String username) throws IOException {
-		// save config file
-		ConfigFile cf = ConfigFile.getInstance();
-		cf.setProperties(server, portS, database, schema, username);
-		PluginServices.getMDIManager().restoreCursor();
-		String title = " "
-				+ String.format(PluginServices.getText(this, "connectedTitle"),
-						username, server);
-		PluginServices.getMainFrame().setTitle(title);
-	}
+
 
 	private boolean activeSession() throws DBException {
 
@@ -234,9 +260,6 @@ public class DBConnectionDialog extends AbstractGVWindow {
 					PluginServices.getText(this, "portError"),
 					PluginServices.getText(this, "dataError"),
 					JOptionPane.ERROR_MESSAGE);
-		} catch (IOException e3) {
-			PluginServices.getMDIManager().restoreCursor();
-	    PluginServices.getLogger().error(e3);
 		} finally {
 			passTF.setText("");
 		}

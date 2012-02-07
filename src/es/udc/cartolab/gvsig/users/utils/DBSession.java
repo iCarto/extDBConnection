@@ -174,8 +174,6 @@ public class DBSession {
 		}
 		instance = null;
 
-		//
-
 	}
 
 	public DBUser getDBUser() {

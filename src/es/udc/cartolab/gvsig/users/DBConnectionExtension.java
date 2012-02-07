@@ -16,8 +16,6 @@
 */
 package es.udc.cartolab.gvsig.users;
 
-import java.io.File;
-
 import com.iver.andami.PluginServices;
 import com.iver.andami.plugins.Extension;
 import com.iver.andami.preferences.IPreference;
@@ -42,12 +40,6 @@ public class DBConnectionExtension extends Extension implements IPreferenceExten
 	}
 
 	public void initialize() {
-
-		//Creating config Dir
-		String symbolsDirStr = System.getProperty("user.dir") + File.separator + "Leyendas";
-		File symbolsDir = new File(symbolsDirStr);
-		symbolsDir.mkdir();
-
 		//icon
 		registerIcons();
 	}
@@ -60,17 +52,14 @@ public class DBConnectionExtension extends Extension implements IPreferenceExten
 	}
 
 	public boolean isEnabled() {
-		// TODO Auto-generated method stub
 		return true;
 	}
 
 	public boolean isVisible() {
-		// TODO Auto-generated method stub
 		return true;
 	}
 
 	public IPreference[] getPreferencesPages() {
-		// TODO Auto-generated method stub
 		IPreference[] preferences=new IPreference[1];
 		preferences[0]=usersPreferencesPage;
 		return preferences;
@@ -82,7 +71,6 @@ public class DBConnectionExtension extends Extension implements IPreferenceExten
 			try {
 				dbs.close();
 			} catch (DBException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -90,7 +78,6 @@ public class DBConnectionExtension extends Extension implements IPreferenceExten
 
 	public void postInitialize() {
 
-		//poner if
 		PluginServices ps = PluginServices.getPluginServices(this);
 		XMLEntity xml = ps.getPersistentXML();
 		if (xml.contains(UsersPreferencePage.CONNECT_DB_AT_STARTUP_KEY_NAME)) {
@@ -98,7 +85,6 @@ public class DBConnectionExtension extends Extension implements IPreferenceExten
 				execute(null);
 			}
 		}
-
 	}
 
 }
