@@ -26,7 +26,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import com.iver.andami.PluginServices;
-import com.iver.andami.ui.mdiManager.WindowInfo;
 import com.iver.cit.gvsig.fmap.drivers.DBException;
 import com.jeta.forms.components.panel.FormPanel;
 
@@ -35,7 +34,6 @@ import es.udc.cartolab.gvsig.users.utils.DBUser;
 
 public class ChangePassDialog extends AbstractGVWindow {
 
-	WindowInfo viewInfo = null;
 	JPanel centerPanel = null;
 	JPanel northPanel = null;
 	JPanel southPanel = null;

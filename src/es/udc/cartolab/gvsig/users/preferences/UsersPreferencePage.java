@@ -1,16 +1,16 @@
 /*
  * Copyright (c) 2010. CartoLab, Universidad de A Coruña
- * 
+ *
  * This file is part of extDBConnection
- * 
+ *
  * extDBConnection is free software: you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation, either
  * version 3 of the License, or any later version.
- * 
+ *
  * extDBConnection is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with extDBConnection.
  * If not, see <http://www.gnu.org/licenses/>.
 */
@@ -53,24 +53,20 @@ public class UsersPreferencePage extends AbstractPreferencePage {
 
 
 	public void setChangesApplied() {
-		// TODO Auto-generated method stub
 		setChanged(false);
 	}
 
 	public void storeValues() throws StoreException {
-		// TODO Auto-generated method stub
 		PluginServices ps = PluginServices.getPluginServices(this);
 		XMLEntity xml = ps.getPersistentXML();
 		xml.putProperty(CONNECT_DB_AT_STARTUP_KEY_NAME, connectDBCB.isSelected());
 	}
 
 	public String getID() {
-		// TODO Auto-generated method stub
 		return id;
 	}
 
 	public ImageIcon getIcon() {
-		// TODO Auto-generated method stub
 		return icon;
 	}
 
@@ -79,9 +75,7 @@ public class UsersPreferencePage extends AbstractPreferencePage {
 		if (!panelStarted) {
 			panelStarted = true;
 
-			//			panel = new JPanel();
-
-			FormPanel form = new FormPanel("forms/preferences.jfrm");
+	    FormPanel form = new FormPanel("forms/preferences.xml");
 			form.setFocusTraversalPolicyProvider(true);
 
 			connectDBCB = form.getCheckBox("connectDBCB");
@@ -94,7 +88,6 @@ public class UsersPreferencePage extends AbstractPreferencePage {
 	}
 
 	public String getTitle() {
-		// TODO Auto-generated method stub
 		return PluginServices.getText(this, "dbconnection");
 	}
 
@@ -103,7 +96,6 @@ public class UsersPreferencePage extends AbstractPreferencePage {
 	}
 
 	public void initializeValues() {
-		// TODO Auto-generated method stub
 		if (!panelStarted) {
 			getPanel();
 		}
@@ -119,7 +111,6 @@ public class UsersPreferencePage extends AbstractPreferencePage {
 	}
 
 	public boolean isValueChanged() {
-		// TODO Auto-generated method stub
 		return super.hasChanged();
 	}
 
