@@ -43,6 +43,7 @@ public abstract class AbstractGVWindow extends JPanel implements IWindow,
 
     protected int height, width;
     protected WindowInfo viewInfo = null;
+    private int windowInfoCode;
 	JPanel northPanel = null;
 	JPanel southPanel = null;
 	private JButton okButton;
@@ -60,6 +61,7 @@ public abstract class AbstractGVWindow extends JPanel implements IWindow,
 	public AbstractGVWindow(int width, int height) {
 		this.height = height;
 		this.width = width;
+	setWindowInfoCode(WindowInfo.MODELESSDIALOG | WindowInfo.PALETTE);
 		getWindowInfo(); // to avoid a NullPointerException
 
 		GridBagLayout layout = new GridBagLayout();
@@ -90,11 +92,17 @@ public abstract class AbstractGVWindow extends JPanel implements IWindow,
 
 	}
 
+    /**
+     * You should not use this constructor unless you want to make lot of stuff
+     * yourself
+     */
+    public AbstractGVWindow() {
+	super();
+    }
+
 	public WindowInfo getWindowInfo() {
-		// TODO Auto-generated method stub
 		if (viewInfo == null) {
-			viewInfo = new WindowInfo(WindowInfo.MODELESSDIALOG
-					| WindowInfo.PALETTE);
+	    viewInfo = new WindowInfo(windowInfoCode);
 			viewInfo.setTitle(title);
 			viewInfo.setWidth(width);
 			viewInfo.setHeight(height);
@@ -155,7 +163,9 @@ public abstract class AbstractGVWindow extends JPanel implements IWindow,
 		PluginServices.getMDIManager().addCentredWindow(this);
 		getRootPane().setDefaultButton(okButton);
 		getRootPane().setFocusTraversalPolicyProvider(true);
-		getDefaultFocusComponent().requestFocusInWindow();
+	if (getDefaultFocusComponent() != null) {
+	    getDefaultFocusComponent().requestFocusInWindow();
+	}
 	}
 
 	protected abstract JPanel getCenterPanel();
@@ -187,4 +197,8 @@ public abstract class AbstractGVWindow extends JPanel implements IWindow,
 	}
 
 	protected abstract Component getDefaultFocusComponent();
+
+    protected void setWindowInfoCode(int code) {
+	windowInfoCode = code;
+	}
 }
