@@ -127,4 +127,17 @@ public class DBUser {
 
 		return false;
 	}
+
+	public boolean canCreateSchema() throws SQLException {
+		DBSession dbs = DBSession.getCurrentSession();
+		Connection con = dbs.getJavaConnection();
+		String dbName = DBSession.getCurrentSession().getDatabase(); 
+		String query = "SELECT has_database_privilege('" + dbName + "', 'create') as can_do";
+		Statement stat = con.createStatement();
+		ResultSet rs = stat.executeQuery(query);
+		while (rs.next()) {
+			return rs.getBoolean("can_do");
+		}
+		return false;
+	}
 }
