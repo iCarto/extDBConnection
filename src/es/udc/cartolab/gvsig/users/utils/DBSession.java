@@ -78,6 +78,13 @@ public class DBSession {
 		return instance;
 	}
 
+	public static boolean isActive() {
+	    if(instance == null) {
+		return false;
+	    }
+	    return true;
+	}
+
 	/**
 	 * Creates a new DB Connection or changes the current one.
 	 * @param server
@@ -686,4 +693,5 @@ public class DBSession {
 		}
 		return true;
 	}
+
 }
