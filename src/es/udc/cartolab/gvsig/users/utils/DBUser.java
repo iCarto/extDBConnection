@@ -106,10 +106,18 @@ public class DBUser {
 
 	}
 
-	public boolean canReadSchema(String schema) throws SQLException {
+	public boolean canUseSchema(String schema) throws SQLException {
 
 		return canPerform(schema, "usage");
 
+	}
+
+	/**
+	 * Use canUseSchema() instead
+	 */
+	@Deprecated
+	public boolean canReadSchema(String schema) throws SQLException {
+		return canUseSchema(schema);
 	}
 
 	private boolean canPerform(String schema, String privilege) throws SQLException {
