@@ -1,4 +1,4 @@
-<project name="extUsers" default="generate-without-source" basedir=".">
+<project name="extDBConnection" default="generate-without-source" basedir=".">
     <description>
     	Users management and DB Connection extension
     </description>
