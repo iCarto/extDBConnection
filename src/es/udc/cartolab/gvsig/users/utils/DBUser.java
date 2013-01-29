@@ -44,17 +44,38 @@ public class DBUser {
 
 	private boolean checkSuper(Connection con) throws SQLException {
 		boolean superuser = false;
-		Statement stat;
-		stat = con.createStatement();
+		Statement stat = con.createStatement();
 		String query = "SELECT usesysid, usesuper FROM pg_user WHERE usename='" + username + "';";
 		ResultSet rs = stat.executeQuery(query);
 
-		while (rs.next()) {
+		if (rs.next()) {
 			superuser = rs.getBoolean("usesuper");
 			userid = rs.getString("usesysid");
+			if (!superuser) {
+				superuser = checkRoleSuperUserRecursive(con, userid);
+			}
 		}
-
 		return superuser;
+	}
+
+	private boolean checkRoleSuperUserRecursive(Connection con, String memberid) throws SQLException{
+		Statement stat = con.createStatement();
+		String query = "SELECT a.rolname AS rolname, a.oid AS rolid, a.rolsuper AS rolsuper " +
+				"FROM pg_roles a JOIN pg_auth_members b ON a.oid=b.roleid " +
+				"WHERE b.member = " + memberid + ";";
+		ResultSet rs = stat.executeQuery(query);
+
+		while (rs.next()) {
+			if (rs.getBoolean("rolsuper")) {
+				stat.execute("SET SESSION ROLE '" + rs.getString("rolname") + "';");
+				return true;
+			}
+			String roleid = rs.getString("rolid");
+			if (checkRoleSuperUserRecursive(con, roleid)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private boolean checkRole(Connection con, String role) throws SQLException {
