@@ -4,15 +4,25 @@
 	<libraries library-dir="lib"/>
 	<resourceBundle name="text"/>
 	<extensions>
-		<extension class-name="es.udc.cartolab.gvsig.users.DBConnectionExtension" description="Connect DB" active="true">
+		<extension class-name="es.udc.cartolab.gvsig.users.PostGISDBConnectionExtension" description="Connect DB" active="true">
 			<tool-bar name="dbconnection">
-				<action-tool icon="DBConnect" tooltip="connectToDB"
+				<action-tool icon="DBConnect" tooltip="connectToDBPostGIS"
 					action-command="DBConnect" position="1"/>
 			</tool-bar>
-			<menu text="data_base_menu/connectToDB"
+			<menu text="data_base_menu/connectToDBPostgreSQL"
 				icon="DBConnect"
 				action-command="DBConnect"
 				position="1"/> 
+		</extension>
+		<extension class-name="es.udc.cartolab.gvsig.users.SpatiaLiteDBConnectionExtension" description="Connect DB" active="true">
+			<tool-bar name="dbconnection">
+				<action-tool icon="DBConnect" tooltip="connectToDBSpatiaLite"
+					action-command="DBConnect" position="1"/>
+			</tool-bar>
+			<menu text="data_base_menu/connectToDBSQLite"
+				icon="DBConnect"
+				action-command="DBConnect"
+				position="2"/> 
 		</extension>
 		<extension class-name="es.udc.cartolab.gvsig.users.CreateUserExtension" description="New User" active="true">
 			<menu text="data_base_menu/manage_users/create_new_user"

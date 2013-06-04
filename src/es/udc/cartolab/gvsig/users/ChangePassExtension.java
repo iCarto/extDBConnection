@@ -38,8 +38,11 @@ public class ChangePassExtension extends Extension {
 	}
 
 	public boolean isVisible() {
-		DBSession dbs = DBSession.getCurrentSession();
-		return dbs!=null;
+		DBSession session = DBSession.getCurrentSession();
+		if (session != null) {
+			return session.getDBUser().canChangePass();
+		}
+		return false;
 	}
 
 }

@@ -33,13 +33,14 @@ import com.iver.utiles.XMLEntity;
 import com.jeta.forms.components.panel.FormPanel;
 
 import es.udc.cartolab.gvsig.users.utils.DBSession;
+import es.udc.cartolab.gvsig.users.utils.DBSessionPostGIS;
 
 /**
  * @author Javier Estévez
  * @author Francisco Puga <fpuga@cartolab.es>
  *
  */
-public class DBConnectionDialog extends AbstractGVWindow {
+public class PostGISDBConnectionDialog extends AbstractGVWindow {
 
 	private static final String SCHEMA_PROPERTY_NAME = "schema";
 	private static final String DATABASE_PROPERTY_NAME = "database";
@@ -73,7 +74,7 @@ public class DBConnectionDialog extends AbstractGVWindow {
 	public static final String ID_DBL = "dbLabel";
 	public static final String ID_SCHEMAL = "schemaLabel";
 
-	public DBConnectionDialog() {
+	public PostGISDBConnectionDialog() {
 		super(425, INIT_MIN_HEIGHT);
 		setTitle(PluginServices.getText(this, "Login"));
 	}
@@ -83,7 +84,7 @@ public class DBConnectionDialog extends AbstractGVWindow {
 
 		if (centerPanel == null) {
 			centerPanel = new JPanel();
-			FormPanel form = new FormPanel("forms/dbConnection.xml");
+			FormPanel form = new FormPanel("forms/postgresDbConnection.xml");
 			centerPanel.add(form);
 			serverTF = form.getTextField(ID_SERVERTF);
 			portTF = form.getTextField(ID_PORTTF);
@@ -113,12 +114,13 @@ public class DBConnectionDialog extends AbstractGVWindow {
 			advCHB.setText(PluginServices.getText(this, "advanced_options"));
 
 			DBSession dbs = DBSession.getCurrentSession();
-			if (dbs != null) {
-				serverTF.setText(dbs.getServer());
-				portTF.setText(Integer.toString(dbs.getPort()));
-				userTF.setText(dbs.getUserName());
-				dbTF.setText(dbs.getDatabase());
-				schemaTF.setText(dbs.getSchema());
+			if ((dbs != null) && (dbs instanceof DBSessionPostGIS)) {
+				serverTF.setText(((DBSessionPostGIS) dbs).getServer());
+				portTF.setText(Integer.toString(((DBSessionPostGIS) dbs)
+						.getPort()));
+				userTF.setText(((DBSessionPostGIS) dbs).getUserName());
+				dbTF.setText(((DBSessionPostGIS) dbs).getDatabase());
+				schemaTF.setText(((DBSessionPostGIS) dbs).getSchema());
 				advCHB.setSelected(false);
 			} else {
 		fillDialogFromPluginPersistence();
@@ -164,7 +166,8 @@ public class DBConnectionDialog extends AbstractGVWindow {
 	xml.putProperty(SCHEMA_PROPERTY_NAME, schema);
 	PluginServices.getMDIManager().restoreCursor();
 	String title = " "
-		+ String.format(PluginServices.getText(this, "connectedTitle"),
+				+ String.format(
+						PluginServices.getText(this, "connectedTitlePostGIS"),
 			user, host);
 	PluginServices.getMainFrame().setTitle(title);
     }
@@ -238,7 +241,7 @@ public class DBConnectionDialog extends AbstractGVWindow {
 			String schema = schemaTF.getText();
 			String database = dbTF.getText();
 
-	    DBSession.createConnection(server, port, database,
+			DBSessionPostGIS.createConnection(server, port, database,
 					schema, username, password);
 
 			closeWindow();

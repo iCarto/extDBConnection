@@ -38,6 +38,7 @@ import com.jeta.forms.components.panel.FormPanel;
 
 import es.udc.cartolab.gvsig.users.utils.DBAdminUtils;
 import es.udc.cartolab.gvsig.users.utils.DBSession;
+import es.udc.cartolab.gvsig.users.utils.DBSessionPostGIS;
 
 public class DropUserDialog extends JPanel implements IWindow, ActionListener {
 
@@ -115,9 +116,11 @@ public class DropUserDialog extends JPanel implements IWindow, ActionListener {
 		if ((event.getSource() == okButton) || (event.getSource() == userTF)) {
 			DBSession dbs = DBSession.getCurrentSession();
 			String username = userTF.getText();
-			if (dbs != null) {
+			if ((dbs != null) && (dbs instanceof DBSessionPostGIS)) {
 				try {
-					if (!username.equalsIgnoreCase(dbs.getUserName()) && !username.equalsIgnoreCase("postgres")) {
+					if (!username.equalsIgnoreCase(((DBSessionPostGIS) dbs)
+							.getUserName())
+							&& !username.equalsIgnoreCase("postgres")) {
 						if (DBAdminUtils.existsUser(dbs.getJavaConnection(), username)) {
 							String message = PluginServices.getText(this, "dropping_user_question");
 							Object[] options = {PluginServices.getText(this, "ok"),

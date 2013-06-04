@@ -23,19 +23,19 @@ import com.iver.andami.preferences.IPreferenceExtension;
 import com.iver.cit.gvsig.fmap.drivers.DBException;
 import com.iver.utiles.XMLEntity;
 
-import es.udc.cartolab.gvsig.users.gui.DBConnectionDialog;
+import es.udc.cartolab.gvsig.users.gui.PostGISDBConnectionDialog;
 import es.udc.cartolab.gvsig.users.preferences.UsersPreferencePage;
 import es.udc.cartolab.gvsig.users.utils.DBSession;
 
 
-public class DBConnectionExtension extends Extension implements IPreferenceExtension {
+public class PostGISDBConnectionExtension extends Extension implements IPreferenceExtension {
 
 	public static UsersPreferencePage usersPreferencesPage = new UsersPreferencePage();
 
 	public void execute(String actionCommand) {
 
 		//without header image
-		DBConnectionDialog dialog = new DBConnectionDialog();
+		PostGISDBConnectionDialog dialog = new PostGISDBConnectionDialog();
 		dialog.openWindow();
 	}
 

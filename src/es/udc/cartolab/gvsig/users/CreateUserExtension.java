@@ -41,7 +41,7 @@ public class CreateUserExtension extends Extension {
 	public boolean isVisible() {
 		DBSession session = DBSession.getCurrentSession();
 		if (session != null) {
-			return session.getDBUser().isAdmin();
+			return session.getDBUser().canCreateUser();
 		}
 		return false;
 	}
