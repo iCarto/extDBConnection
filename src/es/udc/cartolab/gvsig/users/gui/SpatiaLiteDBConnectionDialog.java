@@ -31,15 +31,16 @@ import javax.swing.JTextField;
 import com.iver.andami.PluginServices;
 import com.iver.cit.gvsig.ProjectExtension;
 import com.iver.cit.gvsig.fmap.drivers.DBException;
+import com.iver.utiles.XMLEntity;
 import com.jeta.forms.components.panel.FormPanel;
 
-import es.udc.cartolab.gvsig.users.utils.ConfigFile;
 import es.udc.cartolab.gvsig.users.utils.DBSession;
 import es.udc.cartolab.gvsig.users.utils.DBSessionSpatiaLite;
 
 public class SpatiaLiteDBConnectionDialog  extends AbstractGVWindow {
 
 	private final static int INIT_MIN_HEIGHT = 90;
+	private final static String SQLITE_FILE_PROPERTY_NAME = "sqlite";
 
 	private JPanel centerPanel = null;
 
@@ -77,6 +78,7 @@ public class SpatiaLiteDBConnectionDialog  extends AbstractGVWindow {
 			}
 
 		}
+		fillDialogFromPluginPersistence();
 		return centerPanel;
 	}
 
@@ -101,10 +103,21 @@ public class SpatiaLiteDBConnectionDialog  extends AbstractGVWindow {
         }
 	}
 
+	private void fillDialogFromPluginPersistence() {
+		XMLEntity xml = PluginServices.getPluginServices(this)
+				.getPersistentXML();
+
+		if (xml.contains(SQLITE_FILE_PROPERTY_NAME)) {
+			fileTF.setText(xml.getStringProperty(SQLITE_FILE_PROPERTY_NAME));
+		}
+	}
+
 	private void saveConfig(String file) throws IOException {
 		// save config file
-		ConfigFile cf = ConfigFile.getInstance();
-		cf.setProperties(file);
+
+		XMLEntity xml = PluginServices.getPluginServices(this)
+				.getPersistentXML();
+		xml.putProperty(SQLITE_FILE_PROPERTY_NAME, file);
 		PluginServices.getMDIManager().restoreCursor();
 		String title = " "
 				+ String.format(PluginServices.getText(this,
