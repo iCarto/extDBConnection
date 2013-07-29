@@ -47,9 +47,33 @@ import es.udc.cartolab.com.hardcode.gdbms.driver.sqlite.SQLiteDriver;
 public class DBSessionSpatiaLite extends DBSession {
 
 	private final String sqliteFile;
+	protected static String CONNECTION_STRING_BEGINNING = "jdbc:sqlite:";
 
-	private DBSessionSpatiaLite(String sqliteFile) {
+	protected DBSessionSpatiaLite(String sqliteFile) {
 		this.sqliteFile = sqliteFile;
+	}
+
+	/**
+	 * Creates a new DB Connection or changes the current one.
+	 * 
+	 * @param connString
+	 * @return the connection
+	 * @throws DBException
+	 *             if there's any problem (server error or login error)
+	 */
+	public static DBSession createConnectionFromConnString(String connString)
+			throws DBException {
+		if (!connString.startsWith(CONNECTION_STRING_BEGINNING)) {
+			return null;
+		}
+		if (instance != null) {
+			instance.close();
+		}
+
+		String file = connString.replaceFirst(CONNECTION_STRING_BEGINNING, "");
+		instance = new DBSessionSpatiaLite(file);
+		instance.connect();
+		return instance;
 	}
 
 	/**
@@ -632,7 +656,7 @@ public class DBSessionSpatiaLite extends DBSession {
 
 	@Override
 	public String getConnectionString() {
-		return "jdbc:sqlite:" + sqliteFile;
+		return CONNECTION_STRING_BEGINNING + sqliteFile;
 	}
 
 	@Override

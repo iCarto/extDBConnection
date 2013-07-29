@@ -43,6 +43,7 @@ public abstract class DBSession {
 	protected ConnectionWithParams conwp;
 	protected String database = "", username = "", password = "", server = "";
 	protected int port = 0;
+	public static String CONNECTION_STRING_BEGINNING;
 
 	/**
 	 * Creates a new PostGIS DB Connection or changes the current one.
@@ -72,6 +73,22 @@ public abstract class DBSession {
 				username, password);
 		instance.connect();
 		return instance;
+	}
+
+	public static DBSession createConnection(String connString,
+			String username, String password) throws DBException {
+		if (connString.startsWith(DBSessionPostGIS.CONNECTION_STRING_BEGINNING)) {
+			return DBSessionPostGIS.createConnectionFromConnString(connString,
+					username,
+					password);
+		}
+		if (connString
+				.startsWith(DBSessionSpatiaLite.CONNECTION_STRING_BEGINNING)) {
+			return DBSessionSpatiaLite
+					.createConnectionFromConnString(connString);
+		}
+		return null;
+
 	}
 
 	/**

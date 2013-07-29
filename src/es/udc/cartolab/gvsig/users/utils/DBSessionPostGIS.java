@@ -45,6 +45,7 @@ import com.iver.cit.gvsig.fmap.layers.LayerFactory;
 public class DBSessionPostGIS extends DBSession {
 
 	private String schema = "";
+	protected static String CONNECTION_STRING_BEGINNING = "jdbc:postgresql:";
 
 	protected DBSessionPostGIS(String server, int port, String database,
 			String schema, String username, String password) {
@@ -56,6 +57,43 @@ public class DBSessionPostGIS extends DBSession {
 		this.database = database;
 		this.schema = schema;
 
+	}
+
+	/**
+	 * Creates a new DB Connection or changes the current one.
+	 * 
+	 * @param connString
+	 * @param username
+	 * @param password
+	 * @return the connection
+	 * @throws DBException
+	 *             if there's any problem (server error or login error)
+	 */
+	public static DBSession createConnectionFromConnString(String connString,
+			String username, String password) throws DBException {
+		if (!connString.startsWith(CONNECTION_STRING_BEGINNING)) {
+			return null;
+		}
+		if (instance != null) {
+			instance.close();
+		}
+
+		connString = connString.replaceFirst(
+				CONNECTION_STRING_BEGINNING + "//", "");
+		String[] split = connString.split(":");
+		String server = split[0];
+		if (split.length > 1) {
+			split = split[1].split("/");
+			int port = Integer.parseInt(split[0]);
+			if (split.length > 1) {
+				String database = split[1];
+				instance = new DBSessionPostGIS(server, port, database,
+						"public", username, password);
+				instance.connect();
+				return instance;
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -648,7 +686,8 @@ public class DBSessionPostGIS extends DBSession {
 
 	@Override
 	public String getConnectionString() {
-		return "jdbc:postgresql://" + server + ":" + port + "/" + database;
+		return CONNECTION_STRING_BEGINNING + "//" + server + ":" + port
+				+ "/" + database;
 	}
 
 	@Override
