@@ -279,6 +279,8 @@ public class DBSessionSpatiaLite extends DBSession {
 
 		if (whereClause == null) {
 			whereClause = "";
+		} else {
+			whereClause = whereClause.trim();
 		}
 
 		int numFieldsOrder;
