@@ -208,6 +208,63 @@ public abstract class DBSession {
 	public abstract String[][] getTable(String tableName) throws SQLException;
 
 
+	/* GET TABLES WITH JOIN */
+
+	/*
+	 * NOTES ONTO ALL THE JOIN RELATED METHODS:
+	 * 
+	 * Inside tableNames we must put all the tables we want to join, which will
+	 * be assigned the alphabet letters in order as alias (a, b, c...) so we can
+	 * avoid field names conflicts in all the other parameters (mainly
+	 * joinFields, the whereClause and the fields we retrieve). Then we pass the
+	 * schemas for all those tables in the same order. And inside joinFields we
+	 * must put the fields we want to use for joining the tables. We must
+	 * specify two fields for each table besides the first one, which will be
+	 * the base. Field names will probably repeat in this case, so remember that
+	 * we can use the aliases inside them as well (e.g. "a.cod_com",
+	 * "b.cod_com").
+	 * 
+	 * To summarize, if we have N table names we must have N schemas and (N-1)*2
+	 * join fields.
+	 * 
+	 * 
+	 * EXAMPLE: we want to join the tables 'viviendas', 'parcelas' and
+	 * 'comunidades', being the three in the same schema, 'data'. Both
+	 * 'viviendas' and 'parcelas' are related by 'cod_viv', and 'comunidades'
+	 * and 'viviendas' by 'cod_com'. We must pass the next parameters (in its
+	 * precise order):
+	 * 
+	 * 
+	 * tableNames = {"viviendas", "parcelas", "comunidades"}
+	 * 
+	 * schemas = {"data", "data", "data"}
+	 * 
+	 * joinFields = {"a.cod_viv", "b.cod_viv", "a.cod_com", "c.cod_com"}
+	 */
+
+	public abstract String[][] getTableWithJoin(String[] tableNames,
+			String[] schemas, String[] joinFields, String whereClause,
+			String[] orderBy, boolean desc) throws SQLException;
+
+	public abstract String[][] getTableWithJoin(String[] tableNames,
+			String[] schemas, String[] joinFields, String[] fieldNames,
+			String whereClause, String[] orderBy, boolean desc)
+			throws SQLException;
+
+	public abstract String[][] getTableWithJoin(String[] tableNames,
+			String[] schemas, String[] joinFields, String[] orderBy,
+			boolean desc)
+			throws SQLException;
+
+	public abstract String[][] getTableWithJoin(String[] tableNames,
+			String[] schemas, String[] joinFields, String whereClause)
+			throws SQLException;
+
+	public abstract String[][] getTableWithJoin(String[] tableNames,
+			String[] joinFields, String whereClause) throws SQLException;
+
+	public abstract String[][] getTableWithJoin(String[] tableNames,
+			String[] joinFields) throws SQLException;
 
 	/* GET DISTINCT VALUES FROM A COLUMN */
 
@@ -289,5 +346,9 @@ public abstract class DBSession {
 	public abstract String getDriverName();
 
 	public abstract String getAlphanumericDriverName();
+
+	protected String getCharForNumber(int i) {
+		return i > 0 && i < 27 ? String.valueOf((char) (i + 96)) : null;
+	}
 
 }

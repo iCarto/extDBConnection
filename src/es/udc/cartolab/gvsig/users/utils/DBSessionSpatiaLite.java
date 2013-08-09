@@ -382,6 +382,198 @@ public class DBSessionSpatiaLite extends DBSession {
 		return getTable(tableName, "", null, null, false);
 	}
 
+	/* GET TABLES WITH JOIN */
+
+	/*
+	 * NOTES ONTO ALL THE JOIN RELATED METHODS:
+	 * 
+	 * Inside tableNames we must put all the tables we want to join, which will
+	 * be assigned the alphabet letters in order as alias (a, b, c...) so we can
+	 * avoid field names conflicts in all the other parameters (mainly
+	 * joinFields, the whereClause and the fields we retrieve). Then we pass the
+	 * schemas for all those tables in the same order. And inside joinFields we
+	 * must put the fields we want to use for joining the tables. We must
+	 * specify two fields for each table besides the first one, which will be
+	 * the base. Field names will probably repeat in this case, so remember that
+	 * we can use the aliases inside them as well (e.g. "a.cod_com",
+	 * "b.cod_com").
+	 * 
+	 * To summarize, if we have N table names we must have N schemas and (N-1)*2
+	 * join fields.
+	 * 
+	 * 
+	 * EXAMPLE: we want to join the tables 'viviendas', 'parcelas' and
+	 * 'comunidades'. Both 'viviendas' and 'parcelas' are related by 'cod_viv',
+	 * and 'comunidades' and 'viviendas' by 'cod_com'. We must pass the next
+	 * parameters (in its precise order):
+	 * 
+	 * 
+	 * tableNames = {"viviendas", "parcelas", "comunidades"}
+	 * 
+	 * schemas = {"", "", ""}
+	 * 
+	 * joinFields = {"a.cod_viv", "b.cod_viv", "a.cod_com", "c.cod_com"}
+	 */
+
+	@Override
+	public String[][] getTableWithJoin(String[] tableNames, String[] schemas,
+			String[] joinFields,
+			String whereClause, String[] orderBy, boolean desc)
+			throws SQLException {
+
+		List<String> fields = new ArrayList<String>();
+		for (int i = 0, len = tableNames.length; i < len; i++) {
+			String[] tempFields = getColumnNames(tableNames[i], schemas[i]);
+			for (String tempField : tempFields) {
+				fields.add(tableNames + "." + tempField);
+			}
+		}
+
+		return getTableWithJoin(tableNames, schemas, joinFields,
+				fields.toArray(new String[0]), whereClause,
+				orderBy,
+				desc);
+	}
+
+	@Override
+	public String[][] getTableWithJoin(String[] tableNames, String[] schemas,
+			String[] joinFields, String[] fieldNames, String whereClause,
+			String[] orderBy, boolean desc) throws SQLException {
+		Connection con = ((ConnectionJDBC) conwp.getConnection())
+				.getConnection();
+
+		if (whereClause == null) {
+			whereClause = "";
+		} else {
+			whereClause = whereClause.trim();
+		}
+
+		int numFieldsOrder;
+
+		if (orderBy == null) {
+			numFieldsOrder = 0;
+		} else {
+			numFieldsOrder = orderBy.length;
+		}
+
+		String query = "SELECT ";
+		Set<String> queriedFields = new HashSet<String>();
+		for (int i = 0; i < fieldNames.length; i++) {
+			if (!queriedFields.contains(fieldNames[i])) {
+				query = query + fieldNames[i] + " AS \"" + fieldNames[i]
+						+ "\", ";
+				queriedFields.add(fieldNames[i]);
+			}
+		}
+
+		query = query.substring(0, query.length() - 2) + " FROM "
+				+ tableNames[0] + " " + getCharForNumber(1);
+		for (int i = 1, len = tableNames.length; i<len; i++) {
+			query += " JOIN " + tableNames[i] + " " + getCharForNumber(i + 1)
+					+ " ON " + joinFields[(i - 1) * 2] + " = "
+					+ joinFields[((i - 1) * 2) + 1];
+		}
+
+		List<String> whereValues = new ArrayList<String>();
+
+		if (whereClause.compareTo("") != 0) {
+
+			int quoteIdx = whereClause.indexOf('\'');
+			while (quoteIdx > -1) {
+				int endQuote = whereClause.indexOf('\'', quoteIdx + 1);
+				String subStr = whereClause.substring(quoteIdx + 1, endQuote);
+				whereValues.add(subStr);
+				quoteIdx = whereClause.indexOf('\'', endQuote + 1);
+			}
+
+			for (int i = 0; i < whereValues.size(); i++) {
+				whereClause = whereClause.replaceFirst("'" + whereValues.get(i)
+						+ "'", "?");
+			}
+
+			if (whereClause.toUpperCase().startsWith("WHERE")) {
+				query = query + " " + whereClause;
+			} else {
+				query = query + " WHERE " + whereClause;
+			}
+		}
+
+		if (numFieldsOrder > 0) {
+			query = query + " ORDER BY ";
+			for (int i = 0; i < numFieldsOrder - 1; i++) {
+				query = query + orderBy[i] + ", ";
+			}
+			query = query + orderBy[orderBy.length - 1];
+
+			if (desc) {
+				query = query + " DESC";
+			}
+		}
+
+		PreparedStatement stat = con.prepareStatement(query);
+		for (int i = 0; i < whereValues.size(); i++) {
+			stat.setString(i + 1, whereValues.get(i));
+		}
+
+		ResultSet rs = stat.executeQuery();
+
+		ArrayList<String[]> rows = new ArrayList<String[]>();
+		while (rs.next()) {
+			String[] row = new String[fieldNames.length];
+			for (int i = 0; i < fieldNames.length; i++) {
+				String val = rs.getString(fieldNames[i]);
+				if (val == null) {
+					val = "";
+				}
+				row[i] = val;
+			}
+			rows.add(row);
+		}
+		rs.close();
+
+		return rows.toArray(new String[0][0]);
+
+	}
+
+	@Override
+	public String[][] getTableWithJoin(String[] tableNames, String[] schemas,
+			String[] joinFields, String[] orderBy, boolean desc)
+			throws SQLException {
+		return getTableWithJoin(tableNames, schemas, joinFields, null, orderBy,
+				desc);
+	}
+
+	@Override
+	public String[][] getTableWithJoin(String[] tableNames, String[] schemas,
+			String[] joinFields, String whereClause) throws SQLException {
+		return getTableWithJoin(tableNames, schemas, joinFields, whereClause,
+				null,
+				false);
+	}
+
+	@Override
+	public String[][] getTableWithJoin(String[] tableNames,
+			String[] joinFields, String whereClause) throws SQLException {
+		String[] schemas = new String[tableNames.length];
+		for (int i = 0, len = schemas.length; i < len; i++) {
+			schemas[i] = "";
+		}
+		return getTableWithJoin(tableNames, schemas, joinFields, whereClause,
+				null,
+				false);
+	}
+
+	@Override
+	public String[][] getTableWithJoin(String[] tableNames, String[] joinFields)
+			throws SQLException {
+		String[] schemas = new String[tableNames.length];
+		for (int i = 0, len = schemas.length; i < len; i++) {
+			schemas[i] = "";
+		}
+		return getTableWithJoin(tableNames, schemas, joinFields, null, null,
+				false);
+	}
+
 	/* GET DISTINCT VALUES FROM A COLUMN */
 
 	public String[] getDistinctValues(String tableName, String schema,
