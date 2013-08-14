@@ -17,7 +17,7 @@
 		<extension class-name="es.udc.cartolab.gvsig.users.SpatiaLiteDBConnectionExtension" description="Connect DB" active="true">
 			<tool-bar name="dbconnection">
 				<action-tool icon="DBConnect" tooltip="connectToDBSpatiaLite"
-					action-command="DBConnect" position="1"/>
+					action-command="DBConnect" position="2"/>
 			</tool-bar>
 			<menu text="data_base_menu/connectToDBSQLite"
 				icon="DBConnect"
@@ -37,7 +37,7 @@
 		<extension class-name="es.udc.cartolab.gvsig.users.CloseSessionExtension" description="Change password" active="true">
 			<tool-bar name="dbconnection">
 				<action-tool icon="DBClose" tooltip="close_session"
-					action-command="CLOSE" position="2"/>
+					action-command="CLOSE" position="3"/>
 			</tool-bar>
 			<menu text="data_base_menu/close_session"
 				icon="DBClose"
