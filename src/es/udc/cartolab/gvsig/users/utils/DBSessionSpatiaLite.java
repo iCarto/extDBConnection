@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.cresques.cts.IProjection;
+import org.sqlite.Conn;
 
 import com.hardcode.driverManager.DriverLoadException;
 import com.iver.cit.gvsig.fmap.drivers.ConnectionJDBC;
@@ -36,6 +37,7 @@ import com.iver.cit.gvsig.fmap.drivers.DBException;
 import com.iver.cit.gvsig.fmap.drivers.DBLayerDefinition;
 import com.iver.cit.gvsig.fmap.drivers.FieldDescription;
 import com.iver.cit.gvsig.fmap.drivers.IVectorialJDBCDriver;
+import com.iver.cit.gvsig.fmap.drivers.db.utils.SingleDBConnectionManager;
 import com.iver.cit.gvsig.fmap.drivers.db.utils.SingleVectorialDBConnectionManager;
 import com.iver.cit.gvsig.fmap.layers.FLayer;
 import com.iver.cit.gvsig.fmap.layers.LayerFactory;
@@ -109,6 +111,24 @@ public class DBSessionSpatiaLite extends DBSession {
 			instance = null;
 			throw e;
 		}
+
+	}
+
+	public void close() throws DBException {
+		Connection conn = instance.getJavaConnection();
+		user = null;
+		if (conwp != null) {
+			SingleDBConnectionManager.instance().closeAndRemove(conwp);
+			conwp = null;
+		}
+		if (conn instanceof Conn) {
+			try {
+				((Conn) conn).realClose();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		instance = null;
 
 	}
 
