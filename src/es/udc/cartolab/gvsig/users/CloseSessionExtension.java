@@ -20,6 +20,7 @@ import com.iver.andami.PluginServices;
 import com.iver.andami.plugins.Extension;
 import com.iver.cit.gvsig.ProjectExtension;
 import com.iver.cit.gvsig.fmap.drivers.DBException;
+import com.iver.cit.gvsig.project.Project;
 
 import es.udc.cartolab.gvsig.users.utils.DBSession;
 
@@ -30,13 +31,16 @@ public class CloseSessionExtension extends Extension {
 		if (dbs!=null) {
 			try {
 
-				if (!dbs.askSave()) {
-					return;
-				}
-				dbs.close();
+				ProjectExtension pExt = (ProjectExtension) PluginServices
+						.getExtension(ProjectExtension.class);
+				Project p1 = pExt.getProject();
 
-				ProjectExtension pExt = (ProjectExtension) PluginServices.getExtension(ProjectExtension.class);
 				pExt.execute("NUEVO");
+
+				Project p2 = pExt.getProject();
+				if (p1 != p2) {
+					dbs.close();
+				}
 
 			} catch (DBException e) {
 				// TODO Auto-generated catch block

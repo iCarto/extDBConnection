@@ -19,21 +19,13 @@ package es.udc.cartolab.gvsig.users.utils;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import javax.swing.JOptionPane;
-
 import org.cresques.cts.IProjection;
 
-import com.iver.andami.Launcher;
-import com.iver.andami.Launcher.TerminationProcess;
-import com.iver.andami.PluginServices;
-import com.iver.andami.ui.wizard.UnsavedDataPanel;
-import com.iver.cit.gvsig.ProjectExtension;
 import com.iver.cit.gvsig.fmap.drivers.ConnectionJDBC;
 import com.iver.cit.gvsig.fmap.drivers.DBException;
 import com.iver.cit.gvsig.fmap.drivers.db.utils.ConnectionWithParams;
 import com.iver.cit.gvsig.fmap.drivers.db.utils.SingleDBConnectionManager;
 import com.iver.cit.gvsig.fmap.layers.FLayer;
-import com.iver.cit.gvsig.project.Project;
 
 
 public abstract class DBSession {
@@ -304,42 +296,6 @@ public abstract class DBSession {
 
 	public abstract boolean tableExists(String schema, String tablename)
 			throws SQLException;
-
-	/**
-	 * Checks if there is an active and unsaved project and asks the user to
-	 * save resources.
-	 * 
-	 * @return true if there's no unsaved data
-	 */
-	public boolean askSave() {
-
-		ProjectExtension pExt = (ProjectExtension) PluginServices
-				.getExtension(ProjectExtension.class);
-		Project p = pExt.getProject();
-
-		if (p != null && p.hasChanged()) {
-			TerminationProcess process = Launcher.getTerminationProcess();
-			UnsavedDataPanel panel = process.getUnsavedDataPanel();
-			panel.setHeaderText(PluginServices.getText(this,
-					"Select_resources_to_save_before_closing_current_project"));
-			panel.setAcceptText(
-					PluginServices.getText(this, "save_resources"),
-					PluginServices
-							.getText(this,
-									"Save_the_selected_resources_and_close_current_project"));
-			panel.setCancelText(PluginServices.getText(this, "Dont_close"),
-					PluginServices.getText(this, "Return_to_current_project"));
-			int closeCurrProj = process.manageUnsavedData();
-			if (closeCurrProj == JOptionPane.NO_OPTION) {
-				// the user chose to return to current project
-				return false;
-			} else if (closeCurrProj == JOptionPane.YES_OPTION) {
-				// trick to avoid ask twice for modified data
-				p.setModified(false);
-			}
-		}
-		return true;
-	}
 
 	public abstract String getCompleteTableName(String name, String schema);
 

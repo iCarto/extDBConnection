@@ -29,6 +29,7 @@ import javax.swing.JTextField;
 import com.iver.andami.PluginServices;
 import com.iver.cit.gvsig.ProjectExtension;
 import com.iver.cit.gvsig.fmap.drivers.DBException;
+import com.iver.cit.gvsig.project.Project;
 import com.iver.utiles.XMLEntity;
 import com.jeta.forms.components.panel.FormPanel;
 
@@ -209,14 +210,17 @@ public class PostGISDBConnectionDialog extends AbstractGVWindow {
 
 		DBSession dbs = DBSession.getCurrentSession();
 		if (dbs != null) {
-			if (!dbs.askSave()) {
+			ProjectExtension pExt = (ProjectExtension) PluginServices
+					.getExtension(ProjectExtension.class);
+			Project p1 = pExt.getProject();
+
+			pExt.execute("NUEVO");
+
+			Project p2 = pExt.getProject();
+			if (p1 == p2) {
 				return false;
 			}
 			dbs.close();
-
-			ProjectExtension pExt = (ProjectExtension) PluginServices
-					.getExtension(ProjectExtension.class);
-			pExt.execute("NUEVO");
 		}
 		return true;
 
