@@ -9,7 +9,7 @@
 				<action-tool icon="DBConnect" tooltip="connectToDBPostGIS"
 					action-command="DBConnect" position="1"/>
 			</tool-bar>
-			<menu text="data_base_menu/connectToDBPostgreSQL"
+			<menu text="data_base_menu/connectToDBPostGIS"
 				icon="DBConnect"
 				action-command="DBConnect"
 				position="1"/> 
@@ -19,7 +19,7 @@
 				<action-tool icon="DBConnect" tooltip="connectToDBSpatiaLite"
 					action-command="DBConnect" position="2"/>
 			</tool-bar>
-			<menu text="data_base_menu/connectToDBSQLite"
+			<menu text="data_base_menu/connectToDBSpatiaLite"
 				icon="DBConnect"
 				action-command="DBConnect"
 				position="2"/> 
