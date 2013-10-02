@@ -170,8 +170,7 @@ public abstract class DBSession {
 	public abstract FLayer getLayer(String tableName, IProjection projection)
 			throws SQLException, DBException;
 
-
-	/* GET TABLE */
+	/* GET METADATA */
 
 	protected abstract String[] getColumnNames(String tablename, String schema)
 			throws SQLException;
@@ -179,10 +178,11 @@ public abstract class DBSession {
 	protected abstract int getColumnType(String tablename, String schema,
 			String column) throws SQLException;
 
+	/* GET TABLE AS STRING[][] */
+
 	public abstract String[][] getTable(String tableName, String schema,
 			String whereClause, String[] orderBy, boolean desc)
 			throws SQLException;
-
 
 	public abstract String[][] getTable(String tableName, String schema,
 			String[] fieldNames, String whereClause, String[] orderBy,
@@ -199,6 +199,27 @@ public abstract class DBSession {
 
 	public abstract String[][] getTable(String tableName) throws SQLException;
 
+	/* GET TABLE AS OBJECT[][] */
+
+	public abstract Object[][] getTableAsObjects(String tableName,
+			String schema, String whereClause, String[] orderBy, boolean desc)
+			throws SQLException;
+
+	public abstract Object[][] getTableAsObjects(String tableName,
+			String schema, String[] fieldNames, String whereClause,
+			String[] orderBy, boolean desc) throws SQLException;
+
+	public abstract Object[][] getTableAsObjects(String tableName,
+			String schema, String[] orderBy, boolean desc) throws SQLException;
+
+	public abstract Object[][] getTableAsObjects(String tableName,
+			String schema, String whereClause) throws SQLException;
+
+	public abstract Object[][] getTableAsObjects(String tableName,
+			String whereClause) throws SQLException;
+
+	public abstract Object[][] getTableAsObjects(String tableName)
+			throws SQLException;
 
 	/* GET TABLES WITH JOIN */
 

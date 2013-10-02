@@ -272,7 +272,7 @@ public class DBSessionPostGIS extends DBSession {
 		return getLayer(tableName, null, projection);
 	}
 
-	/* GET TABLE */
+	/* GET METADATA */
 
 	protected String[] getColumnNames(String tablename, String schema)
 			throws SQLException {
@@ -307,6 +307,8 @@ public class DBSessionPostGIS extends DBSession {
 		return -1;
 	}
 
+	/* GET TABLE AS STRING[][] */
+
 	public String[][] getTable(String tableName, String schema,
 			String whereClause, String[] orderBy, boolean desc)
 			throws SQLException {
@@ -320,6 +322,105 @@ public class DBSessionPostGIS extends DBSession {
 	public String[][] getTable(String tableName, String schema,
 			String[] fieldNames, String whereClause, String[] orderBy,
 			boolean desc) throws SQLException {
+		ResultSet rs = getTableResultSet(tableName, schema, fieldNames,
+				whereClause, orderBy, desc);
+
+		ArrayList<String[]> rows = new ArrayList<String[]>();
+		while (rs.next()) {
+			String[] row = new String[fieldNames.length];
+			for (int i = 0; i < fieldNames.length; i++) {
+				String val = rs.getString(fieldNames[i]);
+				if (val == null) {
+					val = "";
+				}
+				row[i] = val;
+			}
+			rows.add(row);
+		}
+		rs.close();
+
+		return rows.toArray(new String[0][0]);
+
+	}
+
+	public String[][] getTable(String tableName, String schema,
+			String[] orderBy, boolean desc) throws SQLException {
+		return getTable(tableName, schema, null, orderBy, desc);
+	}
+
+	public String[][] getTable(String tableName, String schema,
+			String whereClause) throws SQLException {
+		return getTable(tableName, schema, whereClause, null, false);
+	}
+
+	public String[][] getTable(String tableName, String whereClause)
+			throws SQLException {
+		return getTable(tableName, schema, whereClause, null, false);
+	}
+
+	public String[][] getTable(String tableName) throws SQLException {
+		return getTable(tableName, schema, null, null, false);
+	}
+
+	/* GET TABLE AS OBJECT[][] */
+
+	public Object[][] getTableAsObjects(String tableName, String schema,
+			String whereClause, String[] orderBy, boolean desc)
+			throws SQLException {
+
+		String[] columnNames = getColumnNames(tableName, schema);
+
+		return getTableAsObjects(tableName, schema, columnNames, whereClause,
+				orderBy, desc);
+	}
+
+	public Object[][] getTableAsObjects(String tableName, String schema,
+			String[] fieldNames, String whereClause, String[] orderBy,
+			boolean desc) throws SQLException {
+		ResultSet rs = getTableResultSet(tableName, schema, fieldNames,
+				whereClause, orderBy, desc);
+
+		ArrayList<Object[]> rows = new ArrayList<Object[]>();
+		while (rs.next()) {
+			Object[] row = new Object[fieldNames.length];
+			for (int i = 0; i < fieldNames.length; i++) {
+				Object val = rs.getObject(fieldNames[i]);
+				if (val == null) {
+					val = "";
+				}
+				row[i] = val;
+			}
+			rows.add(row);
+		}
+		rs.close();
+
+		return rows.toArray(new Object[0][0]);
+
+	}
+
+	public Object[][] getTableAsObjects(String tableName, String schema,
+			String[] orderBy, boolean desc) throws SQLException {
+		return getTableAsObjects(tableName, schema, null, orderBy, desc);
+	}
+
+	public Object[][] getTableAsObjects(String tableName, String schema,
+			String whereClause) throws SQLException {
+		return getTableAsObjects(tableName, schema, whereClause, null, false);
+	}
+
+	public Object[][] getTableAsObjects(String tableName, String whereClause)
+			throws SQLException {
+		return getTableAsObjects(tableName, schema, whereClause, null, false);
+	}
+
+	public Object[][] getTableAsObjects(String tableName) throws SQLException {
+		return getTableAsObjects(tableName, schema, null, null, false);
+	}
+
+	private ResultSet getTableResultSet(String tableName, String schema,
+			String[] fieldNames, String whereClause, String[] orderBy,
+			boolean desc) throws SQLException {
+
 		Connection con = ((ConnectionJDBC) conwp.getConnection())
 				.getConnection();
 
@@ -390,43 +491,7 @@ public class DBSessionPostGIS extends DBSession {
 			stat.setString(i + 1, whereValues.get(i));
 		}
 
-		ResultSet rs = stat.executeQuery();
-
-		ArrayList<String[]> rows = new ArrayList<String[]>();
-		while (rs.next()) {
-			String[] row = new String[fieldNames.length];
-			for (int i = 0; i < fieldNames.length; i++) {
-				String val = rs.getString(fieldNames[i]);
-				if (val == null) {
-					val = "";
-				}
-				row[i] = val;
-			}
-			rows.add(row);
-		}
-		rs.close();
-
-		return rows.toArray(new String[0][0]);
-
-	}
-
-	public String[][] getTable(String tableName, String schema,
-			String[] orderBy, boolean desc) throws SQLException {
-		return getTable(tableName, schema, null, orderBy, desc);
-	}
-
-	public String[][] getTable(String tableName, String schema,
-			String whereClause) throws SQLException {
-		return getTable(tableName, schema, whereClause, null, false);
-	}
-
-	public String[][] getTable(String tableName, String whereClause)
-			throws SQLException {
-		return getTable(tableName, schema, whereClause, null, false);
-	}
-
-	public String[][] getTable(String tableName) throws SQLException {
-		return getTable(tableName, schema, null, null, false);
+		return stat.executeQuery();
 	}
 
 	/* GET TABLES WITH JOIN */
