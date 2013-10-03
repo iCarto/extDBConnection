@@ -471,14 +471,15 @@ public class DBSessionSpatiaLite extends DBSession {
 
 	public InputStream getBinaryStream(String tableName, String schema,
 			String fieldName, String whereClause) throws SQLException {
+		InputStream is = null;
 		String[] fieldNames = { fieldName };
 		ResultSet rs = getTableResultSet(tableName, schema, fieldNames,
 				whereClause, new String[0], false);
 		if (rs.next()) {
-			return rs.getBinaryStream(1);
-		} else {
-			return null;
+			is = rs.getBinaryStream(1);
 		}
+		rs.close();
+		return is;
 
 	}
 

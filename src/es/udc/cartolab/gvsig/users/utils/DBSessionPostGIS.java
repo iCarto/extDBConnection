@@ -502,25 +502,24 @@ public class DBSessionPostGIS extends DBSession {
 	public InputStream getBinaryStream(String tableName, String schema,
 			String fieldName, String whereClause) throws SQLException {
 		String[] fieldNames = { fieldName };
+		InputStream is = null;
 		try {
 			Class.forName("org.postgresql.Driver");
 			Connection con = DriverManager.getConnection(getConnectionString(),
 					username, password);
 			ResultSet rs = getTableResultSet(tableName, schema, fieldNames,
 					whereClause, new String[0], false, con);
-			con.close();
 			if (rs.next()) {
-				InputStream is = rs.getBinaryStream(1);
-				rs.close();
-				return is;
+				is = rs.getBinaryStream(1);
 			}
+			con.close();
 			rs.close();
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return null;
+		return is;
 
 	}
 
