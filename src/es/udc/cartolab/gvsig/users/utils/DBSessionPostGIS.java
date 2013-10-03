@@ -16,8 +16,10 @@
  */
 package es.udc.cartolab.gvsig.users.utils;
 
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -322,8 +324,10 @@ public class DBSessionPostGIS extends DBSession {
 	public String[][] getTable(String tableName, String schema,
 			String[] fieldNames, String whereClause, String[] orderBy,
 			boolean desc) throws SQLException {
+		Connection con = ((ConnectionJDBC) conwp.getConnection())
+				.getConnection();
 		ResultSet rs = getTableResultSet(tableName, schema, fieldNames,
-				whereClause, orderBy, desc);
+				whereClause, orderBy, desc, con);
 
 		ArrayList<String[]> rows = new ArrayList<String[]>();
 		while (rs.next()) {
@@ -377,8 +381,10 @@ public class DBSessionPostGIS extends DBSession {
 	public Object[][] getTableAsObjects(String tableName, String schema,
 			String[] fieldNames, String whereClause, String[] orderBy,
 			boolean desc) throws SQLException {
+		Connection con = ((ConnectionJDBC) conwp.getConnection())
+				.getConnection();
 		ResultSet rs = getTableResultSet(tableName, schema, fieldNames,
-				whereClause, orderBy, desc);
+				whereClause, orderBy, desc, con);
 
 		ArrayList<Object[]> rows = new ArrayList<Object[]>();
 		while (rs.next()) {
@@ -419,10 +425,7 @@ public class DBSessionPostGIS extends DBSession {
 
 	private ResultSet getTableResultSet(String tableName, String schema,
 			String[] fieldNames, String whereClause, String[] orderBy,
-			boolean desc) throws SQLException {
-
-		Connection con = ((ConnectionJDBC) conwp.getConnection())
-				.getConnection();
+			boolean desc, Connection con) throws SQLException {
 
 		if (whereClause == null) {
 			whereClause = "";
@@ -494,6 +497,97 @@ public class DBSessionPostGIS extends DBSession {
 		return stat.executeQuery();
 	}
 
+	/* GET BINARY STREAM */
+
+	public InputStream getBinaryStream(String tableName, String schema,
+			String fieldName, String whereClause) throws SQLException {
+		String[] fieldNames = { fieldName };
+		try {
+			Class.forName("org.postgresql.Driver");
+			Connection con = DriverManager.getConnection(getConnectionString(),
+					username, password);
+			ResultSet rs = getTableResultSet(tableName, schema, fieldNames,
+					whereClause, new String[0], false, con);
+			con.close();
+			if (rs.next()) {
+				InputStream is = rs.getBinaryStream(1);
+				rs.close();
+				return is;
+			}
+			rs.close();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+
+	}
+
+	/* SET BINARY STREAM */
+
+	public void updateWithBinaryStream(String tableName, String schema,
+			String fieldName, InputStream is, int length, String[] columns,
+			Object[] values, String whereClause) throws SQLException {
+
+		if (columns.length == values.length) {
+			try {
+				Class.forName("org.postgresql.Driver");
+				Connection con = DriverManager.getConnection(
+						getConnectionString(), username, password);
+				String sql = "UPDATE " + schema + "." + tableName + " SET "
+						+ fieldName + " = ?";
+				for (String column : columns) {
+					sql += ", " + column + " = ?";
+				}
+				sql += " " + whereClause;
+
+				PreparedStatement statement = con.prepareStatement(sql);
+				int pos = 1;
+				statement.setBinaryStream(pos++, is, length);
+				for (Object value : values) {
+					statement.setObject(pos++, value);
+				}
+				statement.executeUpdate();
+				con.close();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void insertWithBinaryStream(String tableName, String schema,
+			String fieldName, InputStream is, int length, String[] columns,
+			Object[] values) throws SQLException {
+
+		if (columns.length == values.length) {
+			try {
+				Class.forName("org.postgresql.Driver");
+				Connection con = DriverManager.getConnection(
+						getConnectionString(), username, password);
+				String sql = "INSERT INTO " + schema + "." + tableName + " ("
+						+ fieldName;
+				String sqlValues = "VALUES (?";
+				for (String column : columns) {
+					sql += ", " + column;
+					sqlValues += ", ?";
+				}
+				sql += ") " + sqlValues + ")";
+
+				PreparedStatement statement = con.prepareStatement(sql);
+				int pos = 1;
+				statement.setBinaryStream(pos++, is, length);
+				for (Object value : values) {
+					statement.setObject(pos++, value);
+				}
+				statement.executeUpdate();
+				con.close();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 	/* GET TABLES WITH JOIN */
 
 	/*
@@ -530,9 +624,8 @@ public class DBSessionPostGIS extends DBSession {
 
 	@Override
 	public String[][] getTableWithJoin(String[] tableNames, String[] schemas,
-			String[] joinFields,
-			String whereClause, String[] orderBy, boolean desc)
-			throws SQLException {
+			String[] joinFields, String whereClause, String[] orderBy,
+			boolean desc) throws SQLException {
 
 		List<String> fields = new ArrayList<String>();
 		for (int i = 0, len = tableNames.length; i < len; i++) {
@@ -543,9 +636,7 @@ public class DBSessionPostGIS extends DBSession {
 		}
 
 		return getTableWithJoin(tableNames, schemas, joinFields,
-				fields.toArray(new String[0]), whereClause,
-				orderBy,
-				desc);
+				fields.toArray(new String[0]), whereClause, orderBy, desc);
 	}
 
 	@Override
@@ -581,7 +672,7 @@ public class DBSessionPostGIS extends DBSession {
 
 		query = query.substring(0, query.length() - 2) + " FROM " + schemas[0]
 				+ "." + tableNames[0] + " " + getCharForNumber(1);
-		for (int i = 1, len = tableNames.length; i<len; i++) {
+		for (int i = 1, len = tableNames.length; i < len; i++) {
 			query += " JOIN " + schemas[i] + "." + tableNames[i] + " "
 					+ getCharForNumber(i + 1) + " ON "
 					+ joinFields[(i - 1) * 2] + " = "
@@ -661,8 +752,7 @@ public class DBSessionPostGIS extends DBSession {
 	public String[][] getTableWithJoin(String[] tableNames, String[] schemas,
 			String[] joinFields, String whereClause) throws SQLException {
 		return getTableWithJoin(tableNames, schemas, joinFields, whereClause,
-				null,
-				false);
+				null, false);
 	}
 
 	@Override
@@ -673,8 +763,7 @@ public class DBSessionPostGIS extends DBSession {
 			schemas[i] = schema;
 		}
 		return getTableWithJoin(tableNames, schemas, joinFields, whereClause,
-				null,
-				false);
+				null, false);
 	}
 
 	@Override
@@ -947,8 +1036,8 @@ public class DBSessionPostGIS extends DBSession {
 
 	@Override
 	public String getConnectionString() {
-		return CONNECTION_STRING_BEGINNING + "//" + server + ":" + port
-				+ "/" + database;
+		return CONNECTION_STRING_BEGINNING + "//" + server + ":" + port + "/"
+				+ database;
 	}
 
 	@Override

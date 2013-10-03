@@ -16,6 +16,7 @@
 */
 package es.udc.cartolab.gvsig.users.utils;
 
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -220,6 +221,23 @@ public abstract class DBSession {
 
 	public abstract Object[][] getTableAsObjects(String tableName)
 			throws SQLException;
+
+	/* GET BINARY STREAM */
+
+	public abstract InputStream getBinaryStream(String tableName,
+			String schema, String fieldName, String whereClause)
+			throws SQLException;
+
+	/* SET BINARY STREAM */
+
+	public abstract void updateWithBinaryStream(String tableName, String schema,
+			String fieldName, InputStream is, int length, String[] columns,
+			Object[] values, String whereClause)
+			throws SQLException;
+
+	public abstract void insertWithBinaryStream(String tableName, String schema,
+			String fieldName, InputStream is, int length, String[] columns,
+			Object[] values) throws SQLException;
 
 	/* GET TABLES WITH JOIN */
 

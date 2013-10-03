@@ -13,9 +13,10 @@
  *
  * You should have received a copy of the GNU General Public License along with extDBConnection.
  * If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 package es.udc.cartolab.gvsig.users.utils;
 
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -100,8 +101,7 @@ public class DBSessionSpatiaLite extends DBSession {
 		try {
 			conwp = SingleVectorialDBConnectionManager.instance()
 					.getConnection(getDriverName(), "", "",
-							"SpatiaLite_connection", sqliteFile, "", "",
-							true);
+							"SpatiaLite_connection", sqliteFile, "", "", true);
 			user = new DBUserSpatiaLite(sqliteFile);
 		} catch (DBException e) {
 			if (this.conwp != null) {
@@ -147,9 +147,9 @@ public class DBSessionSpatiaLite extends DBSession {
 		database = "";
 
 		DBLayerDefinition dbLayerDef = new DBLayerDefinition();
-		dbLayerDef.setCatalogName(database); //Nombre de la base de datos
-		dbLayerDef.setSchema(schema); //Nombre del esquema
-		dbLayerDef.setTableName(tableName); //Nombre de la tabla
+		dbLayerDef.setCatalogName(database); // Nombre de la base de datos
+		dbLayerDef.setSchema(schema); // Nombre del esquema
+		dbLayerDef.setTableName(tableName); // Nombre de la tabla
 		dbLayerDef.setWhereClause("");
 		dbLayerDef.setConnection(conwp.getConnection());
 
@@ -161,22 +161,22 @@ public class DBSessionSpatiaLite extends DBSession {
 		tipos[0] = "TABLE";
 		ResultSet tablas = metadataDB.getTables(null, schema, tableName, tipos);
 		tablas.next();
-		//String t = tablas.getString(tablas.findColumn( "TABLE_NAME" ));
+		// String t = tablas.getString(tablas.findColumn( "TABLE_NAME" ));
 
 		ResultSet columnas = metadataDB
 				.getColumns(null, schema, tableName, "%");
 		ResultSet claves = metadataDB.getPrimaryKeys(null, schema, tableName);
 
-		//ResultSetMetaData aux = columnas.getMetaData();
+		// ResultSetMetaData aux = columnas.getMetaData();
 
 		ArrayList<FieldDescription> descripciones = new ArrayList<FieldDescription>();
 		ArrayList<String> nombres = new ArrayList<String>();
 
 		while (columnas.next()) {
-			//log.info("Tratando atributo: \""+columnas.getString("Column_Name")+"\" de la tabla: "+nombreTabla);
+			// log.info("Tratando atributo: \""+columnas.getString("Column_Name")+"\" de la tabla: "+nombreTabla);
 			if (SpatiaLite.isGeometryType(columnas.getString("Type_Name"))) {
-				/*si es la columna de geometria*/
-				//log.info("Encontrado atributo de geometria para la tabla: "+nombreTabla);
+				/* si es la columna de geometria */
+				// log.info("Encontrado atributo de geometria para la tabla: "+nombreTabla);
 				dbLayerDef.setFieldGeometry(columnas.getString("Column_Name"));
 			} else {
 				FieldDescription fieldDescription = new FieldDescription();
@@ -201,8 +201,9 @@ public class DBSessionSpatiaLite extends DBSession {
 			dbLayerDef.setWhereClause(whereClause);
 		}
 
-		/*buscamos clave primaria y la añadimos a la definicion de la capa*/
-		//OJO, esta solución no vale con claves primarias de más de una columna!!!
+		/* buscamos clave primaria y la añadimos a la definicion de la capa */
+		// OJO, esta solución no vale con claves primarias de más de una
+		// columna!!!
 		while (claves.next()) {
 			dbLayerDef.setFieldID(claves.getString("Column_Name"));
 		}
@@ -221,8 +222,8 @@ public class DBSessionSpatiaLite extends DBSession {
 			dbDriver.setData(conwp.getConnection(), dbLayerDef);
 
 			lyr = LayerFactory.createDBLayer(dbDriver, layerName, projection);
-			/*asignamos proyección a la capa y al ViewPort*/
-			//			dbLayerDef.setSRID_EPSG(projection.getAbrev());
+			/* asignamos proyección a la capa y al ViewPort */
+			// dbLayerDef.setSRID_EPSG(projection.getAbrev());
 		} catch (DriverLoadException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -466,6 +467,75 @@ public class DBSessionSpatiaLite extends DBSession {
 		return stat.executeQuery();
 	}
 
+	/* GET BINARY STREAM */
+
+	public InputStream getBinaryStream(String tableName, String schema,
+			String fieldName, String whereClause) throws SQLException {
+		String[] fieldNames = { fieldName };
+		ResultSet rs = getTableResultSet(tableName, schema, fieldNames,
+				whereClause, new String[0], false);
+		if (rs.next()) {
+			return rs.getBinaryStream(1);
+		} else {
+			return null;
+		}
+
+	}
+
+	/* SET BINARY STREAM */
+
+	public void updateWithBinaryStream(String tableName, String schema,
+			String fieldName, InputStream is, int length, String[] columns,
+			Object[] values, String whereClause) throws SQLException {
+		if (columns.length == values.length) {
+			Connection con = ((ConnectionJDBC) conwp.getConnection())
+					.getConnection();
+
+			clearTransaction(con);
+
+			String sql = "UPDATE " + tableName + " SET ";
+			for (String column : columns) {
+				sql = sql + column + "=?, ";
+			}
+			sql = sql.substring(0, sql.length() - 2) + " " + whereClause;
+
+			PreparedStatement statement = con.prepareStatement(sql);
+			for (int i = 0; i < values.length; i++) {
+				statement.setObject(i + 1, values[i]);
+			}
+
+			statement.executeUpdate();
+			con.commit();
+		}
+	}
+
+	public void insertWithBinaryStream(String tableName, String schema,
+			String fieldName, InputStream is, int length, String[] columns,
+			Object[] values) throws SQLException {
+		if (columns.length == values.length) {
+			Connection con = ((ConnectionJDBC) conwp.getConnection())
+					.getConnection();
+
+			clearTransaction(con);
+
+			String sql = "INSERT INTO " + tableName + " (" + fieldName;
+			String sqlValues = "VALUES (?";
+			for (String column : columns) {
+				sql += ", " + column;
+				sqlValues += ", ?";
+			}
+			sql += ") " + sqlValues + ")";
+
+			PreparedStatement statement = con.prepareStatement(sql);
+			int pos = 1;
+			statement.setBinaryStream(pos++, is, length);
+			for (Object value : values) {
+				statement.setObject(pos++, value);
+			}
+			statement.executeUpdate();
+		}
+	}
+
 	/* GET TABLES WITH JOIN */
 
 	/*
@@ -501,9 +571,8 @@ public class DBSessionSpatiaLite extends DBSession {
 
 	@Override
 	public String[][] getTableWithJoin(String[] tableNames, String[] schemas,
-			String[] joinFields,
-			String whereClause, String[] orderBy, boolean desc)
-			throws SQLException {
+			String[] joinFields, String whereClause, String[] orderBy,
+			boolean desc) throws SQLException {
 
 		List<String> fields = new ArrayList<String>();
 		for (int i = 0, len = tableNames.length; i < len; i++) {
@@ -514,9 +583,7 @@ public class DBSessionSpatiaLite extends DBSession {
 		}
 
 		return getTableWithJoin(tableNames, schemas, joinFields,
-				fields.toArray(new String[0]), whereClause,
-				orderBy,
-				desc);
+				fields.toArray(new String[0]), whereClause, orderBy, desc);
 	}
 
 	@Override
@@ -552,7 +619,7 @@ public class DBSessionSpatiaLite extends DBSession {
 
 		query = query.substring(0, query.length() - 2) + " FROM "
 				+ tableNames[0] + " " + getCharForNumber(1);
-		for (int i = 1, len = tableNames.length; i<len; i++) {
+		for (int i = 1, len = tableNames.length; i < len; i++) {
 			query += " JOIN " + tableNames[i] + " " + getCharForNumber(i + 1)
 					+ " ON " + joinFields[(i - 1) * 2] + " = "
 					+ joinFields[((i - 1) * 2) + 1];
@@ -631,8 +698,7 @@ public class DBSessionSpatiaLite extends DBSession {
 	public String[][] getTableWithJoin(String[] tableNames, String[] schemas,
 			String[] joinFields, String whereClause) throws SQLException {
 		return getTableWithJoin(tableNames, schemas, joinFields, whereClause,
-				null,
-				false);
+				null, false);
 	}
 
 	@Override
@@ -643,8 +709,7 @@ public class DBSessionSpatiaLite extends DBSession {
 			schemas[i] = "";
 		}
 		return getTableWithJoin(tableNames, schemas, joinFields, whereClause,
-				null,
-				false);
+				null, false);
 	}
 
 	@Override
