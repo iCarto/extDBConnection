@@ -18,6 +18,7 @@ package es.udc.cartolab.gvsig.users.utils;
 
 import java.io.InputStream;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.cresques.cts.IProjection;
@@ -220,6 +221,28 @@ public abstract class DBSession {
 			String whereClause) throws SQLException;
 
 	public abstract Object[][] getTableAsObjects(String tableName)
+			throws SQLException;
+
+	/* GET TABLE AS RESULTSET */
+
+	public abstract ResultSet getTableAsResultSet(String tableName,
+			String schema, String whereClause, String[] orderBy, boolean desc)
+			throws SQLException;
+
+	public abstract ResultSet getTableAsResultSet(String tableName,
+			String schema, String[] fieldNames, String whereClause,
+			String[] orderBy, boolean desc) throws SQLException;
+
+	public abstract ResultSet getTableAsResultSet(String tableName,
+			String schema, String[] orderBy, boolean desc) throws SQLException;
+
+	public abstract ResultSet getTableAsResultSet(String tableName,
+			String schema, String whereClause) throws SQLException;
+
+	public abstract ResultSet getTableAsResultSet(String tableName,
+			String whereClause) throws SQLException;
+
+	public abstract ResultSet getTableAsResultSet(String tableName)
 			throws SQLException;
 
 	/* GET BINARY STREAM */

@@ -392,6 +392,45 @@ public class DBSessionSpatiaLite extends DBSession {
 		return getTableAsObjects(tableName, "", null, null, false);
 	}
 
+	/* GET TABLE AS RESULTSET */
+
+	public ResultSet getTableAsResultSet(String tableName, String schema,
+			String whereClause, String[] orderBy, boolean desc)
+			throws SQLException {
+
+		String[] columnNames = getColumnNames(tableName, schema);
+
+		return getTableAsResultSet(tableName, schema, columnNames, whereClause,
+				orderBy, desc);
+	}
+
+	public ResultSet getTableAsResultSet(String tableName, String schema,
+			String[] fieldNames, String whereClause, String[] orderBy,
+			boolean desc) throws SQLException {
+		return getTableResultSet(tableName, schema, fieldNames, whereClause,
+				orderBy, desc);
+
+	}
+
+	public ResultSet getTableAsResultSet(String tableName, String schema,
+			String[] orderBy, boolean desc) throws SQLException {
+		return getTableAsResultSet(tableName, schema, null, orderBy, desc);
+	}
+
+	public ResultSet getTableAsResultSet(String tableName, String schema,
+			String whereClause) throws SQLException {
+		return getTableAsResultSet(tableName, schema, whereClause, null, false);
+	}
+
+	public ResultSet getTableAsResultSet(String tableName, String whereClause)
+			throws SQLException {
+		return getTableAsResultSet(tableName, "", whereClause, null, false);
+	}
+
+	public ResultSet getTableAsResultSet(String tableName) throws SQLException {
+		return getTableAsResultSet(tableName, "", null, null, false);
+	}
+
 	private ResultSet getTableResultSet(String tableName, String schema,
 			String[] fieldNames, String whereClause, String[] orderBy,
 			boolean desc) throws SQLException {

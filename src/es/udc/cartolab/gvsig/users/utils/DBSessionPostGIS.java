@@ -423,6 +423,47 @@ public class DBSessionPostGIS extends DBSession {
 		return getTableAsObjects(tableName, schema, null, null, false);
 	}
 
+	/* GET TABLE AS RESULTSET */
+
+	public ResultSet getTableAsResultSet(String tableName, String schema,
+			String whereClause, String[] orderBy, boolean desc)
+			throws SQLException {
+
+		String[] columnNames = getColumnNames(tableName, schema);
+
+		return getTableAsResultSet(tableName, schema, columnNames, whereClause,
+				orderBy, desc);
+	}
+
+	public ResultSet getTableAsResultSet(String tableName, String schema,
+			String[] fieldNames, String whereClause, String[] orderBy,
+			boolean desc) throws SQLException {
+		Connection con = ((ConnectionJDBC) conwp.getConnection())
+				.getConnection();
+		return getTableResultSet(tableName, schema, fieldNames, whereClause,
+				orderBy, desc, con);
+
+	}
+
+	public ResultSet getTableAsResultSet(String tableName, String schema,
+			String[] orderBy, boolean desc) throws SQLException {
+		return getTableAsResultSet(tableName, schema, null, orderBy, desc);
+	}
+
+	public ResultSet getTableAsResultSet(String tableName, String schema,
+			String whereClause) throws SQLException {
+		return getTableAsResultSet(tableName, schema, whereClause, null, false);
+	}
+
+	public ResultSet getTableAsResultSet(String tableName, String whereClause)
+			throws SQLException {
+		return getTableAsResultSet(tableName, schema, whereClause, null, false);
+	}
+
+	public ResultSet getTableAsResultSet(String tableName) throws SQLException {
+		return getTableAsResultSet(tableName, schema, null, null, false);
+	}
+
 	private ResultSet getTableResultSet(String tableName, String schema,
 			String[] fieldNames, String whereClause, String[] orderBy,
 			boolean desc, Connection con) throws SQLException {
