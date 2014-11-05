@@ -533,15 +533,17 @@ public class DBSessionSpatiaLite extends DBSession {
 
 			clearTransaction(con);
 
-			String sql = "UPDATE " + tableName + " SET ";
+			String sql = "UPDATE " + tableName + " SET " + fieldName + "=?, ";
 			for (String column : columns) {
 				sql = sql + column + "=?, ";
 			}
 			sql = sql.substring(0, sql.length() - 2) + " " + whereClause;
 
 			PreparedStatement statement = con.prepareStatement(sql);
-			for (int i = 0; i < values.length; i++) {
-				statement.setObject(i + 1, values[i]);
+			int pos = 1;
+			statement.setBinaryStream(pos++, is, length);
+			for (Object value : values) {
+				statement.setObject(pos++, value);
 			}
 
 			statement.executeUpdate();
@@ -573,6 +575,7 @@ public class DBSessionSpatiaLite extends DBSession {
 				statement.setObject(pos++, value);
 			}
 			statement.executeUpdate();
+			con.commit();
 		}
 	}
 
