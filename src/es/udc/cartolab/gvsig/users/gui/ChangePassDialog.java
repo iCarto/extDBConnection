@@ -17,6 +17,7 @@
 package es.udc.cartolab.gvsig.users.gui;
 
 import java.awt.Component;
+import java.io.InputStream;
 import java.sql.SQLException;
 
 import javax.swing.JButton;
@@ -25,9 +26,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.apache.log4j.Logger;
+
 import com.iver.andami.PluginServices;
 import com.iver.cit.gvsig.fmap.drivers.DBException;
 import com.jeta.forms.components.panel.FormPanel;
+import com.jeta.forms.gui.common.FormException;
 
 import es.udc.cartolab.gvsig.users.utils.DBSession;
 import es.udc.cartolab.gvsig.users.utils.DBUser;
@@ -40,6 +44,8 @@ public class ChangePassDialog extends AbstractGVWindow {
 	JButton okButton, cancelButton;
 	JTextField currentPassTF, newPassTF, reNewPassTF;
 
+	private static final Logger logger = Logger.getLogger(ChangePassDialog.class);
+
 	public ChangePassDialog() {
 		super(425, 160);
 		setTitle(PluginServices.getText(this, "change_password"));
@@ -48,7 +54,14 @@ public class ChangePassDialog extends AbstractGVWindow {
 	protected JPanel getCenterPanel() {
 		if (centerPanel == null) {
 			centerPanel = new JPanel();
-			FormPanel form = new FormPanel("forms/changePass.jfrm");
+			InputStream resourceAsStream = this.getClass().getClassLoader().getResourceAsStream("forms/changePass.jfrm");
+			FormPanel form;
+			try {
+			    form = new FormPanel(resourceAsStream);
+			} catch (FormException e) {
+			    logger.error(e.getStackTrace(), e);
+			    return centerPanel;
+			}
 			centerPanel.add(form);
 
 			JLabel currentPassLabel = form.getLabel("currentPassLabel");

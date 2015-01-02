@@ -17,6 +17,7 @@
 package es.udc.cartolab.gvsig.users.gui;
 
 import java.awt.Component;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -27,9 +28,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.apache.log4j.Logger;
+
 import com.iver.andami.PluginServices;
 import com.iver.cit.gvsig.fmap.drivers.DBException;
 import com.jeta.forms.components.panel.FormPanel;
+import com.jeta.forms.gui.common.FormException;
 
 import es.udc.cartolab.gvsig.users.utils.DBAdminUtils;
 import es.udc.cartolab.gvsig.users.utils.DBSession;
@@ -43,6 +47,10 @@ public class CreateUserWindow extends AbstractGVWindow {
 	// JCheckBox adminCHB;
 	protected JComboBox typeCB;
 
+	
+	private static final Logger logger = Logger
+		.getLogger(CreateUserWindow.class);
+	
 	public CreateUserWindow() {
 		super(425, 200);
 		setTitle(PluginServices.getText(this, "new_user"));
@@ -51,7 +59,14 @@ public class CreateUserWindow extends AbstractGVWindow {
 	protected JPanel getCenterPanel() {
 		if (centerPanel == null) {
 			centerPanel = new JPanel();
-			FormPanel form = new FormPanel("forms/newUser.jfrm");
+			InputStream resourceAsStream = this.getClass().getClassLoader().getResourceAsStream("forms/newUser.jfrm");
+			FormPanel form;
+			try {
+			    form = new FormPanel(resourceAsStream);
+			} catch (FormException e) {
+			    logger.error(e.getStackTrace(), e);
+			    return centerPanel;
+			}
 			centerPanel.add(form);
 			userTF = form.getTextField("userTF");
 			passTF = form.getTextField("passTF");

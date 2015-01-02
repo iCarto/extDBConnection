@@ -20,6 +20,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -28,18 +29,26 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.apache.log4j.Logger;
+
 import com.iver.andami.PluginServices;
 import com.iver.cit.gvsig.ProjectExtension;
 import com.iver.cit.gvsig.fmap.drivers.DBException;
 import com.iver.cit.gvsig.project.Project;
 import com.iver.utiles.XMLEntity;
 import com.jeta.forms.components.panel.FormPanel;
+import com.jeta.forms.gui.common.FormException;
 
 import es.udc.cartolab.gvsig.users.utils.DBSession;
 import es.udc.cartolab.gvsig.users.utils.DBSessionSpatiaLite;
 
+@SuppressWarnings("serial")
 public class SpatiaLiteDBConnectionDialog  extends AbstractGVWindow {
 
+    
+    private static final Logger logger = Logger
+	    .getLogger(SpatiaLiteDBConnectionDialog.class);
+    
 	private final static int INIT_MIN_HEIGHT = 90;
 	private final static String SQLITE_FILE_PROPERTY_NAME = "sqlite";
 
@@ -62,7 +71,14 @@ public class SpatiaLiteDBConnectionDialog  extends AbstractGVWindow {
 
 		if (centerPanel == null) {
 			centerPanel = new JPanel();
-			FormPanel form = new FormPanel("forms/sqliteDbConnection.xml");
+			InputStream resourceAsStream = this.getClass().getClassLoader().getResourceAsStream("forms/sqliteDbConnection.xml");
+			FormPanel form;
+			try {
+			    form = new FormPanel(resourceAsStream);
+			} catch (FormException e) {
+			    logger.error(e.getStackTrace(), e);
+			    return centerPanel;
+			}
 			centerPanel.add(form);
 			fileTF = form.getTextField(ID_SQLITEFILETF);
 			dotsButton = (JButton) form.getButton(ID_SQLITEDOTSBTN);

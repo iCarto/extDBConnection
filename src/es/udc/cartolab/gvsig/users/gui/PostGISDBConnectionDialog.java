@@ -18,6 +18,7 @@ package es.udc.cartolab.gvsig.users.gui;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
+import java.io.InputStream;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -26,12 +27,15 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.apache.log4j.Logger;
+
 import com.iver.andami.PluginServices;
 import com.iver.cit.gvsig.ProjectExtension;
 import com.iver.cit.gvsig.fmap.drivers.DBException;
 import com.iver.cit.gvsig.project.Project;
 import com.iver.utiles.XMLEntity;
 import com.jeta.forms.components.panel.FormPanel;
+import com.jeta.forms.gui.common.FormException;
 
 import es.udc.cartolab.gvsig.users.utils.DBSession;
 import es.udc.cartolab.gvsig.users.utils.DBSessionPostGIS;
@@ -41,7 +45,12 @@ import es.udc.cartolab.gvsig.users.utils.DBSessionPostGIS;
  * @author Francisco Puga <fpuga@cartolab.es>
  *
  */
+@SuppressWarnings("serial")
 public class PostGISDBConnectionDialog extends AbstractGVWindow {
+    
+    
+    private static final Logger logger = Logger
+	    .getLogger(PostGISDBConnectionDialog.class);
 
 	private static final String SCHEMA_PROPERTY_NAME = "schema";
 	private static final String DATABASE_PROPERTY_NAME = "database";
@@ -85,7 +94,15 @@ public class PostGISDBConnectionDialog extends AbstractGVWindow {
 
 		if (centerPanel == null) {
 			centerPanel = new JPanel();
-			FormPanel form = new FormPanel("forms/postgresDbConnection.xml");
+			
+			InputStream resourceAsStream = this.getClass().getClassLoader().getResourceAsStream("forms/postgresDbConnection.xml");
+			FormPanel form;
+			try {
+			    form = new FormPanel(resourceAsStream);
+			} catch (FormException e) {
+			    logger.error(e.getStackTrace(), e);
+			    return centerPanel;
+			}
 			centerPanel.add(form);
 			serverTF = form.getTextField(ID_SERVERTF);
 			portTF = form.getTextField(ID_PORTTF);

@@ -16,17 +16,27 @@
 */
 package es.udc.cartolab.gvsig.users.preferences;
 
+import java.io.InputStream;
+
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
+
+import org.apache.log4j.Logger;
 
 import com.iver.andami.PluginServices;
 import com.iver.andami.preferences.AbstractPreferencePage;
 import com.iver.andami.preferences.StoreException;
 import com.iver.utiles.XMLEntity;
 import com.jeta.forms.components.panel.FormPanel;
+import com.jeta.forms.gui.common.FormException;
 
+@SuppressWarnings("serial")
 public class UsersPreferencePage extends AbstractPreferencePage {
+    
+    
+    private static final Logger logger = Logger
+	    .getLogger(UsersPreferencePage.class);
 
 	/* key names */
 	public static final String CONNECT_DB_AT_STARTUP_KEY_NAME = "ConnectAtStartup";
@@ -74,8 +84,14 @@ public class UsersPreferencePage extends AbstractPreferencePage {
 
 		if (!panelStarted) {
 			panelStarted = true;
-
-	    FormPanel form = new FormPanel("forms/preferences.xml");
+			InputStream resourceAsStream = this.getClass().getClassLoader().getResourceAsStream("forms/preferences.xml");
+			FormPanel form;
+			try {
+			    form = new FormPanel(resourceAsStream);
+			} catch (FormException e) {
+			    logger.error(e.getStackTrace(), e);
+			    return this;
+			}
 			form.setFocusTraversalPolicyProvider(true);
 
 			connectDBCB = form.getCheckBox("connectDBCB");
