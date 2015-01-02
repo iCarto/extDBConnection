@@ -304,11 +304,14 @@ public class DBSessionSpatiaLite extends DBSession {
 		while (rs.next()) {
 			String[] row = new String[fieldNames.length];
 			for (int i = 0; i < fieldNames.length; i++) {
-				String val = rs.getString(fieldNames[i]);
-				if (val == null) {
-					val = "";
-				}
-				row[i] = val;
+			 // elle styles in table elle._map_style are defined as 'xml' columns
+			    // for some reasons rs.getObject returns null and con.setTypeMap
+			    // is not working to set a custom mapping. So this workaround is used
+			    if (rs.getMetaData().getColumnType(i+1) == java.sql.Types.OTHER) {
+				row[i] = rs.getString(i+1);
+			    } else {
+				row[i] = formatter.toString(rs.getObject(i+1));
+			    }
 			}
 			rows.add(row);
 		}
@@ -715,11 +718,14 @@ public class DBSessionSpatiaLite extends DBSession {
 		while (rs.next()) {
 			String[] row = new String[fieldNames.length];
 			for (int i = 0; i < fieldNames.length; i++) {
-				String val = rs.getString(fieldNames[i]);
-				if (val == null) {
-					val = "";
-				}
-				row[i] = val;
+			 // elle styles in table elle._map_style are defined as 'xml' columns
+			    // for some reasons rs.getObject returns null and con.setTypeMap
+			    // is not working to set a custom mapping. So this workaround is used
+			    if (rs.getMetaData().getColumnType(i+1) == java.sql.Types.OTHER) {
+				row[i] = rs.getString(i+1);
+			    } else {
+				row[i] = formatter.toString(rs.getObject(i+1));
+			    }
 			}
 			rows.add(row);
 		}

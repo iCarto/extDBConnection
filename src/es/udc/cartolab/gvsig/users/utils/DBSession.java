@@ -33,6 +33,7 @@ import com.iver.cit.gvsig.fmap.layers.FLayer;
 public abstract class DBSession {
 
 	protected static DBSession instance = null;
+	protected static IFormatter formatter = new Formatter();
 	protected DBUser user;
 	protected ConnectionWithParams conwp;
 	protected String database = "", username = "", password = "", server = "";
@@ -132,6 +133,10 @@ public abstract class DBSession {
 
 	public DBUser getDBUser() {
 		return user;
+	}
+	
+	public static void setFormatter(IFormatter f) {
+	    formatter = f; 
 	}
 
 	public String getServer() {
