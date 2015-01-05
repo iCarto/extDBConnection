@@ -455,12 +455,8 @@ public class DBSessionSpatiaLite extends DBSession {
 		}
 
 		String query = "SELECT ";
-		Set<String> queriedFields = new HashSet<String>();
 		for (int i = 0; i < fieldNames.length; i++) {
-			if (!queriedFields.contains(fieldNames[i])) {
-				query = query + fieldNames[i] + ", ";
-				queriedFields.add(fieldNames[i]);
-			}
+		    query = query + fieldNames[i] + ", ";
 		}
 
 		query = query.substring(0, query.length() - 2) + " FROM " + tableName;
