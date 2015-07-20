@@ -446,14 +446,6 @@ public class DBSessionSpatiaLite extends DBSession {
 			whereClause = whereClause.trim();
 		}
 
-		int numFieldsOrder;
-
-		if (orderBy == null) {
-			numFieldsOrder = 0;
-		} else {
-			numFieldsOrder = orderBy.length;
-		}
-
 		String query = "SELECT ";
 		for (int i = 0; i < fieldNames.length; i++) {
 		    query = query + fieldNames[i] + ", ";
@@ -485,17 +477,7 @@ public class DBSessionSpatiaLite extends DBSession {
 			}
 		}
 
-		if (numFieldsOrder > 0) {
-			query = query + " ORDER BY ";
-			for (int i = 0; i < numFieldsOrder - 1; i++) {
-				query = query + orderBy[i] + ", ";
-			}
-			query = query + orderBy[orderBy.length - 1];
-
-			if (desc) {
-				query = query + " DESC";
-			}
-		}
+		query += builder.getOrderByClause(orderBy, desc);
 
 		PreparedStatement stat = con.prepareStatement(query);
 		for (int i = 0; i < whereValues.size(); i++) {
@@ -641,14 +623,6 @@ public class DBSessionSpatiaLite extends DBSession {
 			whereClause = whereClause.trim();
 		}
 
-		int numFieldsOrder;
-
-		if (orderBy == null) {
-			numFieldsOrder = 0;
-		} else {
-			numFieldsOrder = orderBy.length;
-		}
-
 		String query = "SELECT ";
 		Set<String> queriedFields = new HashSet<String>();
 		for (int i = 0; i < fieldNames.length; i++) {
@@ -691,17 +665,7 @@ public class DBSessionSpatiaLite extends DBSession {
 			}
 		}
 
-		if (numFieldsOrder > 0) {
-			query = query + " ORDER BY ";
-			for (int i = 0; i < numFieldsOrder - 1; i++) {
-				query = query + orderBy[i] + ", ";
-			}
-			query = query + orderBy[orderBy.length - 1];
-
-			if (desc) {
-				query = query + " DESC";
-			}
-		}
+		query += builder.getOrderByClause(orderBy, desc);
 
 		PreparedStatement stat = con.prepareStatement(query);
 		for (int i = 0; i < whereValues.size(); i++) {

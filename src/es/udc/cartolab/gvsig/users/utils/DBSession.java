@@ -39,6 +39,8 @@ public abstract class DBSession {
 	protected String database = "", username = "", password = "", server = "";
 	protected int port = 0;
 	public static String CONNECTION_STRING_BEGINNING;
+	
+	protected QueryBuilder builder= new QueryBuilder();
 
 	/**
 	 * Creates a new PostGIS DB Connection or changes the current one.
