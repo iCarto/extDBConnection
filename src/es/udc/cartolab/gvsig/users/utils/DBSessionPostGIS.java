@@ -46,6 +46,9 @@ import com.iver.cit.gvsig.fmap.layers.LayerFactory;
 
 public class DBSessionPostGIS extends DBSession {
 
+	public static final String DRIVER_NAME = PostGisDriver.NAME;
+	public static final String ALPHANUMERIC_DRIVER_NAME = "PostgreSQL Alphanumeric";
+
 	private String schema = "";
 	protected static String CONNECTION_STRING_BEGINNING = "jdbc:postgresql:";
 
@@ -1049,12 +1052,12 @@ public class DBSessionPostGIS extends DBSession {
 
 	@Override
 	public String getDriverName() {
-		return PostGisDriver.NAME;
+		return DRIVER_NAME;
 	}
 
 	@Override
 	public String getAlphanumericDriverName() {
-		return "PostgreSQL Alphanumeric";
+		return ALPHANUMERIC_DRIVER_NAME;
 	}
 
 	@Override

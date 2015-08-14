@@ -49,6 +49,9 @@ import es.udc.cartolab.com.hardcode.gdbms.driver.sqlite.SQLiteDriver;
 
 public class DBSessionSpatiaLite extends DBSession {
 
+	public static final String DRIVER_NAME = SpatiaLiteDriver.NAME;
+	public static final String ALPHANUMERIC_DRIVER_NAME = SQLiteDriver.NAME;
+
 	private final String sqliteFile;
 	protected static String CONNECTION_STRING_BEGINNING = "jdbc:sqlite:";
 
@@ -1013,12 +1016,12 @@ public class DBSessionSpatiaLite extends DBSession {
 
 	@Override
 	public String getDriverName() {
-		return SpatiaLiteDriver.NAME;
+		return DRIVER_NAME;
 	}
 
 	@Override
 	public String getAlphanumericDriverName() {
-		return SQLiteDriver.NAME;
+		return ALPHANUMERIC_DRIVER_NAME;
 	}
 
 	@Override
