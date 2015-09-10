@@ -37,6 +37,7 @@ public class UsersPreferencePage extends AbstractPreferencePage {
     
     private static final Logger logger = Logger
 	    .getLogger(UsersPreferencePage.class);
+    public static String LOGO = "";
 
 	/* key names */
 	public static final String CONNECT_DB_AT_STARTUP_KEY_NAME = "ConnectAtStartup";

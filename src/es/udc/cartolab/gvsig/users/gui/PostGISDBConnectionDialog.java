@@ -18,8 +18,10 @@ package es.udc.cartolab.gvsig.users.gui;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
+import java.io.File;
 import java.io.InputStream;
 
+import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -34,9 +36,11 @@ import com.iver.cit.gvsig.ProjectExtension;
 import com.iver.cit.gvsig.fmap.drivers.DBException;
 import com.iver.cit.gvsig.project.Project;
 import com.iver.utiles.XMLEntity;
+import com.jeta.forms.components.image.ImageComponent;
 import com.jeta.forms.components.panel.FormPanel;
 import com.jeta.forms.gui.common.FormException;
 
+import es.udc.cartolab.gvsig.users.preferences.UsersPreferencePage;
 import es.udc.cartolab.gvsig.users.utils.DBSession;
 import es.udc.cartolab.gvsig.users.utils.DBSessionPostGIS;
 
@@ -115,6 +119,8 @@ public class PostGISDBConnectionDialog extends AbstractGVWindow {
 	    showAdvancedProperties(false);
 			advCHB.addActionListener(this);
 
+			initLogo(form);
+			
 			// localization
 			JLabel serverLabel = form.getLabel(ID_SERVERL);
 			JLabel portLabel = form.getLabel(ID_PORTL);
@@ -149,6 +155,18 @@ public class PostGISDBConnectionDialog extends AbstractGVWindow {
 		}
 		return centerPanel;
 	}
+	
+    private void initLogo(FormPanel form) {
+	if (!UsersPreferencePage.LOGO.isEmpty()) {
+	    File logo = new File(UsersPreferencePage.LOGO);
+	    if (logo.isFile()) {
+		ImageComponent image = (ImageComponent) form
+			.getComponentByName("image");
+		ImageIcon icon = new ImageIcon(logo.getAbsolutePath());
+		image.setIcon(icon);
+	    }
+	}
+    }
 
     private void fillDialogFromPluginPersistence() {
 	XMLEntity xml = PluginServices.getPluginServices(this)

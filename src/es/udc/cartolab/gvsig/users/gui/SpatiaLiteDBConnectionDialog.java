@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -36,9 +37,11 @@ import com.iver.cit.gvsig.ProjectExtension;
 import com.iver.cit.gvsig.fmap.drivers.DBException;
 import com.iver.cit.gvsig.project.Project;
 import com.iver.utiles.XMLEntity;
+import com.jeta.forms.components.image.ImageComponent;
 import com.jeta.forms.components.panel.FormPanel;
 import com.jeta.forms.gui.common.FormException;
 
+import es.udc.cartolab.gvsig.users.preferences.UsersPreferencePage;
 import es.udc.cartolab.gvsig.users.utils.DBSession;
 import es.udc.cartolab.gvsig.users.utils.DBSessionSpatiaLite;
 
@@ -83,6 +86,8 @@ public class SpatiaLiteDBConnectionDialog  extends AbstractGVWindow {
 			fileTF = form.getTextField(ID_SQLITEFILETF);
 			dotsButton = (JButton) form.getButton(ID_SQLITEDOTSBTN);
 			dotsButton.addActionListener(this);
+			
+			initLogo(form);
 
 			// localization
 			JLabel fileLabel = form.getLabel(ID_SQLITEFILEL);
@@ -98,6 +103,18 @@ public class SpatiaLiteDBConnectionDialog  extends AbstractGVWindow {
 		fillDialogFromPluginPersistence();
 		return centerPanel;
 	}
+	
+    private void initLogo(FormPanel form) {
+	if (!UsersPreferencePage.LOGO.isEmpty()) {
+	    File logo = new File(UsersPreferencePage.LOGO);
+	    if (logo.isFile()) {
+		ImageComponent image = (ImageComponent) form
+			.getComponentByName("image");
+		ImageIcon icon = new ImageIcon(logo.getAbsolutePath());
+		image.setIcon(icon);
+	    }
+	}
+    }
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
