@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.cresques.cts.IProjection;
-import org.sqlite.Conn;
+import org.sqlite.core.CoreConnection;
 
 import com.hardcode.driverManager.DriverLoadException;
 import com.iver.cit.gvsig.fmap.drivers.ConnectionJDBC;
@@ -124,9 +124,9 @@ public class DBSessionSpatiaLite extends DBSession {
 			SingleDBConnectionManager.instance().closeAndRemove(conwp);
 			conwp = null;
 		}
-		if (conn instanceof Conn) {
+		if (conn instanceof CoreConnection) {
 			try {
-				((Conn) conn).realClose();
+				((CoreConnection) conn).realClose();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
