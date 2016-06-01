@@ -135,44 +135,29 @@ public class DBSessionSpatiaLite extends DBSession {
 
 	}
 
+	
+	
 	/* GET LAYER */
 
-	public FLayer getLayer(String layerName, String tableName, String schema,
-			String whereClause, IProjection projection) throws SQLException,
-			DBException {
-
-		if (whereClause == null) {
-			whereClause = "";
-		}
-
-		String database = this.sqliteFile;
-		schema = "";
-		database = "";
-
-		DBLayerDefinition dbLayerDef = new DBLayerDefinition();
-		dbLayerDef.setCatalogName(database); // Nombre de la base de datos
-		dbLayerDef.setSchema(schema); // Nombre del esquema
-		dbLayerDef.setTableName(tableName); // Nombre de la tabla
-		dbLayerDef.setWhereClause("");
-		dbLayerDef.setConnection(conwp.getConnection());
-
-		Connection con = ((ConnectionJDBC) conwp.getConnection())
-				.getConnection();
-		DatabaseMetaData metadataDB = con.getMetaData();
-
-		String tipos[] = new String[1];
-		tipos[0] = "TABLE";
-		ResultSet tablas = metadataDB.getTables(null, schema, tableName, tipos);
-		tablas.next();
-		// String t = tablas.getString(tablas.findColumn( "TABLE_NAME" ));
-
-		ResultSet columnas = metadataDB
-				.getColumns(null, schema, tableName, "%");
-		ResultSet claves = metadataDB.getPrimaryKeys(null, schema, tableName);
-
-		// ResultSetMetaData aux = columnas.getMetaData();
-
-		ArrayList<FieldDescription> descripciones = new ArrayList<FieldDescription>();
+	private DBLayerDefinition getLayerDef(String schema, String tableName, String whereClause, IProjection projection) throws SQLException {
+	    schema = "";
+	    DBLayerDefinition dbLayerDef = new DBLayerDefinition();
+	    dbLayerDef.setCatalogName(sqliteFile); // Nombre de la base de datos
+	    dbLayerDef.setSchema(schema); // Nombre del esquema
+	    dbLayerDef.setTableName(tableName); // Nombre de la tabla
+	    dbLayerDef.setConnection(conwp.getConnection());
+	    
+	    Connection con = ((ConnectionJDBC) conwp.getConnection())
+			.getConnection();
+	    DatabaseMetaData metadataDB = con.getMetaData();
+	    String tipos[] = new String[1];
+	    tipos[0] = "TABLE";
+	    ResultSet tablas = metadataDB.getTables(null, schema, tableName, tipos);
+	    tablas.next();
+	    ResultSet columnas = metadataDB.getColumns(null, schema, tableName, "%");
+	    ResultSet claves = metadataDB.getPrimaryKeys(null, schema, tableName);
+	    
+	    ArrayList<FieldDescription> descripciones = new ArrayList<FieldDescription>();
 		ArrayList<String> nombres = new ArrayList<String>();
 
 		while (columnas.next()) {
@@ -199,7 +184,11 @@ public class DBSessionSpatiaLite extends DBSession {
 
 		dbLayerDef.setFieldsDesc(fields);
 		dbLayerDef.setFieldNames(s);
-
+		
+		if (whereClause == null) {
+			whereClause = "";
+		}
+		dbLayerDef.setWhereClause("");
 		if (whereClause.compareTo("") != 0) {
 			dbLayerDef.setWhereClause(whereClause);
 		}
@@ -216,6 +205,17 @@ public class DBSessionSpatiaLite extends DBSession {
 		}
 
 		dbLayerDef.setSRID_EPSG(projection.getAbrev());
+
+	
+	    return dbLayerDef;
+	    
+	}
+	
+	public FLayer getLayer(String layerName, String tableName, String schema,
+			String whereClause, IProjection projection) throws SQLException,
+			DBException {
+
+		DBLayerDefinition dbLayerDef = getLayerDef(schema, tableName, whereClause, projection);
 
 		FLayer lyr = null;
 		try {
@@ -313,7 +313,7 @@ public class DBSessionSpatiaLite extends DBSession {
 			    if (rs.getMetaData().getColumnType(i+1) == java.sql.Types.OTHER) {
 				row[i] = rs.getString(i+1);
 			    } else {
-				row[i] = formatter.toString(rs.getObject(i+1));
+				row[i] = format.toString(rs.getObject(i+1));
 			    }
 			}
 			rows.add(row);
@@ -687,7 +687,7 @@ public class DBSessionSpatiaLite extends DBSession {
 			    if (rs.getMetaData().getColumnType(i+1) == java.sql.Types.OTHER) {
 				row[i] = rs.getString(i+1);
 			    } else {
-				row[i] = formatter.toString(rs.getObject(i+1));
+				row[i] = format.toString(rs.getObject(i+1));
 			    }
 			}
 			rows.add(row);

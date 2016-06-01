@@ -342,7 +342,7 @@ public class DBSessionPostGIS extends DBSession {
 			    if (rs.getMetaData().getColumnType(i+1) == java.sql.Types.OTHER) {
 				row[i] = rs.getString(i+1);
 			    } else {
-				row[i] = formatter.toString(rs.getObject(i+1));
+				row[i] = format.toString(rs.getObject(i+1));
 			    }
 			}
 			rows.add(row);
@@ -739,7 +739,7 @@ public class DBSessionPostGIS extends DBSession {
 			    if (rs.getMetaData().getColumnType(i+1) == java.sql.Types.OTHER) {
 				row[i] = rs.getString(i+1);
 			    } else {
-				row[i] = formatter.toString(rs.getObject(i+1));
+				row[i] = format.toString(rs.getObject(i+1));
 			    }
 			}
 			rows.add(row);

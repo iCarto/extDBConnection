@@ -29,11 +29,14 @@ import com.iver.cit.gvsig.fmap.drivers.db.utils.ConnectionWithParams;
 import com.iver.cit.gvsig.fmap.drivers.db.utils.SingleDBConnectionManager;
 import com.iver.cit.gvsig.fmap.layers.FLayer;
 
+import es.icarto.gvsig.commons.format.Format;
+import es.icarto.gvsig.commons.format.IFormat;
+
 
 public abstract class DBSession {
 
 	protected static DBSession instance = null;
-	protected static IFormatter formatter = new Formatter();
+	protected static IFormat format = new Format();
 	protected DBUser user;
 	protected ConnectionWithParams conwp;
 	protected String database = "", username = "", password = "", server = "";
@@ -137,8 +140,8 @@ public abstract class DBSession {
 		return user;
 	}
 	
-	public static void setFormatter(IFormatter f) {
-	    formatter = f; 
+	public static void setFormatter(IFormat f) {
+	    format = f; 
 	}
 
 	public String getServer() {
