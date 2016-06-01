@@ -17,6 +17,6 @@
 	<classpathentry kind="lib" path="/_fwAndami/lib/log4j-1.2.14.jar"/>
 	<classpathentry kind="src" path="/libIverUtiles"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/libUIComponent"/>
-	<classpathentry kind="lib" path="/libSpatialite/lib/sqlite-jdbc-3.8.11.2-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="/libSpatialite/lib/sqlite-jdbc-3.9.1-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

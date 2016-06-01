@@ -2,29 +2,48 @@ package es.udc.cartolab.gvsig.users.utils;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import es.icarto.gvsig.commons.testutils.Drivers;
 import es.icarto.gvsig.commons.testutils.TestProperties;
+import es.udc.cartolab.cit.gvsig.fmap.drivers.jdbc.spatialite.NativeDependencies;
 import es.udc.cartolab.cit.gvsig.fmap.drivers.jdbc.spatialite.SpatiaLiteDriver;
 
 
 public class DBSessionSpatiaLiteTest {
 
     private static DBSession session;
-    private final static String sqliteFile = null; // fill me
+
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-	new SpatiaLiteDriver(false, TestProperties.driversPath.replace(
-		"/drivers", "/lib/"));
+	NativeDependencies.libsPath = TestProperties.driversPath.replace("/drivers", "/lib/");
 	Drivers.initgvSIGDrivers(TestProperties.driversPath);
-	DBSessionSpatiaLite.createConnection(sqliteFile);
+	new SpatiaLiteDriver();
+
+	File db = File.createTempFile("test", ".sqlite");
+	db.deleteOnExit();
+
+	DBSessionSpatiaLite.createConnection(db.getAbsolutePath());
+
 	session = DBSession.getCurrentSession();
+	initSpatialData();
+
+    }
+
+    private static void initSpatialData() throws SQLException {
+	Connection conJbdc = session.getJavaConnection();
+	Statement st = conJbdc.createStatement();
+	st.executeQuery("SELECT InitSpatialMetaData()");
+	conJbdc.commit();
+	st.close();
     }
 
     @Test
