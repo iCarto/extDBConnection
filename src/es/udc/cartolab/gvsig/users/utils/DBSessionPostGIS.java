@@ -175,6 +175,7 @@ public class DBSessionPostGIS extends DBSession {
 		dbLayerDef.setCatalogName(database); // Nombre de la base de datos
 		dbLayerDef.setSchema(schema); // Nombre del esquema
 		dbLayerDef.setTableName(tableName); // Nombre de la tabla
+		dbLayerDef.setName(tableName); // Nombre de la tabla
 		dbLayerDef.setWhereClause("");
 		dbLayerDef.setConnection(conwp.getConnection());
 

@@ -145,6 +145,7 @@ public class DBSessionSpatiaLite extends DBSession {
 	    dbLayerDef.setCatalogName(sqliteFile); // Nombre de la base de datos
 	    dbLayerDef.setSchema(schema); // Nombre del esquema
 	    dbLayerDef.setTableName(tableName); // Nombre de la tabla
+	    dbLayerDef.setName(tableName); // Nombre de la tabla
 	    dbLayerDef.setConnection(conwp.getConnection());
 	    
 	    Connection con = ((ConnectionJDBC) conwp.getConnection())
