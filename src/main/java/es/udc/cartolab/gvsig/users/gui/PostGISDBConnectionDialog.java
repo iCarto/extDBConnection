@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010 - 2012. CartoLab. Fundación de Inteniería Civil de Galicia.
+ * Copyright (c) 2010 - 2012. CartoLab. Fundaciï¿½n de Intenierï¿½a Civil de Galicia.
  *
  * This file is part of extDBConnection
  *
@@ -29,13 +29,13 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.apache.log4j.Logger;
+import org.gvsig.andami.PluginServices;
+import org.gvsig.app.extension.ProjectExtension;
+import org.gvsig.fmap.dal.exception.DataException;
+import org.gvsig.utils.XMLEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.iver.andami.PluginServices;
-import com.iver.cit.gvsig.ProjectExtension;
-import com.iver.cit.gvsig.fmap.drivers.DBException;
-import com.iver.cit.gvsig.project.Project;
-import com.iver.utiles.XMLEntity;
 import com.jeta.forms.components.image.ImageComponent;
 import com.jeta.forms.components.panel.FormPanel;
 import com.jeta.forms.gui.common.FormException;
@@ -45,7 +45,7 @@ import es.udc.cartolab.gvsig.users.utils.DBSession;
 import es.udc.cartolab.gvsig.users.utils.DBSessionPostGIS;
 
 /**
- * @author Javier Estévez
+ * @author Javier Estï¿½vez
  * @author Francisco Puga <fpuga@cartolab.es>
  *
  */
@@ -53,8 +53,9 @@ import es.udc.cartolab.gvsig.users.utils.DBSessionPostGIS;
 public class PostGISDBConnectionDialog extends AbstractGVWindow {
     
     
-    private static final Logger logger = Logger
-	    .getLogger(PostGISDBConnectionDialog.class);
+    
+	private static final Logger logger = LoggerFactory
+			.getLogger(PostGISDBConnectionDialog.class);
 
 	private static final String SCHEMA_PROPERTY_NAME = "schema";
 	private static final String DATABASE_PROPERTY_NAME = "database";
@@ -104,7 +105,7 @@ public class PostGISDBConnectionDialog extends AbstractGVWindow {
 			try {
 			    form = new FormPanel(resourceAsStream);
 			} catch (FormException e) {
-			    logger.error(e.getStackTrace(), e);
+				logger.error(e.getMessage(), e);
 			    return centerPanel;
 			}
 			centerPanel.add(form);
@@ -241,21 +242,17 @@ public class PostGISDBConnectionDialog extends AbstractGVWindow {
 
 
 
-	private boolean activeSession() throws DBException {
+	private boolean activeSession() {
 
 		DBSession dbs = DBSession.getCurrentSession();
 		if (dbs != null) {
-			ProjectExtension pExt = (ProjectExtension) PluginServices
-					.getExtension(ProjectExtension.class);
-			Project p1 = pExt.getProject();
-
-			pExt.execute("NUEVO");
-
-			Project p2 = pExt.getProject();
-			if (p1 == p2) {
-				return false;
+			ProjectExtension pExt = (ProjectExtension) PluginServices.getExtension(ProjectExtension.class);
+			pExt.execute("application-project-new");
+			try {
+				dbs.close();
+			} catch (DataException e) {
+				logger.error(e.getMessage(), e);
 			}
-			dbs.close();
 		}
 		return true;
 
@@ -287,22 +284,21 @@ public class PostGISDBConnectionDialog extends AbstractGVWindow {
 
 			saveConfig(server, portS, database, schema, username);
 			PluginServices.getMainFrame().enableControls();
-		} catch (DBException e1) {
+		} catch (NumberFormatException e2) {		
+			JOptionPane.showMessageDialog(this,
+					PluginServices.getText(this, "portError"),
+					PluginServices.getText(this, "dataError"),
+					JOptionPane.ERROR_MESSAGE);
+		} catch (DataException e1) {
 			// Login error
-			e1.printStackTrace();
-			PluginServices.getMDIManager().restoreCursor();
+			logger.error(e1.getMessage(), e1);
 			JOptionPane.showMessageDialog(this,
 					PluginServices.getText(this, "databaseConnectionError"),
 					PluginServices.getText(this, "connectionError"),
 					JOptionPane.ERROR_MESSAGE);
 
-		} catch (NumberFormatException e2) {
-			PluginServices.getMDIManager().restoreCursor();
-			JOptionPane.showMessageDialog(this,
-					PluginServices.getText(this, "portError"),
-					PluginServices.getText(this, "dataError"),
-					JOptionPane.ERROR_MESSAGE);
 		} finally {
+			PluginServices.getMDIManager().restoreCursor();
 			passTF.setText("");
 		}
 	}

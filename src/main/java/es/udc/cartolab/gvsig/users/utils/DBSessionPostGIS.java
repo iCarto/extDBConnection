@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010. CartoLab, Universidad de A Coruña
+ * Copyright (c) 2010. CartoLab, Universidad de A Coruï¿½a
  *
  * This file is part of extDBConnection
  *
@@ -31,23 +31,30 @@ import java.util.List;
 import java.util.Set;
 
 import org.cresques.cts.IProjection;
+import org.gvsig.fmap.dal.DALLocator;
+import org.gvsig.fmap.dal.DataManager;
+import org.gvsig.fmap.dal.exception.DataException;
+import org.gvsig.fmap.mapcontext.MapContextLocator;
+import org.gvsig.fmap.mapcontext.MapContextManager;
+import org.gvsig.fmap.mapcontext.layers.FLayer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.hardcode.driverManager.Driver;
-import com.hardcode.driverManager.DriverLoadException;
-import com.iver.cit.gvsig.fmap.drivers.ConnectionJDBC;
-import com.iver.cit.gvsig.fmap.drivers.DBException;
-import com.iver.cit.gvsig.fmap.drivers.DBLayerDefinition;
-import com.iver.cit.gvsig.fmap.drivers.FieldDescription;
-import com.iver.cit.gvsig.fmap.drivers.IVectorialJDBCDriver;
-import com.iver.cit.gvsig.fmap.drivers.db.utils.SingleDBConnectionManager;
-import com.iver.cit.gvsig.fmap.drivers.jdbc.postgis.PostGisDriver;
-import com.iver.cit.gvsig.fmap.layers.FLayer;
-import com.iver.cit.gvsig.fmap.layers.LayerFactory;
+import es.icarto.gvsig.commons.gvsig2.SingleDBConnectionManager;
+
+import org.gvsig.fmap.dal.store.jdbc.JDBCStoreParameters;
+import org.gvsig.tools.exception.BaseException;
 
 public class DBSessionPostGIS extends DBSession {
+	
+	
+	private static final Logger logger = LoggerFactory
+			.getLogger(DBSessionPostGIS.class);
 
-	public static final String DRIVER_NAME = PostGisDriver.NAME;
-	public static final String ALPHANUMERIC_DRIVER_NAME = "PostgreSQL Alphanumeric";
+	public static final String POSTGRESQL_STORE_PROVIDER_NAME = "PostgreSQL";
+	private static final String POSTGRESQL_SERVER_EXPLORER_NAME = "PostgreSQLExplorer";
+	private static final String POSTGRESQL_RESOURCE = "PostgreSQLResource";
+	// public static final String ALPHANUMERIC_DRIVER_NAME = "PostgreSQL Alphanumeric";
 
 	private String schema = "";
 	protected static String CONNECTION_STRING_BEGINNING = "jdbc:postgresql:";
@@ -61,7 +68,6 @@ public class DBSessionPostGIS extends DBSession {
 
 		this.database = database;
 		this.schema = schema;
-
 	}
 
 	/**
@@ -75,7 +81,7 @@ public class DBSessionPostGIS extends DBSession {
 	 *             if there's any problem (server error or login error)
 	 */
 	public static DBSession createConnectionFromConnString(String connString,
-			String username, String password) throws DBException {
+			String username, String password) throws DataException {
 		if (!connString.startsWith(CONNECTION_STRING_BEGINNING)) {
 			return null;
 		}
@@ -111,12 +117,13 @@ public class DBSessionPostGIS extends DBSession {
 	 * @param username
 	 * @param password
 	 * @return the connection
+	 * @throws DataException 
 	 * @throws DBException
 	 *             if there's any problem (server error or login error)
 	 */
 	public static DBSession createConnection(String server, int port,
-			String database, String schema, String username, String password)
-			throws DBException {
+			String database, String schema, String username, String password) throws DataException
+			{
 		if (instance != null) {
 			instance.close();
 		}
@@ -126,14 +133,13 @@ public class DBSessionPostGIS extends DBSession {
 		return instance;
 	}
 
-	protected void connect() throws DBException {
-		try {
+	protected void connect() throws DataException {
+		try {			
 			conwp = SingleDBConnectionManager.instance().getConnection(
-					getDriverName(), username, password, "ELLE_connection",
-					server, (new Integer(port)).toString(), database, "", true);
-			user = new DBUserPostGIS(username, password,
-					((ConnectionJDBC) conwp.getConnection()).getConnection());
-		} catch (DBException e) {
+					POSTGRESQL_STORE_PROVIDER_NAME, POSTGRESQL_SERVER_EXPLORER_NAME, POSTGRESQL_RESOURCE, username, password, "ELLE_connection",
+					server, port, database, "", true);
+			user = new DBUserPostGIS(username, password, conwp.getConnection());
+		} catch (DataException e) {
 			if (conwp != null) {
 				SingleDBConnectionManager.instance().closeAndRemove(conwp);
 			}
@@ -150,131 +156,40 @@ public class DBSessionPostGIS extends DBSession {
 		this.schema = schema;
 	}
 
-	/* GET LAYER */
-
 	public FLayer getLayer(String layerName, String tableName, String schema,
-			String whereClause, IProjection projection) throws SQLException,
-			DBException {
-		// Code by Sergio Piñón (gvsig_desarrolladores)
+			String whereClause, IProjection projection) throws BaseException {
 
 		if (whereClause == null) {
 			whereClause = "";
 		}
-
-		String database = this.database;
-		if (this.server.compareTo("") != 0) {
-			if (schema == null || schema.compareTo("") == 0) {
-				schema = this.schema;
-			}
-		} else {
-			schema = "";
-			database = "";
-		}
-
-		DBLayerDefinition dbLayerDef = new DBLayerDefinition();
-		dbLayerDef.setCatalogName(database); // Nombre de la base de datos
-		dbLayerDef.setSchema(schema); // Nombre del esquema
-		dbLayerDef.setTableName(tableName); // Nombre de la tabla
-		dbLayerDef.setName(tableName); // Nombre de la tabla
-		dbLayerDef.setWhereClause("");
-		dbLayerDef.setConnection(conwp.getConnection());
-
-		Connection con = ((ConnectionJDBC) conwp.getConnection())
-				.getConnection();
-		DatabaseMetaData metadataDB = con.getMetaData();
-
-		String tipos[] = new String[1];
-		tipos[0] = "TABLE";
-		ResultSet tablas = metadataDB.getTables(null, schema, tableName, tipos);
-		tablas.next();
-		// String t = tablas.getString(tablas.findColumn( "TABLE_NAME" ));
-
-		ResultSet columnas = metadataDB
-				.getColumns(null, schema, tableName, "%");
-		ResultSet claves = metadataDB.getPrimaryKeys(null, schema, tableName);
-
-		// ResultSetMetaData aux = columnas.getMetaData();
-
-		ArrayList<FieldDescription> descripciones = new ArrayList<FieldDescription>();
-		ArrayList<String> nombres = new ArrayList<String>();
-
-		while (columnas.next()) {
-			// log.info("Tratando atributo: \""+columnas.getString("Column_Name")+"\" de la tabla: "+nombreTabla);
-			if (columnas.getString("Type_Name").equalsIgnoreCase("geometry")) {
-				/* si es la columna de geometria */
-				// log.info("Encontrado atributo de geometria para la tabla: "+nombreTabla);
-				dbLayerDef.setFieldGeometry(columnas.getString("Column_Name"));
-			} else {
-				FieldDescription fieldDescription = new FieldDescription();
-				fieldDescription
-						.setFieldName(columnas.getString("Column_Name"));
-				fieldDescription.setFieldType(columnas.getType());
-				descripciones.add(fieldDescription);
-				nombres.add(columnas.getString("Column_Name"));
-			}
-		}
-		FieldDescription fields[] = new FieldDescription[descripciones.size()];
-		String s[] = new String[nombres.size()];
-		for (int i = 0; i < descripciones.size(); i++) {
-			fields[i] = descripciones.get(i);
-			s[i] = nombres.get(i);
-		}
-
-		dbLayerDef.setFieldsDesc(fields);
-		dbLayerDef.setFieldNames(s);
-
+		
+		MapContextManager mapContextManager = MapContextLocator.getMapContextManager();
+		JDBCStoreParameters params = (JDBCStoreParameters) conwp.getStoreParams().getCopy();
+		params.setSchema(schema);
+		params.setTable(tableName);
+		params.setCRS(projection);
+		params.setDynValue("schema", schema);
+		params.setDynValue("table", tableName);
 		if (whereClause.compareTo("") != 0) {
-			dbLayerDef.setWhereClause(whereClause);
+			params.setBaseFilter(whereClause);
 		}
+		
+		FLayer layer = mapContextManager.createLayer(layerName, params);
 
-		/* buscamos clave primaria y la añadimos a la definicion de la capa */
-		// OJO, esta solución no vale con claves primarias de más de una
-		// columna!!!
-		while (claves.next()) {
-			dbLayerDef.setFieldID(claves.getString("Column_Name"));
-		}
-
-		if (dbLayerDef.getFieldID() == null) {
-			if (this.database.compareTo("") != 0) {
-				dbLayerDef.setFieldID("gid");
-			} else {
-				dbLayerDef.setFieldID("PK_UID");
-			}
-		}
-
-		dbLayerDef.setSRID_EPSG(projection.getAbrev());
-
-		Driver drv;
-		FLayer lyr = null;
-		try {
-			drv = LayerFactory.getDM().getDriver("PostGIS JDBC Driver");
-			IVectorialJDBCDriver dbDriver = (IVectorialJDBCDriver) drv;
-
-			dbDriver.setData(conwp.getConnection(), dbLayerDef);
-
-			lyr = LayerFactory.createDBLayer(dbDriver, layerName, projection);
-			/* asignamos proyección a la capa y al ViewPort */
-			// dbLayerDef.setSRID_EPSG(projection.getAbrev());
-		} catch (DriverLoadException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return lyr;
+		return layer;
 	}
 
 	public FLayer getLayer(String layerName, String tableName,
-			String whereClause, IProjection projection) throws SQLException,
-			DBException {
+			String whereClause, IProjection projection) throws BaseException {
 		return getLayer(layerName, tableName, schema, whereClause, projection);
 	}
 
 	public FLayer getLayer(String tableName, String whereClause,
-			IProjection projection) throws SQLException, DBException {
+			IProjection projection) throws BaseException{
 		return getLayer(tableName, tableName, schema, whereClause, projection);
 	}
 
-	public FLayer getLayer(String tableName, IProjection projection)
-			throws SQLException, DBException {
+	public FLayer getLayer(String tableName, IProjection projection) throws BaseException{
 		return getLayer(tableName, null, projection);
 	}
 
@@ -283,8 +198,7 @@ public class DBSessionPostGIS extends DBSession {
 	protected String[] getColumnNames(String tablename, String schema)
 			throws SQLException {
 
-		Connection con = ((ConnectionJDBC) conwp.getConnection())
-				.getConnection();
+		Connection con = conwp.getConnection();
 
 		String query = "SELECT * FROM " + schema + "." + tablename + " LIMIT 1";
 		Statement st = con.createStatement();
@@ -300,8 +214,7 @@ public class DBSessionPostGIS extends DBSession {
 	protected int getColumnType(String tablename, String schema, String column)
 			throws SQLException {
 
-		Connection con = ((ConnectionJDBC) conwp.getConnection())
-				.getConnection();
+		Connection con = conwp.getConnection();
 
 		DatabaseMetaData meta = con.getMetaData();
 		ResultSet rsColumns = meta.getColumns(null, schema, tablename, column);
@@ -328,8 +241,7 @@ public class DBSessionPostGIS extends DBSession {
 	public String[][] getTable(String tableName, String schema,
 			String[] fieldNames, String whereClause, String[] orderBy,
 			boolean desc) throws SQLException {
-		Connection con = ((ConnectionJDBC) conwp.getConnection())
-				.getConnection();
+		Connection con = conwp.getConnection();
 		ResultSet rs = getTableResultSet(tableName, schema, fieldNames,
 				whereClause, orderBy, desc, con);
 
@@ -388,8 +300,7 @@ public class DBSessionPostGIS extends DBSession {
 	public Object[][] getTableAsObjects(String tableName, String schema,
 			String[] fieldNames, String whereClause, String[] orderBy,
 			boolean desc) throws SQLException {
-		Connection con = ((ConnectionJDBC) conwp.getConnection())
-				.getConnection();
+		Connection con = conwp.getConnection();
 		ResultSet rs = getTableResultSet(tableName, schema, fieldNames,
 				whereClause, orderBy, desc, con);
 
@@ -445,8 +356,7 @@ public class DBSessionPostGIS extends DBSession {
 	public ResultSet getTableAsResultSet(String tableName, String schema,
 			String[] fieldNames, String whereClause, String[] orderBy,
 			boolean desc) throws SQLException {
-		Connection con = ((ConnectionJDBC) conwp.getConnection())
-				.getConnection();
+		Connection con = conwp.getConnection();
 		return getTableResultSet(tableName, schema, fieldNames, whereClause,
 				orderBy, desc, con);
 
@@ -542,9 +452,9 @@ public class DBSessionPostGIS extends DBSession {
 			con.close();
 			rs.close();
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		} catch (SQLException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 		return is;
 
@@ -577,7 +487,7 @@ public class DBSessionPostGIS extends DBSession {
 				statement.executeUpdate();
 				con.close();
 			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
+				logger.error(e.getMessage(), e);
 			}
 		}
 	}
@@ -609,7 +519,7 @@ public class DBSessionPostGIS extends DBSession {
 				statement.executeUpdate();
 				con.close();
 			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
+				logger.error(e.getMessage(), e);
 			}
 		}
 	}
@@ -669,8 +579,7 @@ public class DBSessionPostGIS extends DBSession {
 	public String[][] getTableWithJoin(String[] tableNames, String[] schemas,
 			String[] joinFields, String[] fieldNames, String whereClause,
 			String[] orderBy, boolean desc) throws SQLException {
-		Connection con = ((ConnectionJDBC) conwp.getConnection())
-				.getConnection();
+		Connection con = conwp.getConnection();
 
 		if (whereClause == null) {
 			whereClause = "";
@@ -794,8 +703,7 @@ public class DBSessionPostGIS extends DBSession {
 			String fieldName, boolean sorted, boolean desc, String whereClause)
 			throws SQLException {
 
-		Connection con = ((ConnectionJDBC) conwp.getConnection())
-				.getConnection();
+		Connection con = conwp.getConnection();
 
 		Statement stat = con.createStatement();
 
@@ -855,8 +763,7 @@ public class DBSessionPostGIS extends DBSession {
 
 	public String[] getTables(boolean onlyGeospatial) throws SQLException {
 
-		Connection con = ((ConnectionJDBC) conwp.getConnection())
-				.getConnection();
+		Connection con = conwp.getConnection();
 		DatabaseMetaData metadataDB = con.getMetaData();
 		ResultSet rs = metadataDB.getTables(null, null, null,
 				new String[] { "TABLE" });
@@ -896,8 +803,7 @@ public class DBSessionPostGIS extends DBSession {
 
 	public String[] getColumns(String schema, String table) throws SQLException {
 
-		Connection con = ((ConnectionJDBC) conwp.getConnection())
-				.getConnection();
+		Connection con = conwp.getConnection();
 		DatabaseMetaData metadataDB = con.getMetaData();
 
 		ResultSet columns = metadataDB.getColumns(null, schema, table, "%");
@@ -922,8 +828,7 @@ public class DBSessionPostGIS extends DBSession {
 	public void deleteRows(String schema, String table, String whereClause)
 			throws SQLException {
 
-		Connection con = ((ConnectionJDBC) conwp.getConnection())
-				.getConnection();
+		Connection con = conwp.getConnection();
 
 		String sql = "DELETE FROM " + schema + "." + table + " " + whereClause;
 
@@ -942,8 +847,7 @@ public class DBSessionPostGIS extends DBSession {
 	public void insertRow(String schema, String table, String[] columns,
 			Object[] values) throws SQLException {
 
-		Connection con = ((ConnectionJDBC) conwp.getConnection())
-				.getConnection();
+		Connection con = conwp.getConnection();
 
 		if (columns.length == values.length) {
 			String sql = "INSERT INTO " + schema + "." + table + " (";
@@ -982,8 +886,7 @@ public class DBSessionPostGIS extends DBSession {
 	public void updateRows(String schema, String tablename, String[] columns,
 			Object[] values, String whereClause) throws SQLException {
 
-		Connection con = ((ConnectionJDBC) conwp.getConnection())
-				.getConnection();
+		Connection con = conwp.getConnection();
 
 		if (columns.length == values.length) {
 			String sql = "UPDATE " + schema + "." + tablename + " SET ";
@@ -1006,8 +909,7 @@ public class DBSessionPostGIS extends DBSession {
 	public boolean tableExists(String schema, String tablename)
 			throws SQLException {
 
-		Connection con = ((ConnectionJDBC) conwp.getConnection())
-				.getConnection();
+		Connection con = conwp.getConnection();
 
 		if (this.server.compareTo("") != 0) {
 			String query = "select count(*) as count from pg_tables where schemaname='"
@@ -1040,7 +942,7 @@ public class DBSessionPostGIS extends DBSession {
 	}
 
 	@Override
-	protected DBSession restartConnection() throws DBException {
+	protected DBSession restartConnection() throws DataException {
 		return createConnection(server, port, database, schema, username,
 				password);
 	}
@@ -1051,15 +953,10 @@ public class DBSessionPostGIS extends DBSession {
 				+ database;
 	}
 
-	@Override
-	public String getDriverName() {
-		return DRIVER_NAME;
-	}
-
-	@Override
-	public String getAlphanumericDriverName() {
-		return ALPHANUMERIC_DRIVER_NAME;
-	}
+//	@Override
+//	public String getAlphanumericDriverName() {
+//		return ALPHANUMERIC_DRIVER_NAME;
+//	}
 
 	@Override
 	public String getCompleteTableName(String name, String schema) {

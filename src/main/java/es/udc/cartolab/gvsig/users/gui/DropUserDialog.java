@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010. CartoLab, Universidad de A Coruña
+ * Copyright (c) 2010. CartoLab, Universidad de A Coruï¿½a
  * 
  * This file is part of extDBConnection
  * 
@@ -31,12 +31,13 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.apache.log4j.Logger;
+import org.gvsig.andami.PluginServices;
+import org.gvsig.andami.ui.mdiManager.IWindow;
+import org.gvsig.andami.ui.mdiManager.WindowInfo;
+import org.gvsig.fmap.dal.exception.DataException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.iver.andami.PluginServices;
-import com.iver.andami.ui.mdiManager.IWindow;
-import com.iver.andami.ui.mdiManager.WindowInfo;
-import com.iver.cit.gvsig.fmap.drivers.DBException;
 import com.jeta.forms.components.panel.FormPanel;
 import com.jeta.forms.gui.common.FormException;
 
@@ -53,8 +54,9 @@ public class DropUserDialog extends JPanel implements IWindow, ActionListener {
 	private WindowInfo viewInfo;
 
 	
-	private static final Logger logger = Logger
-		.getLogger(DropUserDialog.class);
+	
+	private static final Logger logger = LoggerFactory
+			.getLogger(DropUserDialog.class);
 	
 	public DropUserDialog() {
 
@@ -82,7 +84,7 @@ public class DropUserDialog extends JPanel implements IWindow, ActionListener {
 			try {
 			    form = new FormPanel(resourceAsStream);
 			} catch (FormException e) {
-			    logger.error(e.getStackTrace(), e);
+				logger.error(e.getMessage(), e);
 			    return centerPanel;
 			}
 			form.setFocusTraversalPolicyProvider(true);
@@ -173,11 +175,11 @@ public class DropUserDialog extends JPanel implements IWindow, ActionListener {
 							PluginServices.getText(this, String.format(message, e.getMessage())),
 							PluginServices.getText(this, PluginServices.getText(this, "dropping_user_error")),
 							JOptionPane.ERROR_MESSAGE);
+					
 					try {
 						dbs = DBSession.reconnect();
-					} catch (DBException e2) {
-						// TODO Auto-generated catch block
-						e2.printStackTrace();
+					} catch (DataException e1) {
+						logger.error(e1.getMessage(), e1);
 					}
 				}
 			}
@@ -185,7 +187,6 @@ public class DropUserDialog extends JPanel implements IWindow, ActionListener {
 	}
 
 	public Object getWindowProfile() {
-		// TODO Auto-generated method stub
 		return WindowInfo.DIALOG_PROFILE;
 	}
 

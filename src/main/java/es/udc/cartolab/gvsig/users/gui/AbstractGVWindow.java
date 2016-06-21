@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010. CartoLab, Universidad de A Coruña
+ * Copyright (c) 2010. CartoLab, Universidad de A Coruï¿½a
  *
  * This file is part of extDBConnection
  *
@@ -31,9 +31,10 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.iver.andami.PluginServices;
-import com.iver.andami.ui.mdiManager.IWindow;
-import com.iver.andami.ui.mdiManager.WindowInfo;
+import org.gvsig.andami.PluginServices;
+import org.gvsig.andami.ui.mdiManager.IWindow;
+import org.gvsig.andami.ui.mdiManager.WindowInfo;
+
 
 public abstract class AbstractGVWindow extends JPanel implements IWindow,
 		ActionListener {

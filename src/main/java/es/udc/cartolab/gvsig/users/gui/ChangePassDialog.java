@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010. CartoLab, Universidad de A Coruña
+ * Copyright (c) 2010. CartoLab, Universidad de A Coruï¿½a
  *
  * This file is part of extDBConnection
  *
@@ -26,10 +26,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.apache.log4j.Logger;
+import org.gvsig.andami.PluginServices;
+import org.gvsig.fmap.dal.exception.DataException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.iver.andami.PluginServices;
-import com.iver.cit.gvsig.fmap.drivers.DBException;
 import com.jeta.forms.components.panel.FormPanel;
 import com.jeta.forms.gui.common.FormException;
 
@@ -44,8 +45,10 @@ public class ChangePassDialog extends AbstractGVWindow {
 	JButton okButton, cancelButton;
 	JTextField currentPassTF, newPassTF, reNewPassTF;
 
-	private static final Logger logger = Logger.getLogger(ChangePassDialog.class);
-
+	
+	private static final Logger logger = LoggerFactory
+			.getLogger(ChangePassDialog.class);
+	
 	public ChangePassDialog() {
 		super(425, 160);
 		setTitle(PluginServices.getText(this, "change_password"));
@@ -59,7 +62,7 @@ public class ChangePassDialog extends AbstractGVWindow {
 			try {
 			    form = new FormPanel(resourceAsStream);
 			} catch (FormException e) {
-			    logger.error(e.getStackTrace(), e);
+				logger.error(e.getMessage(), e);
 			    return centerPanel;
 			}
 			centerPanel.add(form);
@@ -104,12 +107,13 @@ public class ChangePassDialog extends AbstractGVWindow {
 							PluginServices.getText(this, "changin_pass_error"),
 							PluginServices.getText(this, "dataError"),
 							JOptionPane.ERROR_MESSAGE);
+					
 					try {
 						dbs = DBSession.reconnect();
-					} catch (DBException e2) {
-						// TODO Auto-generated catch block
-						e2.printStackTrace();
+					} catch (DataException e1) {
+						logger.error(e1.getMessage(), e1);
 					}
+					
 				}
 			}
 		} else {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010. CartoLab, Universidad de A Coruña
+ * Copyright (c) 2010. CartoLab, Universidad de A Coruï¿½a
  *
  * This file is part of extDBConnection
  *
@@ -16,12 +16,15 @@
 */
 package es.udc.cartolab.gvsig.users;
 
-import com.iver.andami.PluginServices;
-import com.iver.andami.plugins.Extension;
-import com.iver.andami.preferences.IPreference;
-import com.iver.andami.preferences.IPreferenceExtension;
-import com.iver.cit.gvsig.fmap.drivers.DBException;
-import com.iver.utiles.XMLEntity;
+import org.gvsig.andami.IconThemeHelper;
+import org.gvsig.andami.PluginServices;
+import org.gvsig.andami.plugins.Extension;
+import org.gvsig.andami.preferences.IPreference;
+import org.gvsig.andami.preferences.IPreferenceExtension;
+import org.gvsig.fmap.dal.exception.DataException;
+import org.gvsig.utils.XMLEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import es.udc.cartolab.gvsig.users.gui.PostGISDBConnectionDialog;
 import es.udc.cartolab.gvsig.users.preferences.UsersPreferencePage;
@@ -30,25 +33,24 @@ import es.udc.cartolab.gvsig.users.utils.DBSession;
 
 public class PostGISDBConnectionExtension extends Extension implements IPreferenceExtension {
 
-	public static UsersPreferencePage usersPreferencesPage = new UsersPreferencePage();
+	
+	private static final Logger logger = LoggerFactory
+			.getLogger(PostGISDBConnectionExtension.class);
+	private final static UsersPreferencePage usersPreferencesPage = new UsersPreferencePage();
 
 	public void execute(String actionCommand) {
-
 		//without header image
 		PostGISDBConnectionDialog dialog = new PostGISDBConnectionDialog();
 		dialog.openWindow();
 	}
 
 	public void initialize() {
-		//icon
 		registerIcons();
 	}
 
 	protected void registerIcons() {
-		PluginServices.getIconTheme().registerDefault(
-				"DBConnect",
-				this.getClass().getClassLoader().getResource("images/sessionconnect.png")
-			);
+		final String id = this.getClass().getName();
+		IconThemeHelper.registerIcon("action", id, this);
 	}
 
 	public boolean isEnabled() {
@@ -70,14 +72,13 @@ public class PostGISDBConnectionExtension extends Extension implements IPreferen
 		if (dbs != null) {
 			try {
 				dbs.close();
-			} catch (DBException e) {
-				e.printStackTrace();
+			} catch (DataException e) {
+				logger.error(e.getMessage(), e);
 			}
 		}
 	}
 
 	public void postInitialize() {
-
 		PluginServices ps = PluginServices.getPluginServices(this);
 		XMLEntity xml = ps.getPersistentXML();
 		if (xml.contains(UsersPreferencePage.CONNECT_DB_AT_STARTUP_KEY_NAME)) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010. CartoLab, Universidad de A Coruña
+ * Copyright (c) 2010. CartoLab, Universidad de A Coruï¿½a
  * 
  * This file is part of extDBConnection
  * 
@@ -16,8 +16,9 @@
 */
 package es.udc.cartolab.gvsig.users;
 
-import com.iver.andami.PluginServices;
-import com.iver.andami.plugins.Extension;
+
+import org.gvsig.andami.PluginServices;
+import org.gvsig.andami.plugins.Extension;
 
 import es.udc.cartolab.gvsig.users.gui.DropUserDialog;
 import es.udc.cartolab.gvsig.users.utils.DBSession;
@@ -29,13 +30,10 @@ public class DropUserExtension extends Extension {
 		PluginServices.getMDIManager().addWindow(dialog);
 	}
 
-	public void initialize() {
-		// TODO Auto-generated method stub
-		
+	public void initialize() {	
 	}
 
 	public boolean isEnabled() {
-		// TODO Auto-generated method stub
 		return true;
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010. CartoLab, Universidad de A Coruña
+ * Copyright (c) 2010. CartoLab, Universidad de A Coruï¿½a
  *
  * This file is part of extDBConnection
  *
@@ -22,15 +22,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.cresques.cts.IProjection;
-
-import com.iver.cit.gvsig.fmap.drivers.ConnectionJDBC;
-import com.iver.cit.gvsig.fmap.drivers.DBException;
-import com.iver.cit.gvsig.fmap.drivers.db.utils.ConnectionWithParams;
-import com.iver.cit.gvsig.fmap.drivers.db.utils.SingleDBConnectionManager;
-import com.iver.cit.gvsig.fmap.layers.FLayer;
+import org.gvsig.fmap.dal.exception.DataException;
+import org.gvsig.fmap.mapcontext.layers.FLayer;
+import org.gvsig.tools.exception.BaseException;
 
 import es.icarto.gvsig.commons.format.Format;
 import es.icarto.gvsig.commons.format.IFormat;
+import es.icarto.gvsig.commons.gvsig2.ConnectionWithParams;
+import es.icarto.gvsig.commons.gvsig2.SingleDBConnectionManager;
 
 
 public abstract class DBSession {
@@ -65,7 +64,7 @@ public abstract class DBSession {
 	@Deprecated
 	public static DBSession createConnection(String server, int port,
 			String database, String schema, String username, String password)
-			throws DBException {
+			throws DataException {
 		if (instance != null) {
 			instance.close();
 		}
@@ -76,19 +75,13 @@ public abstract class DBSession {
 	}
 
 	public static DBSession createConnection(String connString,
-			String username, String password) throws DBException {
+			String username, String password) throws DataException {
 		if (connString.startsWith(DBSessionPostGIS.CONNECTION_STRING_BEGINNING)) {
 			return DBSessionPostGIS.createConnectionFromConnString(connString,
 					username,
 					password);
 		}
-		if (connString
-				.startsWith(DBSessionSpatiaLite.CONNECTION_STRING_BEGINNING)) {
-			return DBSessionSpatiaLite
-					.createConnectionFromConnString(connString);
-		}
 		return null;
-
 	}
 
 	/**
@@ -110,24 +103,29 @@ public abstract class DBSession {
 	 * @return the session
 	 * @throws DBException
 	 */
-	public static DBSession reconnect() throws DBException {
+	public static DBSession reconnect() throws DataException {
 		if (instance!=null) {
 			return instance.restartConnection();
 		}
 		return null;
 	}
 
-	protected abstract void connect() throws DBException;
+	protected abstract void connect() throws DataException;
 
-	protected abstract DBSession restartConnection() throws DBException;
+	protected abstract DBSession restartConnection() throws DataException;
 
 	public Connection getJavaConnection() {
-		return ((ConnectionJDBC) conwp.getConnection()).getConnection();
+		return conwp.getConnection();
+	}
+	
+	public ConnectionWithParams getConnectionWithParams() {
+		return conwp;
 	}
 
-	public void close() throws DBException {
+	public void close() throws DataException {
 
 		user = null;
+		
 		if (conwp!=null) {
 			SingleDBConnectionManager.instance().closeAndRemove(conwp);
 			conwp = null;
@@ -170,17 +168,16 @@ public abstract class DBSession {
 
 	public abstract FLayer getLayer(String layerName, String tableName,
 			String schema, String whereClause, IProjection projection)
-			throws SQLException, DBException;
+			throws BaseException;
 
 	public abstract FLayer getLayer(String layerName, String tableName,
-			String whereClause, IProjection projection) throws SQLException,
-			DBException;
+			String whereClause, IProjection projection) throws BaseException;
 
 	public abstract FLayer getLayer(String tableName, String whereClause,
-			IProjection projection) throws SQLException, DBException;
+			IProjection projection) throws BaseException;
 
 	public abstract FLayer getLayer(String tableName, IProjection projection)
-			throws SQLException, DBException;
+			throws BaseException;
 
 	/* GET METADATA */
 
@@ -371,9 +368,7 @@ public abstract class DBSession {
 
 	public abstract String getCompleteTableName(String name, String schema);
 
-	public abstract String getDriverName();
-
-	public abstract String getAlphanumericDriverName();
+//	public abstract String getAlphanumericDriverName();
 
 	protected String getCharForNumber(int i) {
 		return i > 0 && i < 27 ? String.valueOf((char) (i + 96)) : null;

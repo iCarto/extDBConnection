@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010. CartoLab, Universidad de A Coruña
+ * Copyright (c) 2010. CartoLab, Universidad de A Coruï¿½a
  * 
  * This file is part of extDBConnection
  * 
@@ -23,9 +23,16 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 
 public class ConfigFile {
+	
+	
+	private static final Logger logger = LoggerFactory
+			.getLogger(ConfigFile.class);
 
 	private String preferencesFile;
 	private static ConfigFile instance = null;
@@ -47,8 +54,7 @@ public class ConfigFile {
 		try {
 			getProperties();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 	}
 
@@ -98,7 +104,7 @@ public class ConfigFile {
 		}
 		if (configFile.canWrite()) {
 			FileWriter fileWriter = new FileWriter(configFile);
-			//TODO: añadir cabecera o descripción de los campos
+			//TODO: aï¿½adir cabecera o descripciï¿½n de los campos
 			String[] lines = new String[5];
 			lines[0] = "file \"" + file + "\"";
 			for (int i = 0; i<lines.length; i++) {

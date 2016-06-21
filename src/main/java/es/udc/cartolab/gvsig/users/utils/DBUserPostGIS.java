@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010. CartoLab, Universidad de A Coruña
+ * Copyright (c) 2010. CartoLab, Universidad de A Coruï¿½a
  * 
  * This file is part of extDBConnection
  * 
@@ -22,7 +22,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class DBUserPostGIS implements DBUser {
+	
+	
+	private static final Logger logger = LoggerFactory
+			.getLogger(DBUserPostGIS.class);
 
 	private String username;
 	private String password;
@@ -35,7 +42,7 @@ public class DBUserPostGIS implements DBUser {
 		try {
 			isAdmin = checkSuper(con);
 		} catch (SQLException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 
 	}

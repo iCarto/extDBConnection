@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010. CartoLab, Universidad de A Coruña
+ * Copyright (c) 2010. CartoLab, Universidad de A Coruï¿½a
  *
  * This file is part of extDBConnection
  *
@@ -16,51 +16,42 @@
 */
 package es.udc.cartolab.gvsig.users;
 
-import com.iver.andami.PluginServices;
-import com.iver.andami.plugins.Extension;
-import com.iver.cit.gvsig.ProjectExtension;
-import com.iver.cit.gvsig.fmap.drivers.DBException;
-import com.iver.cit.gvsig.project.Project;
+import org.gvsig.andami.IconThemeHelper;
+import org.gvsig.andami.PluginServices;
+import org.gvsig.andami.plugins.Extension;
+import org.gvsig.app.extension.ProjectExtension;
+import org.gvsig.fmap.dal.exception.DataException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import es.udc.cartolab.gvsig.users.utils.DBSession;
 
 public class CloseSessionExtension extends Extension {
+	
+	
+	private static final Logger logger = LoggerFactory
+			.getLogger(CloseSessionExtension.class);
 
 	public void execute(String actionCommand) {
 		DBSession dbs = DBSession.getCurrentSession();
 		if (dbs!=null) {
+			ProjectExtension pExt = (ProjectExtension) PluginServices.getExtension(ProjectExtension.class);
+			pExt.execute("application-project-new");
 			try {
-
-				ProjectExtension pExt = (ProjectExtension) PluginServices
-						.getExtension(ProjectExtension.class);
-				Project p1 = pExt.getProject();
-
-				pExt.execute("NUEVO");
-
-				Project p2 = pExt.getProject();
-				if (p1 != p2) {
-					dbs.close();
-				}
-
-			} catch (DBException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+				dbs.close();
+			} catch (DataException e) {
+				logger.error(e.getMessage(), e);
+			}			
 		}
 	}
-
-
-
 
 	public void initialize() {
 		registerIcons();
 	}
 
 	protected void registerIcons() {
-		PluginServices.getIconTheme().registerDefault(
-				"DBClose",
-				this.getClass().getClassLoader().getResource("images/sessiondisc.png")
-			);
+		final String id = this.getClass().getName();
+		IconThemeHelper.registerIcon("action", id, this);
 	}
 
 	public boolean isEnabled() {

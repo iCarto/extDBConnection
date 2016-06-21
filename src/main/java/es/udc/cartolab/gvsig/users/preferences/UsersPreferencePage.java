@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010. CartoLab, Universidad de A Coruña
+ * Copyright (c) 2010. CartoLab, Universidad de A Coruï¿½a
  *
  * This file is part of extDBConnection
  *
@@ -22,12 +22,13 @@ import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
-import org.apache.log4j.Logger;
+import org.gvsig.andami.PluginServices;
+import org.gvsig.andami.preferences.AbstractPreferencePage;
+import org.gvsig.andami.preferences.StoreException;
+import org.gvsig.utils.XMLEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.iver.andami.PluginServices;
-import com.iver.andami.preferences.AbstractPreferencePage;
-import com.iver.andami.preferences.StoreException;
-import com.iver.utiles.XMLEntity;
 import com.jeta.forms.components.panel.FormPanel;
 import com.jeta.forms.gui.common.FormException;
 
@@ -35,8 +36,9 @@ import com.jeta.forms.gui.common.FormException;
 public class UsersPreferencePage extends AbstractPreferencePage {
     
     
-    private static final Logger logger = Logger
-	    .getLogger(UsersPreferencePage.class);
+    
+	private static final Logger logger = LoggerFactory
+			.getLogger(UsersPreferencePage.class);
     public static String LOGO = "";
 
 	/* key names */
@@ -90,7 +92,7 @@ public class UsersPreferencePage extends AbstractPreferencePage {
 			try {
 			    form = new FormPanel(resourceAsStream);
 			} catch (FormException e) {
-			    logger.error(e.getStackTrace(), e);
+				logger.error(e.getMessage(), e);
 			    return this;
 			}
 			form.setFocusTraversalPolicyProvider(true);

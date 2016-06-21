@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010. CartoLab, Universidad de A Coruña
+ * Copyright (c) 2010. CartoLab, Universidad de A Coruï¿½a
  * 
  * This file is part of extDBConnection
  * 
@@ -16,7 +16,7 @@
 */
 package es.udc.cartolab.gvsig.users;
 
-import com.iver.andami.plugins.Extension;
+import org.gvsig.andami.plugins.Extension;
 
 import es.udc.cartolab.gvsig.users.gui.ChangePassDialog;
 import es.udc.cartolab.gvsig.users.utils.DBSession;
