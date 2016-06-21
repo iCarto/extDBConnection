@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<plugin-config>
+	<depends plugin-name="org.gvsig.app.mainplugin"/>
+	<depends plugin-name="org.gvsig.geodb.app.mainplugin"/>
+	<depends plugin-name="es.icarto.gvsig.commons"/>
+	<libraries library-dir="lib"/>
+	<resourceBundle name="text"/>
+	<extensions>
+	
+		<extension class-name="es.udc.cartolab.gvsig.users.PostGISDBConnectionExtension" active="true">
+			<action 
+                name= "es.udc.cartolab.gvsig.users.PostGISDBConnectionExtension"
+                label="es.udc.cartolab.gvsig.users.PostGISDBConnectionExtension.label"
+                tooltip="es.udc.cartolab.gvsig.users.PostGISDBConnectionExtension.tooltip"
+                icon="es.udc.cartolab.gvsig.users.PostGISDBConnectionExtension"
+                position="1"
+                action-command=""
+            />
+            <menu text="data_base_menu/connectToDBPostGIS"
+				name= "es.udc.cartolab.gvsig.users.PostGISDBConnectionExtension"
+			/> 
+			<tool-bar name="dbconnection">
+				<action-tool name= "es.udc.cartolab.gvsig.users.PostGISDBConnectionExtension"/>
+			</tool-bar>
+		</extension>
+		
+		<extension class-name="es.udc.cartolab.gvsig.users.CloseSessionExtension" active="true">
+			<action 
+                name= "es.udc.cartolab.gvsig.users.CloseSessionExtension"
+                label="es.udc.cartolab.gvsig.users.CloseSessionExtension.label"
+                tooltip="es.udc.cartolab.gvsig.users.CloseSessionExtension.tooltip"
+                icon="es.udc.cartolab.gvsig.users.CloseSessionExtension"
+                position="3"
+                action-command=""
+            />
+		
+			<menu text="data_base_menu/close_session"
+				name= "es.udc.cartolab.gvsig.users.CloseSessionExtension"
+			/> 
+				
+			<tool-bar name="dbconnection">
+				<action-tool name="es.udc.cartolab.gvsig.users.CloseSessionExtension" />
+			</tool-bar>
+		</extension>
+		
+		<extension class-name="es.udc.cartolab.gvsig.users.ChangePassExtension" active="true">
+			<action 
+                name= "es.udc.cartolab.gvsig.users.ChangePassExtension"
+                label="es.udc.cartolab.gvsig.users.ChangePassExtension.label"
+                tooltip="es.udc.cartolab.gvsig.users.ChangePassExtension.tooltip"
+                position="4"
+                action-command=""
+            />
+            <menu text="data_base_menu/manage_users/change_password"
+				name= "es.udc.cartolab.gvsig.users.ChangePassExtension"
+			/> 
+		</extension>
+		
+		<extension class-name="es.udc.cartolab.gvsig.users.CreateUserExtension" active="true">
+			<action 
+                name= "es.udc.cartolab.gvsig.users.CreateUserExtension"
+                label="es.udc.cartolab.gvsig.users.CreateUserExtension.label"
+                tooltip="es.udc.cartolab.gvsig.users.CreateUserExtension.tooltip"
+                position="5"
+                action-command=""
+            />
+            <menu text="data_base_menu/manage_users/create_new_user"
+				name= "es.udc.cartolab.gvsig.users.SpatiaLiteDBConnectionExtension"
+			/> 
+		</extension>
+		
+		<extension class-name="es.udc.cartolab.gvsig.users.DropUserExtension" active="true">
+			<action 
+                name= "es.udc.cartolab.gvsig.users.DropUserExtension"
+                label="es.udc.cartolab.gvsig.users.DropUserExtension.label"
+                tooltip="es.udc.cartolab.gvsig.users.DropUserExtension.tooltip"
+                position="6"
+                action-command=""
+            />
+            <menu text="data_base_menu/manage_users/drop_user"
+				name= "es.udc.cartolab.gvsig.users.DropUserExtension"
+			/> 
+		</extension>
+		
+	</extensions>
+</plugin-config>
