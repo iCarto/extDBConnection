@@ -30,6 +30,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.management.RuntimeErrorException;
+
 import org.cresques.cts.IProjection;
 import org.gvsig.fmap.dal.DALLocator;
 import org.gvsig.fmap.dal.DataManager;
@@ -195,33 +197,44 @@ public class DBSessionPostGIS extends DBSession {
 
 	/* GET METADATA */
 
-	protected String[] getColumnNames(String tablename, String schema)
-			throws SQLException {
+	protected String[] getColumnNames(String tablename, String schema) {
 
 		Connection con = conwp.getConnection();
-
-		String query = "SELECT * FROM " + schema + "." + tablename + " LIMIT 1";
-		Statement st = con.createStatement();
-		ResultSet resultSet = st.executeQuery(query);
-		ResultSetMetaData md = resultSet.getMetaData();
-		String[] cols = new String[md.getColumnCount()];
-		for (int i = 0; i < md.getColumnCount(); i++) {
-			cols[i] = md.getColumnLabel(i + 1);
+		try {
+			String query = "SELECT * FROM " + schema + "." + tablename + " LIMIT 1";
+			Statement st = con.createStatement();
+			ResultSet resultSet = st.executeQuery(query);
+			ResultSetMetaData md = resultSet.getMetaData();
+			String[] cols = new String[md.getColumnCount()];
+			for (int i = 0; i < md.getColumnCount(); i++) {
+				cols[i] = md.getColumnLabel(i + 1);
+			}
+			return cols;
+		} catch (SQLException e) {
+			logger.error(e.getMessage(), e);
+			throw new RuntimeException(e);
+		}  finally {
+			conwp.close(con);
 		}
-		return cols;
 	}
 
 	protected int getColumnType(String tablename, String schema, String column)
 			throws SQLException {
 
 		Connection con = conwp.getConnection();
-
-		DatabaseMetaData meta = con.getMetaData();
-		ResultSet rsColumns = meta.getColumns(null, schema, tablename, column);
-		while (rsColumns.next()) {
-			if (column.equalsIgnoreCase(rsColumns.getString("COLUMN_NAME"))) {
-				return rsColumns.getInt("COLUMN_TYPE");
-			}
+		try {
+			DatabaseMetaData meta = con.getMetaData();
+			ResultSet rsColumns = meta.getColumns(null, schema, tablename, column);
+			while (rsColumns.next()) {
+				if (column.equalsIgnoreCase(rsColumns.getString("COLUMN_NAME"))) {
+					return rsColumns.getInt("COLUMN_TYPE");
+				}
+			}	
+		} catch (SQLException e) {
+			logger.error(e.getMessage(), e);
+			throw new RuntimeException(e);
+		} finally {
+			conwp.close(con);
 		}
 		return -1;
 	}
@@ -240,27 +253,37 @@ public class DBSessionPostGIS extends DBSession {
 
 	public String[][] getTable(String tableName, String schema,
 			String[] fieldNames, String whereClause, String[] orderBy,
-			boolean desc) throws SQLException {
+			boolean desc) {
 		Connection con = conwp.getConnection();
-		ResultSet rs = getTableResultSet(tableName, schema, fieldNames,
-				whereClause, orderBy, desc, con);
-
 		ArrayList<String[]> rows = new ArrayList<String[]>();
-		while (rs.next()) {
-			String[] row = new String[fieldNames.length];
-			for (int i = 0; i < fieldNames.length; i++) {
-			 // elle styles in table elle._map_style are defined as 'xml' columns
-			    // for some reasons rs.getObject returns null and con.setTypeMap
-			    // is not working to set a custom mapping. So this workaround is used
-			    if (rs.getMetaData().getColumnType(i+1) == java.sql.Types.OTHER) {
-				row[i] = rs.getString(i+1);
-			    } else {
-				row[i] = format.toString(rs.getObject(i+1));
-			    }
+		try {
+			ResultSet rs = getTableResultSet(tableName, schema, fieldNames,
+					whereClause, orderBy, desc, con);
+
+			while (rs.next()) {
+				String[] row = new String[fieldNames.length];
+				for (int i = 0; i < fieldNames.length; i++) {
+					// elle styles in table elle._map_style are defined as 'xml'
+					// columns
+					// for some reasons rs.getObject returns null and
+					// con.setTypeMap
+					// is not working to set a custom mapping. So this
+					// workaround is used
+					if (rs.getMetaData().getColumnType(i + 1) == java.sql.Types.OTHER) {
+						row[i] = rs.getString(i + 1);
+					} else {
+						row[i] = format.toString(rs.getObject(i + 1));
+					}
+				}
+				rows.add(row);
 			}
-			rows.add(row);
+			rs.close();
+		} catch (SQLException e) {
+			logger.error(e.getMessage(), e);
+			throw new RuntimeException(e);
+		} finally {
+			conwp.close(con);
 		}
-		rs.close();
 
 		return rows.toArray(new String[0][0]);
 
@@ -301,25 +324,31 @@ public class DBSessionPostGIS extends DBSession {
 			String[] fieldNames, String whereClause, String[] orderBy,
 			boolean desc) throws SQLException {
 		Connection con = conwp.getConnection();
-		ResultSet rs = getTableResultSet(tableName, schema, fieldNames,
-				whereClause, orderBy, desc, con);
-
 		ArrayList<Object[]> rows = new ArrayList<Object[]>();
-		while (rs.next()) {
-			Object[] row = new Object[fieldNames.length];
-			for (int i = 0; i < fieldNames.length; i++) {
-				Object val = rs.getObject(fieldNames[i]);
-				if (val == null) {
-					val = "";
+		try {
+			ResultSet rs = getTableResultSet(tableName, schema, fieldNames,
+					whereClause, orderBy, desc, con);
+
+			while (rs.next()) {
+				Object[] row = new Object[fieldNames.length];
+				for (int i = 0; i < fieldNames.length; i++) {
+					Object val = rs.getObject(fieldNames[i]);
+					if (val == null) {
+						val = "";
+					}
+					row[i] = val;
 				}
-				row[i] = val;
+				rows.add(row);
 			}
-			rows.add(row);
+			rs.close();
+		} catch (SQLException e) {
+			logger.error(e.getMessage(), e);
+			throw new RuntimeException(e);
+		} finally {
+			conwp.close(con);
 		}
-		rs.close();
 
 		return rows.toArray(new Object[0][0]);
-
 	}
 
 	public Object[][] getTableAsObjects(String tableName, String schema,
@@ -818,34 +847,31 @@ public class DBSessionPostGIS extends DBSession {
 		return result;
 	}
 
-	/**
-	 * Be careful!
-	 * 
-	 * @param table
-	 * @param whereClause
-	 * @throws SQLException
-	 */
-	public void deleteRows(String schema, String table, String whereClause)
-			throws SQLException {
+	@Override
+	public void deleteRows(String schema, String table, String whereClause) {
 
 		Connection con = conwp.getConnection();
-
-		String sql = "DELETE FROM " + schema + "." + table + " " + whereClause;
-
-		Statement statement = con.createStatement();
-		statement.executeUpdate(sql);
-		con.commit();
+		String sql = String.format("DELETE FROM \"%s\".\"%s\" %s", schema, table, whereClause);
+		try {
+			Statement statement = con.createStatement();
+			statement.executeUpdate(sql);						
+		} catch (SQLException e) {
+			logger.error(e.getMessage(), e);
+			throw new RuntimeException(e);
+		} finally {
+			conwp.close(con);
+		}
 	}
 
-	public void insertRow(String schema, String table, Object[] values)
-			throws SQLException {
+	@Override
+	public void insertRow(String schema, String table, Object[] values) throws SQLException {
 
 		String[] columns = getColumnNames(table, schema);
 		insertRow(schema, table, columns, values);
 	}
 
-	public void insertRow(String schema, String table, String[] columns,
-			Object[] values) throws SQLException {
+	@Override
+	public void insertRow(String schema, String table, String[] columns, Object[] values) {
 
 		Connection con = conwp.getConnection();
 
@@ -860,31 +886,22 @@ public class DBSessionPostGIS extends DBSession {
 			}
 			sql = sql.substring(0, sql.length() - 2) + ")";
 
-			PreparedStatement statement = con.prepareStatement(sql);
-
-			for (int i = 0; i < columns.length; i++) {
-				statement.setObject(i + 1, values[i]);
+			try {
+				PreparedStatement statement = con.prepareStatement(sql);
+				for (int i = 0; i < columns.length; i++) {
+					statement.setObject(i + 1, values[i]);
+				}
+				statement.executeUpdate();
+			} catch (SQLException e) {
+				logger.error(e.getMessage(), e);
+				throw new RuntimeException(e);
+			} finally {
+				conwp.close(con);
 			}
-
-			statement.executeUpdate();
-			con.commit();
-
 		}
-
 	}
 
-	/**
-	 * Be careful!
-	 * 
-	 * @param schema
-	 * @param tablename
-	 * @param fields
-	 * @param values
-	 * @param whereClause
-	 * @throws SQLException
-	 */
-	public void updateRows(String schema, String tablename, String[] columns,
-			Object[] values, String whereClause) throws SQLException {
+	public void updateRows(String schema, String tablename, String[] columns, Object[] values, String whereClause) {
 
 		Connection con = conwp.getConnection();
 
@@ -895,29 +912,31 @@ public class DBSessionPostGIS extends DBSession {
 			}
 			sql = sql.substring(0, sql.length() - 2) + " " + whereClause;
 
-			PreparedStatement statement = con.prepareStatement(sql);
-			for (int i = 0; i < values.length; i++) {
-				statement.setObject(i + 1, values[i]);
+			try {
+				PreparedStatement statement = con.prepareStatement(sql);
+				for (int i = 0; i < values.length; i++) {
+					statement.setObject(i + 1, values[i]);
+				}
+				statement.executeUpdate();	
+			} catch (SQLException e) {
+				logger.error(e.getMessage(), e);
+				throw new RuntimeException(e);
+			} finally {
+				conwp.close(con);
 			}
-
-			statement.executeUpdate();
-			con.commit();
 		}
-
 	}
 
-	public boolean tableExists(String schema, String tablename)
-			throws SQLException {
+	public boolean tableExists(String schema, String tablename) {
 
 		Connection con = conwp.getConnection();
 
-		if (this.server.compareTo("") != 0) {
-			String query = "select count(*) as count from pg_tables where schemaname='"
-					+ schema + "' and tablename='" + tablename + "'";
+		String query = "select count(*) as count from pg_tables where schemaname='"
+				+ schema + "' and tablename='" + tablename + "'";
 
+		try {
 			Statement stat = con.createStatement();
 			ResultSet rs = stat.executeQuery(query);
-
 			while (rs.next()) {
 				int count = rs.getInt("count");
 				if (count != 1) {
@@ -927,18 +946,48 @@ public class DBSessionPostGIS extends DBSession {
 				}
 			}
 			return false;
-		} else {
-			String sql = "SELECT name FROM sqlite_master WHERE type='table' AND name=?;";
-
-			PreparedStatement st = con.prepareStatement(sql);
-			st.setString(1, tablename);
-			ResultSet rs = st.executeQuery();
-			if (rs.next()) {
-				return true;
-			}
-			return false;
+		} catch (SQLException e) {
+			logger.error(e.getMessage(), e);
+			throw new RuntimeException(e);
+		} finally {
+			conwp.close(con);
 		}
+	}
+	
+	@Override
+	public boolean schemaExists(String schema) {
+		Connection con = conwp.getConnection();
+		String sqlHasSchema = String.format("SELECT COUNT(*) AS schemaCount FROM information_schema.schemata WHERE schema_name = '%s'", schema);
+		try {
+		    Statement stat = con.createStatement();
+		    ResultSet rs = stat.executeQuery(sqlHasSchema);
+		    rs.next();
+		    int schemaCount = rs.getInt("schemaCount");
+		    if (schemaCount == 1) {
+			return true;
+		    }
+		    return false;
+		} catch (SQLException e) {
+		    logger.error(e.getMessage(), e);
+		    throw new RuntimeException(e);
+		} finally {
+			conwp.close(con);
+		}
+	}
 
+	@Override
+	public void createSchema(String schema) {
+		Connection con = conwp.getConnection();
+		String sqlCreateSchema = String.format("CREATE SCHEMA %s", schema);
+		try {
+			Statement stat = con.createStatement();
+			stat.execute(sqlCreateSchema);
+		} catch (SQLException e) {
+			logger.error(e.getMessage(), e);
+			throw new RuntimeException(e);
+		} finally {
+			conwp.close(con);
+		}
 	}
 
 	@Override

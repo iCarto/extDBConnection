@@ -350,21 +350,20 @@ public abstract class DBSession {
 	public abstract String[] getColumns(String schema, String table)
 			throws SQLException;
 
-	public abstract void deleteRows(String schema, String table,
-			String whereClause) throws SQLException;
+	public abstract void deleteRows(String schema, String table, String whereClause);
 
 	public abstract void insertRow(String schema, String table, Object[] values)
 			throws SQLException;
 
-	public abstract void insertRow(String schema, String table,
-			String[] columns, Object[] values) throws SQLException;
+	public abstract void insertRow(String schema, String table, String[] columns, Object[] values);
 
 	public abstract void updateRows(String schema, String tablename,
 			String[] columns, Object[] values, String whereClause)
 			throws SQLException;
 
-	public abstract boolean tableExists(String schema, String tablename)
-			throws SQLException;
+	public abstract boolean tableExists(String schema, String tablename);
+	public abstract boolean schemaExists(String schema);
+	public abstract void createSchema(String schema);
 
 	public abstract String getCompleteTableName(String name, String schema);
 
@@ -373,5 +372,8 @@ public abstract class DBSession {
 	protected String getCharForNumber(int i) {
 		return i > 0 && i < 27 ? String.valueOf((char) (i + 96)) : null;
 	}
+
+
+	
 
 }
