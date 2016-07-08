@@ -16,6 +16,8 @@
  */
 package es.udc.cartolab.gvsig.users.gui;
 
+import static es.icarto.gvsig.commons.i18n.I18n._;
+
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -91,7 +93,7 @@ public class PostGISDBConnectionDialog extends AbstractGVWindow {
 
 	public PostGISDBConnectionDialog() {
 		super(425, INIT_MIN_HEIGHT);
-		setTitle(PluginServices.getText(this, "Login"));
+		setTitle(_("login"));
 	}
 
 	@Override
@@ -130,13 +132,13 @@ public class PostGISDBConnectionDialog extends AbstractGVWindow {
 			JLabel schemaLabel = form.getLabel(ID_SCHEMAL);
 			JLabel dbLabel = form.getLabel(ID_DBL);
 
-			serverLabel.setText(PluginServices.getText(this, "server"));
-	    portLabel.setText(PluginServices.getText(this, "host"));
-			userLabel.setText(PluginServices.getText(this, "user_name"));
-			passLabel.setText(PluginServices.getText(this, "user_pass"));
-	    schemaLabel.setText(PluginServices.getText(this, "schema"));
-			dbLabel.setText(PluginServices.getText(this, "data_base"));
-			advCHB.setText(PluginServices.getText(this, "advanced_options"));
+			serverLabel.setText(_("server"));
+			portLabel.setText(_("port"));
+			dbLabel.setText(_("data_base"));
+			userLabel.setText(_("user_name"));
+			passLabel.setText(_("user_pass"));
+			schemaLabel.setText(_("schema"));
+			advCHB.setText(_("advanced_options"));
 
 			DBSession dbs = DBSession.getCurrentSession();
 			if ((dbs != null) && (dbs instanceof DBSessionPostGIS)) {
@@ -202,10 +204,7 @@ public class PostGISDBConnectionDialog extends AbstractGVWindow {
 	xml.putProperty(USER_PROPERTY_NAME, user);
 	xml.putProperty(SCHEMA_PROPERTY_NAME, schema);
 	PluginServices.getMDIManager().restoreCursor();
-	String title = " "
-				+ String.format(
-						PluginServices.getText(this, "connectedTitlePostGIS"),
-			user, host);
+	String title = " " + _("connectedTitlePostGIS", user, host);
 	PluginServices.getMainFrame().setTitle(title);
     }
 
@@ -285,17 +284,11 @@ public class PostGISDBConnectionDialog extends AbstractGVWindow {
 			saveConfig(server, portS, database, schema, username);
 			PluginServices.getMainFrame().enableControls();
 		} catch (NumberFormatException e2) {		
-			JOptionPane.showMessageDialog(this,
-					PluginServices.getText(this, "portError"),
-					PluginServices.getText(this, "dataError"),
-					JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this,_("portError"), _("dataError"), JOptionPane.ERROR_MESSAGE);
 		} catch (DataException e1) {
 			// Login error
 			logger.error(e1.getMessage(), e1);
-			JOptionPane.showMessageDialog(this,
-					PluginServices.getText(this, "databaseConnectionError"),
-					PluginServices.getText(this, "connectionError"),
-					JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, _("databaseConnectionError"), _("connectionError"), JOptionPane.ERROR_MESSAGE);
 
 		} finally {
 			PluginServices.getMDIManager().restoreCursor();

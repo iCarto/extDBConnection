@@ -10,13 +10,13 @@
 		<extension class-name="es.udc.cartolab.gvsig.users.PostGISDBConnectionExtension" active="true">
 			<action 
                 name= "es.udc.cartolab.gvsig.users.PostGISDBConnectionExtension"
-                label="es.udc.cartolab.gvsig.users.PostGISDBConnectionExtension.label"
+                label="es.udc.cartolab.gvsig.users.PostGISDBConnectionExtension"
                 tooltip="es.udc.cartolab.gvsig.users.PostGISDBConnectionExtension.tooltip"
                 icon="es.udc.cartolab.gvsig.users.PostGISDBConnectionExtension"
                 position="1"
                 action-command=""
             />
-            <menu text="data_base_menu/connectToDBPostGIS"
+            <menu text="data_base_menu/es.udc.cartolab.gvsig.users.PostGISDBConnectionExtension"
 				name= "es.udc.cartolab.gvsig.users.PostGISDBConnectionExtension"
 			/> 
 			<tool-bar name="dbconnection">
@@ -27,7 +27,7 @@
 		<extension class-name="es.udc.cartolab.gvsig.users.CloseSessionExtension" active="true">
 			<action 
                 name= "es.udc.cartolab.gvsig.users.CloseSessionExtension"
-                label="es.udc.cartolab.gvsig.users.CloseSessionExtension.label"
+                label="es.udc.cartolab.gvsig.users.CloseSessionExtension"
                 tooltip="es.udc.cartolab.gvsig.users.CloseSessionExtension.tooltip"
                 icon="es.udc.cartolab.gvsig.users.CloseSessionExtension"
                 position="3"
@@ -46,8 +46,8 @@
 		<extension class-name="es.udc.cartolab.gvsig.users.ChangePassExtension" active="true">
 			<action 
                 name= "es.udc.cartolab.gvsig.users.ChangePassExtension"
-                label="es.udc.cartolab.gvsig.users.ChangePassExtension.label"
-                tooltip="es.udc.cartolab.gvsig.users.ChangePassExtension.tooltip"
+                label="es.udc.cartolab.gvsig.users.ChangePassExtension"
+                tooltip="es.udc.cartolab.gvsig.users.ChangePassExtension"
                 position="4"
                 action-command=""
             />
@@ -59,21 +59,21 @@
 		<extension class-name="es.udc.cartolab.gvsig.users.CreateUserExtension" active="true">
 			<action 
                 name= "es.udc.cartolab.gvsig.users.CreateUserExtension"
-                label="es.udc.cartolab.gvsig.users.CreateUserExtension.label"
-                tooltip="es.udc.cartolab.gvsig.users.CreateUserExtension.tooltip"
+                label="es.udc.cartolab.gvsig.users.CreateUserExtension"
+                tooltip="es.udc.cartolab.gvsig.users.CreateUserExtension"
                 position="5"
                 action-command=""
             />
             <menu text="data_base_menu/manage_users/create_new_user"
-				name= "es.udc.cartolab.gvsig.users.SpatiaLiteDBConnectionExtension"
+				name= "es.udc.cartolab.gvsig.users.CreateUserExtension"
 			/> 
 		</extension>
 		
 		<extension class-name="es.udc.cartolab.gvsig.users.DropUserExtension" active="true">
 			<action 
                 name= "es.udc.cartolab.gvsig.users.DropUserExtension"
-                label="es.udc.cartolab.gvsig.users.DropUserExtension.label"
-                tooltip="es.udc.cartolab.gvsig.users.DropUserExtension.tooltip"
+                label="es.udc.cartolab.gvsig.users.DropUserExtension"
+                tooltip="es.udc.cartolab.gvsig.users.DropUserExtension"
                 position="6"
                 action-command=""
             />

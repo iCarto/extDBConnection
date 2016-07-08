@@ -16,6 +16,8 @@
 */
 package es.udc.cartolab.gvsig.users.gui;
 
+import static es.icarto.gvsig.commons.i18n.I18n._;
+
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -94,7 +96,7 @@ public class DropUserDialog extends JPanel implements IWindow, ActionListener {
 			userTF.addActionListener(this);
 
 			JLabel userLabel = form.getLabel("userLabel");
-			userLabel.setText(PluginServices.getText(this, "user_name"));
+			userLabel.setText(_("user_name"));
 		}
 		return centerPanel;
 	}
@@ -106,8 +108,8 @@ public class DropUserDialog extends JPanel implements IWindow, ActionListener {
 			FlowLayout layout = new FlowLayout();
 			layout.setAlignment(FlowLayout.RIGHT);
 			southPanel.setLayout(layout);
-			okButton = new JButton(PluginServices.getText(this, "ok"));
-			cancelButton = new JButton(PluginServices.getText(this, "cancel"));
+			okButton = new JButton(_("ok"));
+			cancelButton = new JButton(_("cancel"));
 			okButton.addActionListener(this);
 			cancelButton.addActionListener(this);
 			southPanel.add(okButton);
@@ -119,7 +121,7 @@ public class DropUserDialog extends JPanel implements IWindow, ActionListener {
 	public WindowInfo getWindowInfo() {
 		if (viewInfo == null) {
 			viewInfo = new WindowInfo(WindowInfo.MODALDIALOG);
-			viewInfo.setTitle(PluginServices.getText(this, "drop_user"));
+			viewInfo.setTitle(_("drop_user"));
 			viewInfo.setWidth(425);
 			viewInfo.setHeight(75);
 		}
@@ -140,12 +142,11 @@ public class DropUserDialog extends JPanel implements IWindow, ActionListener {
 							.getUserName())
 							&& !username.equalsIgnoreCase("postgres")) {
 						if (DBAdminUtils.existsUser(dbs.getJavaConnection(), username)) {
-							String message = PluginServices.getText(this, "dropping_user_question");
-							Object[] options = {PluginServices.getText(this, "ok"),
-									PluginServices.getText(this, "cancel")};
+							
+							Object[] options = {_("ok"), _("cancel")};
 							int n = JOptionPane.showOptionDialog(this,
-									PluginServices.getText(this, String.format(message, username)),
-									" ",
+									_("drop_user_question", username),
+									"",
 									JOptionPane.YES_NO_CANCEL_OPTION,
 									JOptionPane.WARNING_MESSAGE,
 									null,
@@ -156,24 +157,23 @@ public class DropUserDialog extends JPanel implements IWindow, ActionListener {
 								dbs.getJavaConnection().commit();
 							}
 						} else {
-							String message = PluginServices.getText(this, "user_doesnt_exist");
+							
 							JOptionPane.showMessageDialog(this,
-									PluginServices.getText(this, String.format(message, username)),
-									PluginServices.getText(this, " "),
+									_("user_doesnt_exist", username),
+									"",
 									JOptionPane.ERROR_MESSAGE);
 						}
 					} else {
-						String message = PluginServices.getText(this, "user_cant_be_dropped");
 						JOptionPane.showMessageDialog(this,
-								PluginServices.getText(this, String.format(message, username)),
-								PluginServices.getText(this, " "),
+								_("user_cant_be_dropped", username),
+								"",
 								JOptionPane.ERROR_MESSAGE);
 					}
 				} catch (SQLException e) {
-					String message = PluginServices.getText(this, "dropping_user_error_message");
+					logger.error(e.getMessage(), e);
 					JOptionPane.showMessageDialog(this,
-							PluginServices.getText(this, String.format(message, e.getMessage())),
-							PluginServices.getText(this, PluginServices.getText(this, "dropping_user_error")),
+							_("dropping_user_error_message"),
+							"",
 							JOptionPane.ERROR_MESSAGE);
 					
 					try {

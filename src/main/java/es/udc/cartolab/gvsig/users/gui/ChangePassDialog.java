@@ -16,6 +16,8 @@
  */
 package es.udc.cartolab.gvsig.users.gui;
 
+import static es.icarto.gvsig.commons.i18n.I18n._;
+
 import java.awt.Component;
 import java.io.InputStream;
 import java.sql.SQLException;
@@ -51,7 +53,7 @@ public class ChangePassDialog extends AbstractGVWindow {
 	
 	public ChangePassDialog() {
 		super(425, 160);
-		setTitle(PluginServices.getText(this, "change_password"));
+		setTitle(_("change_password"));
 	}
 
 	protected JPanel getCenterPanel() {
@@ -68,13 +70,11 @@ public class ChangePassDialog extends AbstractGVWindow {
 			centerPanel.add(form);
 
 			JLabel currentPassLabel = form.getLabel("currentPassLabel");
-			currentPassLabel.setText(PluginServices.getText(this,
-					"current_pass"));
+			currentPassLabel.setText(_("current_pass"));
 			JLabel newPassLabel = form.getLabel("newPassLabel");
-			newPassLabel.setText(PluginServices.getText(this, "new_pass"));
+			newPassLabel.setText(_("new_pass"));
 			JLabel reNewPassLabel = form.getLabel("reNewPassLabel");
-			reNewPassLabel.setText(PluginServices.getText(this,
-					"retype_user_pass"));
+			reNewPassLabel.setText(_("retype_user_pass"));
 
 			currentPassTF = form.getTextField("currentPassTF");
 			newPassTF = form.getTextField("newPassTF");
@@ -96,17 +96,11 @@ public class ChangePassDialog extends AbstractGVWindow {
 						user.changePassword(newPass);
 						closeWindow();
 					} else {
-						JOptionPane.showMessageDialog(this,
-								PluginServices.getText(this, "wrong_password"),
-								PluginServices.getText(this, "dataError"),
-								JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(this,_("wrong_password"),"", JOptionPane.ERROR_MESSAGE);
 					}
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
-					JOptionPane.showMessageDialog(this,
-							PluginServices.getText(this, "changin_pass_error"),
-							PluginServices.getText(this, "dataError"),
-							JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(this,_("changin_pass_error"),"", JOptionPane.ERROR_MESSAGE);
 					
 					try {
 						dbs = DBSession.reconnect();
@@ -117,10 +111,7 @@ public class ChangePassDialog extends AbstractGVWindow {
 				}
 			}
 		} else {
-			JOptionPane.showMessageDialog(this,
-					PluginServices.getText(this, "passwords_dont_match"),
-					PluginServices.getText(this, "dataError"),
-					JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, _("passwords_dont_match"), "", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 

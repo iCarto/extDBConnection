@@ -16,6 +16,8 @@
  */
 package es.udc.cartolab.gvsig.users.gui;
 
+import static es.icarto.gvsig.commons.i18n.I18n._;
+
 import java.awt.Component;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -55,7 +57,7 @@ public class CreateUserWindow extends AbstractGVWindow {
 	
 	public CreateUserWindow() {
 		super(425, 200);
-		setTitle(PluginServices.getText(this, "new_user"));
+		setTitle(_("new_user"));
 	}
 
 	protected JPanel getCenterPanel() {
@@ -78,18 +80,16 @@ public class CreateUserWindow extends AbstractGVWindow {
 
 			// Labels
 			JLabel userLabel = form.getLabel("userLabel");
-			userLabel.setText(PluginServices.getText(this, "user_name"));
+			userLabel.setText(_("user_name"));
 			JLabel passLabel = form.getLabel("passLabel");
-			passLabel.setText(PluginServices.getText(this, "user_pass"));
+			passLabel.setText(_("user_pass"));
 			JLabel repassLabel = form.getLabel("repassLabel");
-			repassLabel.setText(PluginServices
-					.getText(this, "retype_user_pass"));
+			repassLabel.setText(_("retype_user_pass"));
 			JLabel typeLabel = form.getLabel("typeLabel");
-			typeLabel.setText(PluginServices.getText(this, "user_type"));
+			typeLabel.setText(_("user_type"));
 
-			// adminCHB.setText(PluginServices.getText(this, "create_admin"));
-			typeCB.addItem(PluginServices.getText(this, "create_guest"));
-			typeCB.addItem(PluginServices.getText(this, "create_admin"));
+			typeCB.addItem(_("create_guest"));
+			typeCB.addItem(_("create_admin"));
 		}
 		return centerPanel;
 	}
@@ -100,10 +100,9 @@ public class CreateUserWindow extends AbstractGVWindow {
 		String pass2 = repassTF.getText();
 		boolean cont = true;
 		if (typeCB.getSelectedIndex() == 2) {
-			Object[] options = { PluginServices.getText(this, "ok"),
-					PluginServices.getText(this, "cancel") };
+			Object[] options = { _("ok"), _("cancel") };
 			int n = JOptionPane.showOptionDialog(this,
-					PluginServices.getText(this, "create_admin_question"), "",
+					_("create_admin_question"), "",
 					JOptionPane.YES_NO_CANCEL_OPTION,
 					JOptionPane.WARNING_MESSAGE, null, options, options[1]);
 			if (n != 0) {
@@ -117,11 +116,7 @@ public class CreateUserWindow extends AbstractGVWindow {
 					Connection con = dbs.getJavaConnection();
 					try {
 						if (DBAdminUtils.existsUser(con, username)) {
-							String message = PluginServices.getText(this,
-									"user_exists");
-							JOptionPane.showMessageDialog(this, String.format(
-									message, username), PluginServices.getText(
-									this, "creating_user_error"),
+							JOptionPane.showMessageDialog(this, _("user_exists", username), _("creating_user_error"),
 									JOptionPane.ERROR_MESSAGE);
 						} else {
 							closeWindow();
@@ -131,15 +126,9 @@ public class CreateUserWindow extends AbstractGVWindow {
 								// force db commit
 								con.commit();
 							} catch (SQLException e2) {
-								String message = PluginServices.getText(this,
-										"creating_user_error_message");
-								JOptionPane
-										.showMessageDialog(this, String.format(
-												message, e2.getMessage()),
-												PluginServices.getText(this,
-														"creating_user_error"),
-												JOptionPane.ERROR_MESSAGE);
-								
+								logger.error(e2.getMessage(), e2);
+
+								JOptionPane.showMessageDialog(this, _("creating_user_error"), _("creating_user_error"), JOptionPane.ERROR_MESSAGE);
 								try {
 									dbs = DBSession.reconnect();
 								} catch (DataException e) {
@@ -157,10 +146,7 @@ public class CreateUserWindow extends AbstractGVWindow {
 					}
 				}
 			} else {
-				JOptionPane.showMessageDialog(this,
-						PluginServices.getText(this, "passwords_dont_match"),
-						PluginServices.getText(this, "creating_user_error"),
-						JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this, _("passwords_dont_match"), _("creating_user_error"), JOptionPane.ERROR_MESSAGE);
 			}
 		}
 	}

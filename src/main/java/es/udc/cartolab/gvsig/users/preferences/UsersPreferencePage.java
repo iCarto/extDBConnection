@@ -16,6 +16,8 @@
 */
 package es.udc.cartolab.gvsig.users.preferences;
 
+import static es.icarto.gvsig.commons.i18n.I18n._;
+
 import java.io.InputStream;
 
 import javax.swing.ImageIcon;
@@ -98,7 +100,7 @@ public class UsersPreferencePage extends AbstractPreferencePage {
 			form.setFocusTraversalPolicyProvider(true);
 
 			connectDBCB = form.getCheckBox("connectDBCB");
-			connectDBCB.setText(PluginServices.getText(this, "connect_startup"));
+			connectDBCB.setText(_("connect_startup"));
 
 			addComponent(form);
 		}
@@ -107,7 +109,7 @@ public class UsersPreferencePage extends AbstractPreferencePage {
 	}
 
 	public String getTitle() {
-		return PluginServices.getText(this, "dbconnection");
+		return _("dbconnection");
 	}
 
 	public void initializeDefaults() {

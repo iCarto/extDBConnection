@@ -16,6 +16,8 @@
  */
 package es.udc.cartolab.gvsig.users.gui;
 
+import static es.icarto.gvsig.commons.i18n.I18n._;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -146,8 +148,8 @@ public abstract class AbstractGVWindow extends JPanel implements IWindow,
 			FlowLayout layout = new FlowLayout();
 			layout.setAlignment(FlowLayout.RIGHT);
 			southPanel.setLayout(layout);
-			okButton = new JButton(PluginServices.getText(this, "ok"));
-			cancelButton = new JButton(PluginServices.getText(this, "cancel"));
+			okButton = new JButton(_("ok"));
+			cancelButton = new JButton(_("cancel"));
 			okButton.addActionListener(this);
 			cancelButton.addActionListener(this);
 			southPanel.add(okButton);
