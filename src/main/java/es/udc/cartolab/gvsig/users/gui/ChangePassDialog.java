@@ -99,8 +99,8 @@ public class ChangePassDialog extends AbstractGVWindow {
 						JOptionPane.showMessageDialog(this,_("wrong_password"),"", JOptionPane.ERROR_MESSAGE);
 					}
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					JOptionPane.showMessageDialog(this,_("changin_pass_error"),"", JOptionPane.ERROR_MESSAGE);
+					logger.error(e.getMessage(), e);
+					JOptionPane.showMessageDialog(this,_("changing_pass_error"),"", JOptionPane.ERROR_MESSAGE);
 					
 					try {
 						dbs = DBSession.reconnect();

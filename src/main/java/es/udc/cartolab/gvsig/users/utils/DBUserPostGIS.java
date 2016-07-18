@@ -116,14 +116,15 @@ public class DBUserPostGIS implements DBUser {
 
 		DBSession dbs = DBSession.getCurrentSession();
 		Connection con = dbs.getJavaConnection();
-		String sql = "ALTER ROLE " + username + " WITH ENCRYPTED PASSWORD ?";
-		PreparedStatement stat = con.prepareStatement(sql);
-		stat.setString(1, password);
-		stat.execute();
-		stat.close();
-
-		con.commit();
-
+		// http://dba.stackexchange.com/a/78399/15606
+		String sanitizedPassword = password.replace("'", "''");
+		String sql = "ALTER ROLE " + username + " WITH ENCRYPTED PASSWORD '" + sanitizedPassword + "'";
+		Statement st = con.createStatement();
+		st.executeUpdate(sql);
+		if (!con.getAutoCommit()) {
+			con.commit();			
+		}
+		st.close();
 	}
 
 	public boolean canCreateTable(String schema) throws SQLException {

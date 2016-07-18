@@ -36,22 +36,20 @@ public class DBAdminUtils {
 	 */
 	public static void createUser(Connection con, String username, String password) throws SQLException {
 
-		String sql = "SET ROLE administrador;";
+		String usernameSanitized = username.replace("'", "''");
+		String passSanitized = password.replace("'", "''");
+		String sql = "CREATE USER " + usernameSanitized +";";
 		Statement stat = con.createStatement();
 		stat.execute(sql);
+		sql = "ALTER ROLE " + usernameSanitized + " WITH ENCRYPTED PASSWORD '" + passSanitized + "'";
+		stat.executeUpdate(sql);
+		
+		if (!con.getAutoCommit()) {
+			con.commit();
+		}
+		stat.close();
+		
 
-		sql = "CREATE USER " + username +";";
-		stat = con.createStatement();
-		stat.execute(sql);
-		
-		sql = "ALTER ROLE " + username + " WITH ENCRYPTED PASSWORD ?";
-		PreparedStatement stat2 = con.prepareStatement(sql);
-		stat2.setString(1, password);
-		stat2.execute();
-		
-		sql = "RESET ROLE";
-		stat = con.createStatement();
-		stat.execute(sql);
 
 	}
 	
@@ -106,20 +104,14 @@ public class DBAdminUtils {
 	 * 
 	 */
 	public static void dropUser(Connection con, String username) throws SQLException {
-	
-		String sql = "SET ROLE administrador";
 		Statement stat = con.createStatement();
-		stat.execute(sql);
-		
-		sql = "DROP USER %s";
+		String sql = "DROP USER %s";
 		sql = String.format(sql, username);
 		stat.execute(sql);
-		
-		sql = "RESET ROLE";
-		stat = con.createStatement();
-		stat.execute(sql);
-		
-		
+		if (!con.getAutoCommit()) {
+			con.commit();
+		}
+		stat.close();
 	}
 
 }

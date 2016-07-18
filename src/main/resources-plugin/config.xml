@@ -34,7 +34,7 @@
                 action-command=""
             />
 		
-			<menu text="data_base_menu/close_session"
+			<menu text="data_base_menu/es.udc.cartolab.gvsig.users.CloseSessionExtension"
 				name= "es.udc.cartolab.gvsig.users.CloseSessionExtension"
 			/> 
 				
@@ -51,7 +51,7 @@
                 position="4"
                 action-command=""
             />
-            <menu text="data_base_menu/manage_users/change_password"
+            <menu text="data_base_menu/manage_users/es.udc.cartolab.gvsig.users.ChangePassExtension"
 				name= "es.udc.cartolab.gvsig.users.ChangePassExtension"
 			/> 
 		</extension>
@@ -64,7 +64,7 @@
                 position="5"
                 action-command=""
             />
-            <menu text="data_base_menu/manage_users/create_new_user"
+            <menu text="data_base_menu/manage_users/es.udc.cartolab.gvsig.users.CreateUserExtension"
 				name= "es.udc.cartolab.gvsig.users.CreateUserExtension"
 			/> 
 		</extension>
@@ -72,12 +72,12 @@
 		<extension class-name="es.udc.cartolab.gvsig.users.DropUserExtension" active="true">
 			<action 
                 name= "es.udc.cartolab.gvsig.users.DropUserExtension"
-                label="es.udc.cartolab.gvsig.users.DropUserExtension"
-                tooltip="es.udc.cartolab.gvsig.users.DropUserExtension"
+                label="DropUserExtension"
+                tooltip="DropUserExtension"
                 position="6"
                 action-command=""
             />
-            <menu text="data_base_menu/manage_users/drop_user"
+            <menu text="data_base_menu/manage_users/es.udc.cartolab.gvsig.users.DropUserExtension"
 				name= "es.udc.cartolab.gvsig.users.DropUserExtension"
 			/> 
 		</extension>

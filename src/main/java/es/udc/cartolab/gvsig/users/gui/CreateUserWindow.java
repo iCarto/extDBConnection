@@ -123,8 +123,6 @@ public class CreateUserWindow extends AbstractGVWindow {
 							try {
 								DBAdminUtils.createUser(con, username, pass1);
 								grantRole(con, username);
-								// force db commit
-								con.commit();
 							} catch (SQLException e2) {
 								logger.error(e2.getMessage(), e2);
 

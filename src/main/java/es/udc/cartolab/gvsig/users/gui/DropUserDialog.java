@@ -145,7 +145,7 @@ public class DropUserDialog extends JPanel implements IWindow, ActionListener {
 							
 							Object[] options = {_("ok"), _("cancel")};
 							int n = JOptionPane.showOptionDialog(this,
-									_("drop_user_question", username),
+									_("dropping_user_question", username),
 									"",
 									JOptionPane.YES_NO_CANCEL_OPTION,
 									JOptionPane.WARNING_MESSAGE,
@@ -154,7 +154,6 @@ public class DropUserDialog extends JPanel implements IWindow, ActionListener {
 									options[1]);
 							if (n==0) {
 								DBAdminUtils.dropUser(dbs.getJavaConnection(), username);
-								dbs.getJavaConnection().commit();
 							}
 						} else {
 							
