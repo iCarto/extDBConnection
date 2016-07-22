@@ -28,6 +28,7 @@ import es.udc.cartolab.gvsig.users.gui.PostGISDBConnectionDialog;
 import es.udc.cartolab.gvsig.users.preferences.Persistence;
 import es.udc.cartolab.gvsig.users.preferences.UsersPreferencePage;
 import es.udc.cartolab.gvsig.users.utils.DBSession;
+import es.udc.cartolab.gvsig.users.utils.DBSessionPostGIS;
 
 public class PostGISDBConnectionExtension extends Extension implements
 		IPreferenceExtension {
@@ -85,6 +86,16 @@ public class PostGISDBConnectionExtension extends Extension implements
 	@Override
 	public void postInitialize() {
 		Persistence p = new Persistence();
+
+		if (p.autoConnectAtStartUp) {
+			try {
+				DBSessionPostGIS.createConnection(p.host, p.portInt,
+						p.database, p.schema, p.user, p.pwd);
+				return;
+			} catch (DataException e) {
+				logger.error(e.getMessage(), e);
+			}
+		}
 		if (p.openDialogAtStartUp) {
 			execute(null);
 		}

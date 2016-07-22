@@ -12,15 +12,18 @@ public class Persistence {
 	public static final String PWD_KEY = "pwd";
 	public static final String SCHEMA_KEY = "schema";
 	public static final String OPEN_CONNECTION_DIALOG_AT_STARTUP = "OPEN_CONNECTION_DIALOG_AT_STARTUP";
+	private static final String AUTOCONNECT_AT_STARTUP = "AUTOCONNECT_AT_STARTUP";
 
 	public final String host;
 	public final String port;
+	public int portInt;
 	public final String database;
 	public final String user;
 	public final String pwd;
 	public final String schema;
 
 	public final boolean openDialogAtStartUp;
+	public final boolean autoConnectAtStartUp;
 
 	private final XMLEntity xml;
 
@@ -30,12 +33,18 @@ public class Persistence {
 
 		host = getStringValue(HOST_KEY);
 		port = getStringValue(PORT_KEY);
+		try {
+			portInt = Integer.parseInt(port);
+		} catch (Exception e) {
+			portInt = -1;
+		}
 		database = getStringValue(DATABASE_KEY);
 		user = getStringValue(USER_KEY);
 		pwd = getStringValue(PWD_KEY);
 		schema = getStringValue(SCHEMA_KEY);
 
 		openDialogAtStartUp = getBooleanValue(OPEN_CONNECTION_DIALOG_AT_STARTUP);
+		autoConnectAtStartUp = getBooleanValue(AUTOCONNECT_AT_STARTUP);
 	}
 
 	public boolean paramsAreSet() {
