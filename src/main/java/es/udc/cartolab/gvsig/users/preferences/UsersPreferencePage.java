@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with extDBConnection.
  * If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 package es.udc.cartolab.gvsig.users.preferences;
 
 import static es.icarto.gvsig.commons.i18n.I18n._;
@@ -36,18 +36,10 @@ import com.jeta.forms.gui.common.FormException;
 
 @SuppressWarnings("serial")
 public class UsersPreferencePage extends AbstractPreferencePage {
-    
-    
-    
+
 	private static final Logger logger = LoggerFactory
 			.getLogger(UsersPreferencePage.class);
-    public static String LOGO = "";
-
-	/* key names */
-	public static final String CONNECT_DB_AT_STARTUP_KEY_NAME = "ConnectAtStartup";
-
-	/* default values */
-	private static final boolean CONNECT_DB_AT_STARTUP = false;
+	public static String LOGO = "";
 
 	protected String id;
 	private ImageIcon icon;
@@ -62,40 +54,47 @@ public class UsersPreferencePage extends AbstractPreferencePage {
 	public UsersPreferencePage() {
 		super();
 		id = this.getClass().getName();
-		icon = new ImageIcon(this.getClass().getClassLoader().getResource("images/logo.png"));
+		icon = new ImageIcon(this.getClass().getClassLoader()
+				.getResource("images/logo.png"));
 		panelStarted = false;
 	}
 
-
+	@Override
 	public void setChangesApplied() {
 		setChanged(false);
 	}
 
+	@Override
 	public void storeValues() throws StoreException {
 		PluginServices ps = PluginServices.getPluginServices(this);
 		XMLEntity xml = ps.getPersistentXML();
-		xml.putProperty(CONNECT_DB_AT_STARTUP_KEY_NAME, connectDBCB.isSelected());
+		xml.putProperty(Persistence.OPEN_CONNECTION_DIALOG_AT_STARTUP,
+				connectDBCB.isSelected());
 	}
 
+	@Override
 	public String getID() {
 		return id;
 	}
 
+	@Override
 	public ImageIcon getIcon() {
 		return icon;
 	}
 
+	@Override
 	public JPanel getPanel() {
 
 		if (!panelStarted) {
 			panelStarted = true;
-			InputStream resourceAsStream = this.getClass().getClassLoader().getResourceAsStream("forms/preferences.xml");
+			InputStream resourceAsStream = this.getClass().getClassLoader()
+					.getResourceAsStream("forms/preferences.xml");
 			FormPanel form;
 			try {
-			    form = new FormPanel(resourceAsStream);
+				form = new FormPanel(resourceAsStream);
 			} catch (FormException e) {
 				logger.error(e.getMessage(), e);
-			    return this;
+				return this;
 			}
 			form.setFocusTraversalPolicyProvider(true);
 
@@ -108,34 +107,28 @@ public class UsersPreferencePage extends AbstractPreferencePage {
 		return this;
 	}
 
+	@Override
 	public String getTitle() {
 		return _("dbconnection");
 	}
 
+	@Override
 	public void initializeDefaults() {
-		connectDBCB.setSelected(CONNECT_DB_AT_STARTUP);
+		connectDBCB.setSelected(false);
 	}
 
+	@Override
 	public void initializeValues() {
 		if (!panelStarted) {
 			getPanel();
 		}
-
-		PluginServices ps = PluginServices.getPluginServices(this);
-		XMLEntity xml = ps.getPersistentXML();
-
-		if (xml.contains(CONNECT_DB_AT_STARTUP_KEY_NAME)) {
-			connectDBCB.setSelected(xml.getBooleanProperty(CONNECT_DB_AT_STARTUP_KEY_NAME));
-		} else {
-			connectDBCB.setSelected(CONNECT_DB_AT_STARTUP);
-		}
+		Persistence p = new Persistence();
+		connectDBCB.setSelected(p.openDialogAtStartUp);
 	}
 
+	@Override
 	public boolean isValueChanged() {
 		return super.hasChanged();
 	}
-
-
-
 
 }

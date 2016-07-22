@@ -42,6 +42,7 @@ import com.jeta.forms.components.image.ImageComponent;
 import com.jeta.forms.components.panel.FormPanel;
 import com.jeta.forms.gui.common.FormException;
 
+import es.udc.cartolab.gvsig.users.preferences.Persistence;
 import es.udc.cartolab.gvsig.users.preferences.UsersPreferencePage;
 import es.udc.cartolab.gvsig.users.utils.DBSession;
 import es.udc.cartolab.gvsig.users.utils.DBSessionPostGIS;
@@ -53,17 +54,10 @@ import es.udc.cartolab.gvsig.users.utils.DBSessionPostGIS;
  */
 @SuppressWarnings("serial")
 public class PostGISDBConnectionDialog extends AbstractGVWindow {
-    
-    
-    
+
 	private static final Logger logger = LoggerFactory
 			.getLogger(PostGISDBConnectionDialog.class);
 
-	private static final String SCHEMA_PROPERTY_NAME = "schema";
-	private static final String DATABASE_PROPERTY_NAME = "database";
-	private static final String USER_PROPERTY_NAME = "user";
-	private static final String PORT_PROPERTY_NAME = "port";
-	private static final String HOST_PROPERTY_NAME = "host";
 	private final static int INIT_MIN_HEIGHT = 175;
 	private final static int INIT_MAX_HEIGHT = 350;
 
@@ -76,9 +70,9 @@ public class PostGISDBConnectionDialog extends AbstractGVWindow {
 	private JTextField serverTF, userTF, passTF, schemaTF, dbTF, portTF;
 	private JComponent advForm;
 
-    public static final String ID_SERVERTF = "serverTF";
-    public static final String ID_PORTTF = "portTF";
-    public static final String ID_USERTF = "userTF";
+	public static final String ID_SERVERTF = "serverTF";
+	public static final String ID_PORTTF = "portTF";
+	public static final String ID_USERTF = "userTF";
 	public static final String ID_PASSTF = "passTF"; // javax.swing.JPasswordField
 	public static final String ID_DBTF = "dbTF";
 	public static final String ID_SCHEMATF = "schemaTF";
@@ -101,14 +95,15 @@ public class PostGISDBConnectionDialog extends AbstractGVWindow {
 
 		if (centerPanel == null) {
 			centerPanel = new JPanel();
-			
-			InputStream resourceAsStream = this.getClass().getClassLoader().getResourceAsStream("forms/postgresDbConnection.xml");
+
+			InputStream resourceAsStream = this.getClass().getClassLoader()
+					.getResourceAsStream("forms/postgresDbConnection.xml");
 			FormPanel form;
 			try {
-			    form = new FormPanel(resourceAsStream);
+				form = new FormPanel(resourceAsStream);
 			} catch (FormException e) {
 				logger.error(e.getMessage(), e);
-			    return centerPanel;
+				return centerPanel;
 			}
 			centerPanel.add(form);
 			serverTF = form.getTextField(ID_SERVERTF);
@@ -119,11 +114,11 @@ public class PostGISDBConnectionDialog extends AbstractGVWindow {
 			schemaTF = form.getTextField(ID_SCHEMATF);
 			advForm = (JComponent) form.getComponentByName(ID_ADVF);
 			advCHB = form.getCheckBox(ID_ADVCHB);
-	    showAdvancedProperties(false);
+			showAdvancedProperties(false);
 			advCHB.addActionListener(this);
 
 			initLogo(form);
-			
+
 			// localization
 			JLabel serverLabel = form.getLabel(ID_SERVERL);
 			JLabel portLabel = form.getLabel(ID_PORTL);
@@ -150,7 +145,7 @@ public class PostGISDBConnectionDialog extends AbstractGVWindow {
 				schemaTF.setText(((DBSessionPostGIS) dbs).getSchema());
 				advCHB.setSelected(false);
 			} else {
-		fillDialogFromPluginPersistence();
+				fillDialogFromPluginPersistence();
 			}
 
 			passTF.requestFocusInWindow();
@@ -158,55 +153,51 @@ public class PostGISDBConnectionDialog extends AbstractGVWindow {
 		}
 		return centerPanel;
 	}
-	
-    private void initLogo(FormPanel form) {
-	if (!UsersPreferencePage.LOGO.isEmpty()) {
-	    File logo = new File(UsersPreferencePage.LOGO);
-	    if (logo.isFile()) {
-		ImageComponent image = (ImageComponent) form
-			.getComponentByName("image");
-		ImageIcon icon = new ImageIcon(logo.getAbsolutePath());
-		image.setIcon(icon);
-	    }
+
+	private void initLogo(FormPanel form) {
+		if (!UsersPreferencePage.LOGO.isEmpty()) {
+			File logo = new File(UsersPreferencePage.LOGO);
+			if (logo.isFile()) {
+				ImageComponent image = (ImageComponent) form
+						.getComponentByName("image");
+				ImageIcon icon = new ImageIcon(logo.getAbsolutePath());
+				image.setIcon(icon);
+			}
+		}
 	}
-    }
 
-    private void fillDialogFromPluginPersistence() {
-	XMLEntity xml = PluginServices.getPluginServices(this)
-		.getPersistentXML();
-
-	if (xml.contains(HOST_PROPERTY_NAME) && xml.contains(PORT_PROPERTY_NAME)
-		&& xml.contains(DATABASE_PROPERTY_NAME) && xml.contains(USER_PROPERTY_NAME)
-		&& xml.contains(SCHEMA_PROPERTY_NAME)) {
-	    serverTF.setText(xml.getStringProperty(HOST_PROPERTY_NAME));
-	    portTF.setText(xml.getStringProperty(PORT_PROPERTY_NAME));
-	    dbTF.setText(xml.getStringProperty(DATABASE_PROPERTY_NAME));
-	    userTF.setText(xml.getStringProperty(USER_PROPERTY_NAME));
-	    schemaTF.setText(xml.getStringProperty(SCHEMA_PROPERTY_NAME));
-	} else {
-	    showAdvancedProperties(true);
-	    advCHB.setSelected(true);
+	private void fillDialogFromPluginPersistence() {
+		Persistence p = new Persistence();
+		if (p.paramsAreSet()) {
+			serverTF.setText(p.host);
+			portTF.setText(p.port + "");
+			dbTF.setText(p.database);
+			userTF.setText(p.user);
+			schemaTF.setText(p.schema);
+		} else {
+			showAdvancedProperties(true);
+			advCHB.setSelected(true);
+		}
 	}
-    }
 
-    private void saveConfig(String host, String port, String database,
-	    String schema, String user) {
-	// TODO: fpuga: If in the future we will want save more than one
-	// configuration this approach is not valid. Whe should store each
-	// connection in a different XMLEntity and in the main XMLEntity store a
-	// "lastConnectionUsed" value
+	private void saveConfig(String host, String port, String database,
+			String schema, String user) {
+		// TODO: fpuga: If in the future we will want save more than one
+		// configuration this approach is not valid. Whe should store each
+		// connection in a different XMLEntity and in the main XMLEntity store a
+		// "lastConnectionUsed" value
 
-	XMLEntity xml = PluginServices.getPluginServices(this)
-		.getPersistentXML();
-	xml.putProperty(HOST_PROPERTY_NAME, host);
-	xml.putProperty(PORT_PROPERTY_NAME, port);
-	xml.putProperty(DATABASE_PROPERTY_NAME, database);
-	xml.putProperty(USER_PROPERTY_NAME, user);
-	xml.putProperty(SCHEMA_PROPERTY_NAME, schema);
-	PluginServices.getMDIManager().restoreCursor();
-	String title = " " + _("connectedTitlePostGIS", user, host);
-	PluginServices.getMainFrame().setTitle(title);
-    }
+		XMLEntity xml = PluginServices.getPluginServices(this)
+				.getPersistentXML();
+		xml.putProperty(Persistence.HOST_KEY, host);
+		xml.putProperty(Persistence.PORT_KEY, port);
+		xml.putProperty(Persistence.DATABASE_KEY, database);
+		xml.putProperty(Persistence.USER_KEY, user);
+		xml.putProperty(Persistence.SCHEMA_KEY, schema);
+		PluginServices.getMDIManager().restoreCursor();
+		String title = " " + _("connectedTitlePostGIS", user, host);
+		PluginServices.getMainFrame().setTitle(title);
+	}
 
 	@Override
 	protected JPanel getNorthPanel() {
@@ -239,13 +230,12 @@ public class PostGISDBConnectionDialog extends AbstractGVWindow {
 		advForm.setVisible(show);
 	}
 
-
-
 	private boolean activeSession() {
 
 		DBSession dbs = DBSession.getCurrentSession();
 		if (dbs != null) {
-			ProjectExtension pExt = (ProjectExtension) PluginServices.getExtension(ProjectExtension.class);
+			ProjectExtension pExt = (ProjectExtension) PluginServices
+					.getExtension(ProjectExtension.class);
 			pExt.execute("application-project-new");
 			try {
 				dbs.close();
@@ -276,19 +266,21 @@ public class PostGISDBConnectionDialog extends AbstractGVWindow {
 			String schema = schemaTF.getText();
 			String database = dbTF.getText();
 
-			DBSessionPostGIS.createConnection(server, port, database,
-					schema, username, password);
+			DBSessionPostGIS.createConnection(server, port, database, schema,
+					username, password);
 
 			closeWindow();
 
 			saveConfig(server, portS, database, schema, username);
 			PluginServices.getMainFrame().enableControls();
-		} catch (NumberFormatException e2) {		
-			JOptionPane.showMessageDialog(this,_("portError"), _("dataError"), JOptionPane.ERROR_MESSAGE);
+		} catch (NumberFormatException e2) {
+			JOptionPane.showMessageDialog(this, _("portError"), _("dataError"),
+					JOptionPane.ERROR_MESSAGE);
 		} catch (DataException e1) {
 			// Login error
 			logger.error(e1.getMessage(), e1);
-			JOptionPane.showMessageDialog(this, _("databaseConnectionError"), _("connectionError"), JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, _("databaseConnectionError"),
+					_("connectionError"), JOptionPane.ERROR_MESSAGE);
 
 		} finally {
 			PluginServices.getMDIManager().restoreCursor();

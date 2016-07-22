@@ -13,37 +13,37 @@
  *
  * You should have received a copy of the GNU General Public License along with extDBConnection.
  * If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 package es.udc.cartolab.gvsig.users;
 
 import org.gvsig.andami.IconThemeHelper;
-import org.gvsig.andami.PluginServices;
 import org.gvsig.andami.plugins.Extension;
 import org.gvsig.andami.preferences.IPreference;
 import org.gvsig.andami.preferences.IPreferenceExtension;
 import org.gvsig.fmap.dal.exception.DataException;
-import org.gvsig.utils.XMLEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import es.udc.cartolab.gvsig.users.gui.PostGISDBConnectionDialog;
+import es.udc.cartolab.gvsig.users.preferences.Persistence;
 import es.udc.cartolab.gvsig.users.preferences.UsersPreferencePage;
 import es.udc.cartolab.gvsig.users.utils.DBSession;
 
+public class PostGISDBConnectionExtension extends Extension implements
+		IPreferenceExtension {
 
-public class PostGISDBConnectionExtension extends Extension implements IPreferenceExtension {
-
-	
 	private static final Logger logger = LoggerFactory
 			.getLogger(PostGISDBConnectionExtension.class);
 	private final static UsersPreferencePage usersPreferencesPage = new UsersPreferencePage();
 
+	@Override
 	public void execute(String actionCommand) {
-		//without header image
+		// without header image
 		PostGISDBConnectionDialog dialog = new PostGISDBConnectionDialog();
 		dialog.openWindow();
 	}
 
+	@Override
 	public void initialize() {
 		registerIcons();
 	}
@@ -53,20 +53,24 @@ public class PostGISDBConnectionExtension extends Extension implements IPreferen
 		IconThemeHelper.registerIcon("action", id, this);
 	}
 
+	@Override
 	public boolean isEnabled() {
 		return true;
 	}
 
+	@Override
 	public boolean isVisible() {
 		return true;
 	}
 
+	@Override
 	public IPreference[] getPreferencesPages() {
-		IPreference[] preferences=new IPreference[1];
-		preferences[0]=usersPreferencesPage;
+		IPreference[] preferences = new IPreference[1];
+		preferences[0] = usersPreferencesPage;
 		return preferences;
 	}
 
+	@Override
 	public void terminate() {
 		DBSession dbs = DBSession.getCurrentSession();
 		if (dbs != null) {
@@ -78,14 +82,13 @@ public class PostGISDBConnectionExtension extends Extension implements IPreferen
 		}
 	}
 
+	@Override
 	public void postInitialize() {
-		PluginServices ps = PluginServices.getPluginServices(this);
-		XMLEntity xml = ps.getPersistentXML();
-		if (xml.contains(UsersPreferencePage.CONNECT_DB_AT_STARTUP_KEY_NAME)) {
-			if (xml.getBooleanProperty(UsersPreferencePage.CONNECT_DB_AT_STARTUP_KEY_NAME)) {
-				execute(null);
-			}
+		Persistence p = new Persistence();
+		if (p.openDialogAtStartUp) {
+			execute(null);
 		}
+
 	}
 
 }
