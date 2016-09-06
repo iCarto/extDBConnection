@@ -30,33 +30,28 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.management.RuntimeErrorException;
-
 import org.cresques.cts.IProjection;
-import org.gvsig.fmap.dal.DALLocator;
-import org.gvsig.fmap.dal.DataManager;
 import org.gvsig.fmap.dal.exception.DataException;
+import org.gvsig.fmap.dal.store.jdbc.JDBCStoreParameters;
 import org.gvsig.fmap.mapcontext.MapContextLocator;
 import org.gvsig.fmap.mapcontext.MapContextManager;
 import org.gvsig.fmap.mapcontext.layers.FLayer;
+import org.gvsig.tools.exception.BaseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import es.icarto.gvsig.commons.gvsig2.SingleDBConnectionManager;
 
-import org.gvsig.fmap.dal.store.jdbc.JDBCStoreParameters;
-import org.gvsig.tools.exception.BaseException;
-
 public class DBSessionPostGIS extends DBSession {
-	
-	
+
 	private static final Logger logger = LoggerFactory
 			.getLogger(DBSessionPostGIS.class);
 
 	public static final String POSTGRESQL_STORE_PROVIDER_NAME = "PostgreSQL";
 	private static final String POSTGRESQL_SERVER_EXPLORER_NAME = "PostgreSQLExplorer";
 	private static final String POSTGRESQL_RESOURCE = "PostgreSQLResource";
-	// public static final String ALPHANUMERIC_DRIVER_NAME = "PostgreSQL Alphanumeric";
+	// public static final String ALPHANUMERIC_DRIVER_NAME =
+	// "PostgreSQL Alphanumeric";
 
 	private String schema = "";
 	protected static String CONNECTION_STRING_BEGINNING = "jdbc:postgresql:";
@@ -74,7 +69,7 @@ public class DBSessionPostGIS extends DBSession {
 
 	/**
 	 * Creates a new DB Connection or changes the current one.
-	 * 
+	 *
 	 * @param connString
 	 * @param username
 	 * @param password
@@ -111,7 +106,7 @@ public class DBSessionPostGIS extends DBSession {
 
 	/**
 	 * Creates a new DB Connection or changes the current one.
-	 * 
+	 *
 	 * @param server
 	 * @param port
 	 * @param database
@@ -119,13 +114,13 @@ public class DBSessionPostGIS extends DBSession {
 	 * @param username
 	 * @param password
 	 * @return the connection
-	 * @throws DataException 
+	 * @throws DataException
 	 * @throws DBException
 	 *             if there's any problem (server error or login error)
 	 */
 	public static DBSession createConnection(String server, int port,
-			String database, String schema, String username, String password) throws DataException
-			{
+			String database, String schema, String username, String password)
+			throws DataException {
 		if (instance != null) {
 			instance.close();
 		}
@@ -135,18 +130,21 @@ public class DBSessionPostGIS extends DBSession {
 		return instance;
 	}
 
+	@Override
 	protected void connect() throws DataException {
-		try {			
+		try {
 			conwp = SingleDBConnectionManager.instance().getConnection(
-					POSTGRESQL_STORE_PROVIDER_NAME, POSTGRESQL_SERVER_EXPLORER_NAME, POSTGRESQL_RESOURCE, username, password, "ELLE_connection",
-					server, port, database, "", true);
+					POSTGRESQL_STORE_PROVIDER_NAME,
+					POSTGRESQL_SERVER_EXPLORER_NAME, POSTGRESQL_RESOURCE,
+					username, password, "ELLE_connection", server, port,
+					database, "", true);
 			user = new DBUserPostGIS(username, password, conwp.getConnection());
-		} catch (DataException e) {
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
 			if (conwp != null) {
 				SingleDBConnectionManager.instance().closeAndRemove(conwp);
 			}
 			instance = null;
-			throw e;
 		}
 	}
 
@@ -158,15 +156,18 @@ public class DBSessionPostGIS extends DBSession {
 		this.schema = schema;
 	}
 
+	@Override
 	public FLayer getLayer(String layerName, String tableName, String schema,
 			String whereClause, IProjection projection) throws BaseException {
 
 		if (whereClause == null) {
 			whereClause = "";
 		}
-		
-		MapContextManager mapContextManager = MapContextLocator.getMapContextManager();
-		JDBCStoreParameters params = (JDBCStoreParameters) conwp.getStoreParams().getCopy();
+
+		MapContextManager mapContextManager = MapContextLocator
+				.getMapContextManager();
+		JDBCStoreParameters params = (JDBCStoreParameters) conwp
+				.getStoreParams().getCopy();
 		params.setSchema(schema);
 		params.setTable(tableName);
 		params.setCRS(projection);
@@ -175,33 +176,39 @@ public class DBSessionPostGIS extends DBSession {
 		if (whereClause.compareTo("") != 0) {
 			params.setBaseFilter(whereClause);
 		}
-		
+
 		FLayer layer = mapContextManager.createLayer(layerName, params);
 
 		return layer;
 	}
 
+	@Override
 	public FLayer getLayer(String layerName, String tableName,
 			String whereClause, IProjection projection) throws BaseException {
 		return getLayer(layerName, tableName, schema, whereClause, projection);
 	}
 
+	@Override
 	public FLayer getLayer(String tableName, String whereClause,
-			IProjection projection) throws BaseException{
+			IProjection projection) throws BaseException {
 		return getLayer(tableName, tableName, schema, whereClause, projection);
 	}
 
-	public FLayer getLayer(String tableName, IProjection projection) throws BaseException{
+	@Override
+	public FLayer getLayer(String tableName, IProjection projection)
+			throws BaseException {
 		return getLayer(tableName, null, projection);
 	}
 
 	/* GET METADATA */
 
+	@Override
 	protected String[] getColumnNames(String tablename, String schema) {
 
 		Connection con = conwp.getConnection();
 		try {
-			String query = "SELECT * FROM " + schema + "." + tablename + " LIMIT 1";
+			String query = "SELECT * FROM " + schema + "." + tablename
+					+ " LIMIT 1";
 			Statement st = con.createStatement();
 			ResultSet resultSet = st.executeQuery(query);
 			ResultSetMetaData md = resultSet.getMetaData();
@@ -213,23 +220,25 @@ public class DBSessionPostGIS extends DBSession {
 		} catch (SQLException e) {
 			logger.error(e.getMessage(), e);
 			throw new RuntimeException(e);
-		}  finally {
+		} finally {
 			conwp.close(con);
 		}
 	}
 
+	@Override
 	protected int getColumnType(String tablename, String schema, String column)
 			throws SQLException {
 
 		Connection con = conwp.getConnection();
 		try {
 			DatabaseMetaData meta = con.getMetaData();
-			ResultSet rsColumns = meta.getColumns(null, schema, tablename, column);
+			ResultSet rsColumns = meta.getColumns(null, schema, tablename,
+					column);
 			while (rsColumns.next()) {
 				if (column.equalsIgnoreCase(rsColumns.getString("COLUMN_NAME"))) {
 					return rsColumns.getInt("COLUMN_TYPE");
 				}
-			}	
+			}
 		} catch (SQLException e) {
 			logger.error(e.getMessage(), e);
 			throw new RuntimeException(e);
@@ -241,9 +250,10 @@ public class DBSessionPostGIS extends DBSession {
 
 	/* GET TABLE AS STRING[][] */
 
+	@Override
 	public String[][] getTable(String tableName, String schema,
 			String whereClause, String[] orderBy, boolean desc)
-			throws SQLException {
+					throws SQLException {
 
 		String[] columnNames = getColumnNames(tableName, schema);
 
@@ -251,6 +261,7 @@ public class DBSessionPostGIS extends DBSession {
 				desc);
 	}
 
+	@Override
 	public String[][] getTable(String tableName, String schema,
 			String[] fieldNames, String whereClause, String[] orderBy,
 			boolean desc) {
@@ -289,30 +300,35 @@ public class DBSessionPostGIS extends DBSession {
 
 	}
 
+	@Override
 	public String[][] getTable(String tableName, String schema,
 			String[] orderBy, boolean desc) throws SQLException {
 		return getTable(tableName, schema, null, orderBy, desc);
 	}
 
+	@Override
 	public String[][] getTable(String tableName, String schema,
 			String whereClause) throws SQLException {
 		return getTable(tableName, schema, whereClause, null, false);
 	}
 
+	@Override
 	public String[][] getTable(String tableName, String whereClause)
 			throws SQLException {
 		return getTable(tableName, schema, whereClause, null, false);
 	}
 
+	@Override
 	public String[][] getTable(String tableName) throws SQLException {
 		return getTable(tableName, schema, null, null, false);
 	}
 
 	/* GET TABLE AS OBJECT[][] */
 
+	@Override
 	public Object[][] getTableAsObjects(String tableName, String schema,
 			String whereClause, String[] orderBy, boolean desc)
-			throws SQLException {
+					throws SQLException {
 
 		String[] columnNames = getColumnNames(tableName, schema);
 
@@ -320,6 +336,7 @@ public class DBSessionPostGIS extends DBSession {
 				orderBy, desc);
 	}
 
+	@Override
 	public Object[][] getTableAsObjects(String tableName, String schema,
 			String[] fieldNames, String whereClause, String[] orderBy,
 			boolean desc) throws SQLException {
@@ -351,30 +368,35 @@ public class DBSessionPostGIS extends DBSession {
 		return rows.toArray(new Object[0][0]);
 	}
 
+	@Override
 	public Object[][] getTableAsObjects(String tableName, String schema,
 			String[] orderBy, boolean desc) throws SQLException {
 		return getTableAsObjects(tableName, schema, null, orderBy, desc);
 	}
 
+	@Override
 	public Object[][] getTableAsObjects(String tableName, String schema,
 			String whereClause) throws SQLException {
 		return getTableAsObjects(tableName, schema, whereClause, null, false);
 	}
 
+	@Override
 	public Object[][] getTableAsObjects(String tableName, String whereClause)
 			throws SQLException {
 		return getTableAsObjects(tableName, schema, whereClause, null, false);
 	}
 
+	@Override
 	public Object[][] getTableAsObjects(String tableName) throws SQLException {
 		return getTableAsObjects(tableName, schema, null, null, false);
 	}
 
 	/* GET TABLE AS RESULTSET */
 
+	@Override
 	public ResultSet getTableAsResultSet(String tableName, String schema,
 			String whereClause, String[] orderBy, boolean desc)
-			throws SQLException {
+					throws SQLException {
 
 		String[] columnNames = getColumnNames(tableName, schema);
 
@@ -382,6 +404,7 @@ public class DBSessionPostGIS extends DBSession {
 				orderBy, desc);
 	}
 
+	@Override
 	public ResultSet getTableAsResultSet(String tableName, String schema,
 			String[] fieldNames, String whereClause, String[] orderBy,
 			boolean desc) throws SQLException {
@@ -391,21 +414,25 @@ public class DBSessionPostGIS extends DBSession {
 
 	}
 
+	@Override
 	public ResultSet getTableAsResultSet(String tableName, String schema,
 			String[] orderBy, boolean desc) throws SQLException {
 		return getTableAsResultSet(tableName, schema, null, orderBy, desc);
 	}
 
+	@Override
 	public ResultSet getTableAsResultSet(String tableName, String schema,
 			String whereClause) throws SQLException {
 		return getTableAsResultSet(tableName, schema, whereClause, null, false);
 	}
 
+	@Override
 	public ResultSet getTableAsResultSet(String tableName, String whereClause)
 			throws SQLException {
 		return getTableAsResultSet(tableName, schema, whereClause, null, false);
 	}
 
+	@Override
 	public ResultSet getTableAsResultSet(String tableName) throws SQLException {
 		return getTableAsResultSet(tableName, schema, null, null, false);
 	}
@@ -421,9 +448,9 @@ public class DBSessionPostGIS extends DBSession {
 		}
 
 		String query = "SELECT ";
-		
+
 		for (int i = 0; i < fieldNames.length; i++) {
-		    query = query + fieldNames[i] + ", ";
+			query = query + fieldNames[i] + ", ";
 		}
 
 		query = query.substring(0, query.length() - 2) + " FROM " + schema
@@ -465,6 +492,7 @@ public class DBSessionPostGIS extends DBSession {
 
 	/* GET BINARY STREAM */
 
+	@Override
 	public InputStream getBinaryStream(String tableName, String schema,
 			String fieldName, String whereClause) throws SQLException {
 		String[] fieldNames = { fieldName };
@@ -491,6 +519,7 @@ public class DBSessionPostGIS extends DBSession {
 
 	/* SET BINARY STREAM */
 
+	@Override
 	public void updateWithBinaryStream(String tableName, String schema,
 			String fieldName, InputStream is, int length, String[] columns,
 			Object[] values, String whereClause) throws SQLException {
@@ -521,6 +550,7 @@ public class DBSessionPostGIS extends DBSession {
 		}
 	}
 
+	@Override
 	public void insertWithBinaryStream(String tableName, String schema,
 			String fieldName, InputStream is, int length, String[] columns,
 			Object[] values) throws SQLException {
@@ -557,7 +587,7 @@ public class DBSessionPostGIS extends DBSession {
 
 	/*
 	 * NOTES ONTO ALL THE JOIN RELATED METHODS:
-	 * 
+	 *
 	 * Inside tableNames we must put all the tables we want to join, which will
 	 * be assigned the alphabet letters in order as alias (a, b, c...) so we can
 	 * avoid field names conflicts in all the other parameters (mainly
@@ -568,22 +598,22 @@ public class DBSessionPostGIS extends DBSession {
 	 * the base. Field names will probably repeat in this case, so remember that
 	 * we can use the aliases inside them as well (e.g. "a.cod_com",
 	 * "b.cod_com").
-	 * 
+	 *
 	 * To summarize, if we have N table names we must have N schemas and (N-1)*2
 	 * join fields.
-	 * 
-	 * 
+	 *
+	 *
 	 * EXAMPLE: we want to join the tables 'viviendas', 'parcelas' and
 	 * 'comunidades', being the three in the same schema, 'data'. Both
 	 * 'viviendas' and 'parcelas' are related by 'cod_viv', and 'comunidades'
 	 * and 'viviendas' by 'cod_com'. We must pass the next parameters (in its
 	 * precise order):
-	 * 
-	 * 
+	 *
+	 *
 	 * tableNames = {"viviendas", "parcelas", "comunidades"}
-	 * 
+	 *
 	 * schemas = {"data", "data", "data"}
-	 * 
+	 *
 	 * joinFields = {"a.cod_viv", "b.cod_viv", "a.cod_com", "c.cod_com"}
 	 */
 
@@ -672,14 +702,16 @@ public class DBSessionPostGIS extends DBSession {
 		while (rs.next()) {
 			String[] row = new String[fieldNames.length];
 			for (int i = 0; i < fieldNames.length; i++) {
-			 // elle styles in table elle._map_style are defined as 'xml' columns
-			    // for some reasons rs.getObject returns null and con.setTypeMap
-			    // is not working to set a custom mapping. So this workaround is used
-			    if (rs.getMetaData().getColumnType(i+1) == java.sql.Types.OTHER) {
-				row[i] = rs.getString(i+1);
-			    } else {
-				row[i] = format.toString(rs.getObject(i+1));
-			    }
+				// elle styles in table elle._map_style are defined as 'xml'
+				// columns
+				// for some reasons rs.getObject returns null and con.setTypeMap
+				// is not working to set a custom mapping. So this workaround is
+				// used
+				if (rs.getMetaData().getColumnType(i + 1) == java.sql.Types.OTHER) {
+					row[i] = rs.getString(i + 1);
+				} else {
+					row[i] = format.toString(rs.getObject(i + 1));
+				}
 			}
 			rows.add(row);
 		}
@@ -692,7 +724,7 @@ public class DBSessionPostGIS extends DBSession {
 	@Override
 	public String[][] getTableWithJoin(String[] tableNames, String[] schemas,
 			String[] joinFields, String[] orderBy, boolean desc)
-			throws SQLException {
+					throws SQLException {
 		return getTableWithJoin(tableNames, schemas, joinFields, null, orderBy,
 				desc);
 	}
@@ -728,9 +760,10 @@ public class DBSessionPostGIS extends DBSession {
 
 	/* GET DISTINCT VALUES FROM A COLUMN */
 
+	@Override
 	public String[] getDistinctValues(String tableName, String schema,
 			String fieldName, boolean sorted, boolean desc, String whereClause)
-			throws SQLException {
+					throws SQLException {
 
 		Connection con = conwp.getConnection();
 
@@ -772,24 +805,28 @@ public class DBSessionPostGIS extends DBSession {
 
 	}
 
+	@Override
 	public String[] getDistinctValues(String tableName, String schema,
 			String fieldName, boolean sorted, boolean desc) throws SQLException {
 		return getDistinctValues(tableName, schema, fieldName, sorted, desc,
 				null);
 	}
 
+	@Override
 	public String[] getDistinctValues(String tableName, String schema,
 			String fieldName) throws SQLException {
 		return getDistinctValues(tableName, schema, fieldName, false, false,
 				null);
 	}
 
+	@Override
 	public String[] getDistinctValues(String tableName, String fieldName)
 			throws SQLException {
 		return getDistinctValues(tableName, schema, fieldName, false, false,
 				null);
 	}
 
+	@Override
 	public String[] getTables(boolean onlyGeospatial) throws SQLException {
 
 		Connection con = conwp.getConnection();
@@ -824,12 +861,14 @@ public class DBSessionPostGIS extends DBSession {
 		return result;
 	}
 
+	@Override
 	public String[] getColumns(String table) throws SQLException {
 
 		return getColumns(null, table);
 
 	}
 
+	@Override
 	public String[] getColumns(String schema, String table) throws SQLException {
 
 		Connection con = conwp.getConnection();
@@ -851,10 +890,11 @@ public class DBSessionPostGIS extends DBSession {
 	public void deleteRows(String schema, String table, String whereClause) {
 
 		Connection con = conwp.getConnection();
-		String sql = String.format("DELETE FROM \"%s\".\"%s\" %s", schema, table, whereClause);
+		String sql = String.format("DELETE FROM \"%s\".\"%s\" %s", schema,
+				table, whereClause);
 		try {
 			Statement statement = con.createStatement();
-			statement.executeUpdate(sql);						
+			statement.executeUpdate(sql);
 		} catch (SQLException e) {
 			logger.error(e.getMessage(), e);
 			throw new RuntimeException(e);
@@ -864,14 +904,16 @@ public class DBSessionPostGIS extends DBSession {
 	}
 
 	@Override
-	public void insertRow(String schema, String table, Object[] values) throws SQLException {
+	public void insertRow(String schema, String table, Object[] values)
+			throws SQLException {
 
 		String[] columns = getColumnNames(table, schema);
 		insertRow(schema, table, columns, values);
 	}
 
 	@Override
-	public void insertRow(String schema, String table, String[] columns, Object[] values) {
+	public void insertRow(String schema, String table, String[] columns,
+			Object[] values) {
 
 		Connection con = conwp.getConnection();
 
@@ -901,7 +943,9 @@ public class DBSessionPostGIS extends DBSession {
 		}
 	}
 
-	public void updateRows(String schema, String tablename, String[] columns, Object[] values, String whereClause) {
+	@Override
+	public void updateRows(String schema, String tablename, String[] columns,
+			Object[] values, String whereClause) {
 
 		Connection con = conwp.getConnection();
 
@@ -917,7 +961,7 @@ public class DBSessionPostGIS extends DBSession {
 				for (int i = 0; i < values.length; i++) {
 					statement.setObject(i + 1, values[i]);
 				}
-				statement.executeUpdate();	
+				statement.executeUpdate();
 			} catch (SQLException e) {
 				logger.error(e.getMessage(), e);
 				throw new RuntimeException(e);
@@ -927,6 +971,7 @@ public class DBSessionPostGIS extends DBSession {
 		}
 	}
 
+	@Override
 	public boolean tableExists(String schema, String tablename) {
 
 		Connection con = conwp.getConnection();
@@ -953,23 +998,25 @@ public class DBSessionPostGIS extends DBSession {
 			conwp.close(con);
 		}
 	}
-	
+
 	@Override
 	public boolean schemaExists(String schema) {
 		Connection con = conwp.getConnection();
-		String sqlHasSchema = String.format("SELECT COUNT(*) AS schemaCount FROM information_schema.schemata WHERE schema_name = '%s'", schema);
+		String sqlHasSchema = String
+				.format("SELECT COUNT(*) AS schemaCount FROM information_schema.schemata WHERE schema_name = '%s'",
+						schema);
 		try {
-		    Statement stat = con.createStatement();
-		    ResultSet rs = stat.executeQuery(sqlHasSchema);
-		    rs.next();
-		    int schemaCount = rs.getInt("schemaCount");
-		    if (schemaCount == 1) {
-			return true;
-		    }
-		    return false;
+			Statement stat = con.createStatement();
+			ResultSet rs = stat.executeQuery(sqlHasSchema);
+			rs.next();
+			int schemaCount = rs.getInt("schemaCount");
+			if (schemaCount == 1) {
+				return true;
+			}
+			return false;
 		} catch (SQLException e) {
-		    logger.error(e.getMessage(), e);
-		    throw new RuntimeException(e);
+			logger.error(e.getMessage(), e);
+			throw new RuntimeException(e);
 		} finally {
 			conwp.close(con);
 		}
@@ -1002,10 +1049,10 @@ public class DBSessionPostGIS extends DBSession {
 				+ database;
 	}
 
-//	@Override
-//	public String getAlphanumericDriverName() {
-//		return ALPHANUMERIC_DRIVER_NAME;
-//	}
+	// @Override
+	// public String getAlphanumericDriverName() {
+	// return ALPHANUMERIC_DRIVER_NAME;
+	// }
 
 	@Override
 	public String getCompleteTableName(String name, String schema) {
