@@ -12,7 +12,7 @@
 	<parent>
 		<groupId>org.gvsig</groupId>
 		<artifactId>org.gvsig.desktop.plugin</artifactId>
-		<version>2.0.100</version>
+		<version>2.0.157</version>
 	</parent>
 
 
@@ -22,65 +22,65 @@
   				<artifactId>junit</artifactId>
   				<version>4.12</version>
 			</dependency>
-		
-		
-			
+
+
+
 		  <!-- http://mvnrepository.com/artifact/net.java.abeille/abeille -->
 		  <dependency>
           	<groupId>com.jeta</groupId>
             <artifactId>formsrt</artifactId>
             <version>2.1.0_M3-1</version>
           </dependency>
-            
+
           <dependency>
 			<groupId>org.gvsig</groupId>
 			<artifactId>org.gvsig.projection.api</artifactId>
 			<scope>compile</scope>
-		  </dependency>  
-            
+		  </dependency>
+
           <dependency>
 				<groupId>org.gvsig</groupId>
 				<artifactId>org.gvsig.tools.lib</artifactId>
 				<scope>compile</scope>
-		 </dependency>  
-            
+		 </dependency>
+
             <dependency>
 				<groupId>es.icarto</groupId>
 				<artifactId>es.icarto.gvsig.commons</artifactId>
 				<version>1.0.0-SNAPSHOT</version>
 				<scope>compile</scope>
-		 </dependency>  
-            
+		 </dependency>
+
 			<dependency>
 				<groupId>org.gvsig</groupId>
 				<artifactId>org.gvsig.andami</artifactId>
 				<scope>compile</scope>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>org.gvsig</groupId>
 				<artifactId>org.gvsig.app.mainplugin</artifactId>
 				<scope>compile</scope>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>org.gvsig</groupId>
 				<artifactId>org.gvsig.ui</artifactId>
 				<scope>compile</scope>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>org.gvsig</groupId>
 				<artifactId>org.gvsig.utils</artifactId>
 				<scope>compile</scope>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>org.gvsig</groupId>
 				<artifactId>org.gvsig.fmap.mapcontext.api</artifactId>
 				<scope>compile</scope>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>org.gvsig</groupId>
 				<artifactId>org.gvsig.fmap.dal.api</artifactId>
@@ -91,7 +91,7 @@
 				<artifactId>org.gvsig.fmap.dal.impl</artifactId>
 				<scope>compile</scope>
 			</dependency>
-		
+
 			<dependency>
 				<groupId>org.gvsig</groupId>
 				<artifactId>org.gvsig.fmap.dal.db.lib</artifactId>
@@ -102,10 +102,10 @@
 				<artifactId>org.gvsig.fmap.dal.db.jdbc</artifactId>
 				<scope>compile</scope>
 			</dependency>
-			
-			
+
+
 		</dependencies>
-	
+
 
 
 
