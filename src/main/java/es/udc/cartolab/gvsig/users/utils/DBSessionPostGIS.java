@@ -120,7 +120,7 @@ public class DBSessionPostGIS extends DBSession {
 	 */
 	public static DBSession createConnection(String server, int port,
 			String database, String schema, String username, String password)
-			throws DataException {
+					throws DataException {
 		if (instance != null) {
 			instance.close();
 		}
@@ -253,7 +253,7 @@ public class DBSessionPostGIS extends DBSession {
 	@Override
 	public String[][] getTable(String tableName, String schema,
 			String whereClause, String[] orderBy, boolean desc)
-					throws SQLException {
+			throws SQLException {
 
 		String[] columnNames = getColumnNames(tableName, schema);
 
@@ -328,7 +328,7 @@ public class DBSessionPostGIS extends DBSession {
 	@Override
 	public Object[][] getTableAsObjects(String tableName, String schema,
 			String whereClause, String[] orderBy, boolean desc)
-					throws SQLException {
+			throws SQLException {
 
 		String[] columnNames = getColumnNames(tableName, schema);
 
@@ -396,7 +396,7 @@ public class DBSessionPostGIS extends DBSession {
 	@Override
 	public ResultSet getTableAsResultSet(String tableName, String schema,
 			String whereClause, String[] orderBy, boolean desc)
-					throws SQLException {
+			throws SQLException {
 
 		String[] columnNames = getColumnNames(tableName, schema);
 
@@ -587,7 +587,7 @@ public class DBSessionPostGIS extends DBSession {
 
 	/*
 	 * NOTES ONTO ALL THE JOIN RELATED METHODS:
-	 *
+	 * 
 	 * Inside tableNames we must put all the tables we want to join, which will
 	 * be assigned the alphabet letters in order as alias (a, b, c...) so we can
 	 * avoid field names conflicts in all the other parameters (mainly
@@ -598,22 +598,22 @@ public class DBSessionPostGIS extends DBSession {
 	 * the base. Field names will probably repeat in this case, so remember that
 	 * we can use the aliases inside them as well (e.g. "a.cod_com",
 	 * "b.cod_com").
-	 *
+	 * 
 	 * To summarize, if we have N table names we must have N schemas and (N-1)*2
 	 * join fields.
-	 *
-	 *
+	 * 
+	 * 
 	 * EXAMPLE: we want to join the tables 'viviendas', 'parcelas' and
 	 * 'comunidades', being the three in the same schema, 'data'. Both
 	 * 'viviendas' and 'parcelas' are related by 'cod_viv', and 'comunidades'
 	 * and 'viviendas' by 'cod_com'. We must pass the next parameters (in its
 	 * precise order):
-	 *
-	 *
+	 * 
+	 * 
 	 * tableNames = {"viviendas", "parcelas", "comunidades"}
-	 *
+	 * 
 	 * schemas = {"data", "data", "data"}
-	 *
+	 * 
 	 * joinFields = {"a.cod_viv", "b.cod_viv", "a.cod_com", "c.cod_com"}
 	 */
 
@@ -724,7 +724,7 @@ public class DBSessionPostGIS extends DBSession {
 	@Override
 	public String[][] getTableWithJoin(String[] tableNames, String[] schemas,
 			String[] joinFields, String[] orderBy, boolean desc)
-					throws SQLException {
+			throws SQLException {
 		return getTableWithJoin(tableNames, schemas, joinFields, null, orderBy,
 				desc);
 	}
@@ -763,7 +763,7 @@ public class DBSessionPostGIS extends DBSession {
 	@Override
 	public String[] getDistinctValues(String tableName, String schema,
 			String fieldName, boolean sorted, boolean desc, String whereClause)
-					throws SQLException {
+			throws SQLException {
 
 		Connection con = conwp.getConnection();
 
@@ -884,6 +884,33 @@ public class DBSessionPostGIS extends DBSession {
 			result[i] = cols.get(i);
 		}
 		return result;
+	}
+
+	@Override
+	/**
+	 * Only returns the columns of the table that has some not null values in it
+	 */
+	public List<String> getColumnsWithNotNulls(String schema, String table)
+			throws SQLException {
+
+		Connection con = conwp.getConnection();
+		DatabaseMetaData metadataDB = con.getMetaData();
+
+		ResultSet columns = metadataDB.getColumns(null, schema, table, "%");
+		List<String> cols = new ArrayList<String>();
+		while (columns.next()) {
+			String columnName = columns.getString("Column_name");
+			String sql = String.format(
+					"SELECT count(*) FROM \"%s\".\"%s\" WHERE %s IS NOT NULL",
+					schema, table, columnName);
+			Statement statement = con.createStatement();
+			ResultSet rs = statement.executeQuery(sql);
+			rs.next();
+			if (rs.getInt(1) > 0) {
+				cols.add(columnName);
+			}
+		}
+		return cols;
 	}
 
 	@Override

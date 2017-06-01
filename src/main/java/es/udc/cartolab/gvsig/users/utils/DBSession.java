@@ -13,13 +13,14 @@
  *
  * You should have received a copy of the GNU General Public License along with extDBConnection.
  * If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 package es.udc.cartolab.gvsig.users.utils;
 
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.cresques.cts.IProjection;
 import org.gvsig.fmap.dal.exception.DataException;
@@ -31,7 +32,6 @@ import es.icarto.gvsig.commons.format.IFormat;
 import es.icarto.gvsig.commons.gvsig2.ConnectionWithParams;
 import es.icarto.gvsig.commons.gvsig2.SingleDBConnectionManager;
 
-
 public abstract class DBSession {
 
 	protected static DBSession instance = null;
@@ -41,16 +41,16 @@ public abstract class DBSession {
 	protected String database = "", username = "", password = "", server = "";
 	protected int port = 0;
 	public static String CONNECTION_STRING_BEGINNING;
-	
-	protected QueryBuilder builder= new QueryBuilder();
+
+	protected QueryBuilder builder = new QueryBuilder();
 
 	/**
 	 * Creates a new PostGIS DB Connection or changes the current one.
-	 * 
+	 *
 	 * Method created in order to retain compatibility. We should instantiate
 	 * the specific session we need because each one may accept a different set
 	 * of parameters.
-	 * 
+	 *
 	 * @param server
 	 * @param port
 	 * @param database
@@ -78,14 +78,13 @@ public abstract class DBSession {
 			String username, String password) throws DataException {
 		if (connString.startsWith(DBSessionPostGIS.CONNECTION_STRING_BEGINNING)) {
 			return DBSessionPostGIS.createConnectionFromConnString(connString,
-					username,
-					password);
+					username, password);
 		}
 		return null;
 	}
 
 	/**
-	 * 
+	 *
 	 * @return the DB Connection or null if there isn't any
 	 */
 	public static DBSession getCurrentSession() {
@@ -99,12 +98,12 @@ public abstract class DBSession {
 	/**
 	 * To be used only when there's any error (SQLException) that is not handled
 	 * by gvSIG
-	 * 
+	 *
 	 * @return the session
 	 * @throws DBException
 	 */
 	public static DBSession reconnect() throws DataException {
-		if (instance!=null) {
+		if (instance != null) {
 			return instance.restartConnection();
 		}
 		return null;
@@ -117,7 +116,7 @@ public abstract class DBSession {
 	public Connection getJavaConnection() {
 		return conwp.getConnection();
 	}
-	
+
 	public ConnectionWithParams getConnectionWithParams() {
 		return conwp;
 	}
@@ -125,8 +124,8 @@ public abstract class DBSession {
 	public void close() throws DataException {
 
 		user = null;
-		
-		if (conwp!=null) {
+
+		if (conwp != null) {
 			SingleDBConnectionManager.instance().closeAndRemove(conwp);
 			conwp = null;
 		}
@@ -137,9 +136,9 @@ public abstract class DBSession {
 	public DBUser getDBUser() {
 		return user;
 	}
-	
+
 	public static void setFormatter(IFormat f) {
-	    format = f; 
+		format = f;
 	}
 
 	public String getServer() {
@@ -260,14 +259,14 @@ public abstract class DBSession {
 
 	/* SET BINARY STREAM */
 
-	public abstract void updateWithBinaryStream(String tableName, String schema,
-			String fieldName, InputStream is, int length, String[] columns,
-			Object[] values, String whereClause)
+	public abstract void updateWithBinaryStream(String tableName,
+			String schema, String fieldName, InputStream is, int length,
+			String[] columns, Object[] values, String whereClause)
 			throws SQLException;
 
-	public abstract void insertWithBinaryStream(String tableName, String schema,
-			String fieldName, InputStream is, int length, String[] columns,
-			Object[] values) throws SQLException;
+	public abstract void insertWithBinaryStream(String tableName,
+			String schema, String fieldName, InputStream is, int length,
+			String[] columns, Object[] values) throws SQLException;
 
 	/* GET TABLES WITH JOIN */
 
@@ -314,8 +313,7 @@ public abstract class DBSession {
 
 	public abstract String[][] getTableWithJoin(String[] tableNames,
 			String[] schemas, String[] joinFields, String[] orderBy,
-			boolean desc)
-			throws SQLException;
+			boolean desc) throws SQLException;
 
 	public abstract String[][] getTableWithJoin(String[] tableNames,
 			String[] schemas, String[] joinFields, String whereClause)
@@ -350,30 +348,34 @@ public abstract class DBSession {
 	public abstract String[] getColumns(String schema, String table)
 			throws SQLException;
 
-	public abstract void deleteRows(String schema, String table, String whereClause);
+	public abstract void deleteRows(String schema, String table,
+			String whereClause);
 
 	public abstract void insertRow(String schema, String table, Object[] values)
 			throws SQLException;
 
-	public abstract void insertRow(String schema, String table, String[] columns, Object[] values);
+	public abstract void insertRow(String schema, String table,
+			String[] columns, Object[] values);
 
 	public abstract void updateRows(String schema, String tablename,
 			String[] columns, Object[] values, String whereClause)
 			throws SQLException;
 
 	public abstract boolean tableExists(String schema, String tablename);
+
 	public abstract boolean schemaExists(String schema);
+
 	public abstract void createSchema(String schema);
 
 	public abstract String getCompleteTableName(String name, String schema);
 
-//	public abstract String getAlphanumericDriverName();
+	// public abstract String getAlphanumericDriverName();
 
 	protected String getCharForNumber(int i) {
 		return i > 0 && i < 27 ? String.valueOf((char) (i + 96)) : null;
 	}
 
-
-	
+	public abstract List<String> getColumnsWithNotNulls(String schema,
+			String table) throws SQLException;
 
 }
