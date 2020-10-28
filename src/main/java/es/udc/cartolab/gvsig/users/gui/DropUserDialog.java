@@ -35,6 +35,7 @@ import javax.swing.JTextField;
 
 import org.gvsig.andami.PluginServices;
 import org.gvsig.andami.ui.mdiManager.IWindow;
+import org.gvsig.andami.ui.mdiManager.MDIManagerFactory;
 import org.gvsig.andami.ui.mdiManager.WindowInfo;
 import org.gvsig.fmap.dal.exception.DataException;
 import org.slf4j.Logger;
@@ -131,7 +132,7 @@ public class DropUserDialog extends JPanel implements IWindow, ActionListener {
 	public void actionPerformed(ActionEvent event) {
 		// TODO Auto-generated method stub
 		if (event.getSource() == cancelButton) {
-			PluginServices.getMDIManager().closeWindow(this);
+			MDIManagerFactory.getManager().closeWindow(this);
 		}
 		if ((event.getSource() == okButton) || (event.getSource() == userTF)) {
 			DBSession dbs = DBSession.getCurrentSession();

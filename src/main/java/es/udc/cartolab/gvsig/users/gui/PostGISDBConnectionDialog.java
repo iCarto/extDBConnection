@@ -32,6 +32,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.gvsig.andami.PluginServices;
+import org.gvsig.andami.ui.mdiManager.MDIManagerFactory;
 import org.gvsig.app.extension.ProjectExtension;
 import org.gvsig.fmap.dal.exception.DataException;
 import org.gvsig.utils.XMLEntity;
@@ -55,8 +56,7 @@ import es.udc.cartolab.gvsig.users.utils.DBSessionPostGIS;
 @SuppressWarnings("serial")
 public class PostGISDBConnectionDialog extends AbstractGVWindow {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(PostGISDBConnectionDialog.class);
+	private static final Logger logger = LoggerFactory.getLogger(PostGISDBConnectionDialog.class);
 
 	private final static int INIT_MIN_HEIGHT = 175;
 	private final static int INIT_MAX_HEIGHT = 350;
@@ -93,39 +93,39 @@ public class PostGISDBConnectionDialog extends AbstractGVWindow {
 	@Override
 	protected JPanel getCenterPanel() {
 
-		if (centerPanel == null) {
-			centerPanel = new JPanel();
+		if (this.centerPanel == null) {
+			this.centerPanel = new JPanel();
 
-			InputStream resourceAsStream = this.getClass().getClassLoader()
+			final InputStream resourceAsStream = this.getClass().getClassLoader()
 					.getResourceAsStream("forms/postgresDbConnection.xml");
 			FormPanel form;
 			try {
 				form = new FormPanel(resourceAsStream);
-			} catch (FormException e) {
+			} catch (final FormException e) {
 				logger.error(e.getMessage(), e);
-				return centerPanel;
+				return this.centerPanel;
 			}
-			centerPanel.add(form);
-			serverTF = form.getTextField(ID_SERVERTF);
-			portTF = form.getTextField(ID_PORTTF);
-			userTF = form.getTextField(ID_USERTF);
-			passTF = form.getTextField(ID_PASSTF);
-			dbTF = form.getTextField(ID_DBTF);
-			schemaTF = form.getTextField(ID_SCHEMATF);
-			advForm = (JComponent) form.getComponentByName(ID_ADVF);
-			advCHB = form.getCheckBox(ID_ADVCHB);
+			this.centerPanel.add(form);
+			this.serverTF = form.getTextField(ID_SERVERTF);
+			this.portTF = form.getTextField(ID_PORTTF);
+			this.userTF = form.getTextField(ID_USERTF);
+			this.passTF = form.getTextField(ID_PASSTF);
+			this.dbTF = form.getTextField(ID_DBTF);
+			this.schemaTF = form.getTextField(ID_SCHEMATF);
+			this.advForm = (JComponent) form.getComponentByName(ID_ADVF);
+			this.advCHB = form.getCheckBox(ID_ADVCHB);
 			showAdvancedProperties(false);
-			advCHB.addActionListener(this);
+			this.advCHB.addActionListener(this);
 
 			initLogo(form);
 
 			// localization
-			JLabel serverLabel = form.getLabel(ID_SERVERL);
-			JLabel portLabel = form.getLabel(ID_PORTL);
-			JLabel userLabel = form.getLabel(ID_USERL);
-			JLabel passLabel = form.getLabel(ID_PASSL);
-			JLabel schemaLabel = form.getLabel(ID_SCHEMAL);
-			JLabel dbLabel = form.getLabel(ID_DBL);
+			final JLabel serverLabel = form.getLabel(ID_SERVERL);
+			final JLabel portLabel = form.getLabel(ID_PORTL);
+			final JLabel userLabel = form.getLabel(ID_USERL);
+			final JLabel passLabel = form.getLabel(ID_PASSL);
+			final JLabel schemaLabel = form.getLabel(ID_SCHEMAL);
+			final JLabel dbLabel = form.getLabel(ID_DBL);
 
 			serverLabel.setText(_("server"));
 			portLabel.setText(_("port"));
@@ -133,80 +133,76 @@ public class PostGISDBConnectionDialog extends AbstractGVWindow {
 			userLabel.setText(_("user_name"));
 			passLabel.setText(_("user_pass"));
 			schemaLabel.setText(_("schema"));
-			advCHB.setText(_("advanced_options"));
+			this.advCHB.setText(_("advanced_options"));
 
-			DBSession dbs = DBSession.getCurrentSession();
-			if ((dbs != null) && (dbs instanceof DBSessionPostGIS)) {
-				serverTF.setText(((DBSessionPostGIS) dbs).getServer());
-				portTF.setText(Integer.toString(((DBSessionPostGIS) dbs)
-						.getPort()));
-				userTF.setText(((DBSessionPostGIS) dbs).getUserName());
-				dbTF.setText(((DBSessionPostGIS) dbs).getDatabase());
-				schemaTF.setText(((DBSessionPostGIS) dbs).getSchema());
-				advCHB.setSelected(false);
+			final DBSession dbs = DBSession.getCurrentSession();
+			if (dbs != null && dbs instanceof DBSessionPostGIS) {
+				this.serverTF.setText(((DBSessionPostGIS) dbs).getServer());
+				this.portTF.setText(Integer.toString(((DBSessionPostGIS) dbs).getPort()));
+				this.userTF.setText(((DBSessionPostGIS) dbs).getUserName());
+				this.dbTF.setText(((DBSessionPostGIS) dbs).getDatabase());
+				this.schemaTF.setText(((DBSessionPostGIS) dbs).getSchema());
+				this.advCHB.setSelected(false);
 			} else {
 				fillDialogFromPluginPersistence();
 			}
 
-			passTF.requestFocusInWindow();
+			this.passTF.requestFocusInWindow();
 
 		}
-		return centerPanel;
+		return this.centerPanel;
 	}
 
 	private void initLogo(FormPanel form) {
 		if (!UsersPreferencePage.LOGO.isEmpty()) {
-			File logo = new File(UsersPreferencePage.LOGO);
+			final File logo = new File(UsersPreferencePage.LOGO);
 			if (logo.isFile()) {
-				ImageComponent image = (ImageComponent) form
-						.getComponentByName("image");
-				ImageIcon icon = new ImageIcon(logo.getAbsolutePath());
+				final ImageComponent image = (ImageComponent) form.getComponentByName("image");
+				final ImageIcon icon = new ImageIcon(logo.getAbsolutePath());
 				image.setIcon(icon);
 			}
 		}
 	}
 
 	private void fillDialogFromPluginPersistence() {
-		Persistence p = new Persistence();
+		final Persistence p = new Persistence();
 		if (p.paramsAreSet()) {
-			serverTF.setText(p.host);
-			portTF.setText(p.port + "");
-			dbTF.setText(p.database);
-			userTF.setText(p.user);
-			schemaTF.setText(p.schema);
+			this.serverTF.setText(p.host);
+			this.portTF.setText(p.port + "");
+			this.dbTF.setText(p.database);
+			this.userTF.setText(p.user);
+			this.schemaTF.setText(p.schema);
 		} else {
 			showAdvancedProperties(true);
-			advCHB.setSelected(true);
+			this.advCHB.setSelected(true);
 		}
 	}
 
-	private void saveConfig(String host, String port, String database,
-			String schema, String user) {
+	private void saveConfig(String host, String port, String database, String schema, String user) {
 		// TODO: fpuga: If in the future we will want save more than one
 		// configuration this approach is not valid. Whe should store each
 		// connection in a different XMLEntity and in the main XMLEntity store a
 		// "lastConnectionUsed" value
 
-		XMLEntity xml = PluginServices.getPluginServices(this)
-				.getPersistentXML();
+		final XMLEntity xml = PluginServices.getPluginServices(this).getPersistentXML();
 		xml.putProperty(Persistence.HOST_KEY, host);
 		xml.putProperty(Persistence.PORT_KEY, port);
 		xml.putProperty(Persistence.DATABASE_KEY, database);
 		xml.putProperty(Persistence.USER_KEY, user);
 		xml.putProperty(Persistence.SCHEMA_KEY, schema);
-		PluginServices.getMDIManager().restoreCursor();
-		String title = " " + _("connectedTitlePostGIS", user, host);
+		MDIManagerFactory.getManager().restoreCursor();
+		final String title = " " + _("connectedTitlePostGIS", user, host);
 		PluginServices.getMainFrame().setTitle(title);
 	}
 
 	@Override
 	protected JPanel getNorthPanel() {
 		if (headerImg != null) {
-			maxHeight = INIT_MAX_HEIGHT + headerImg.getIconHeight();
-			minHeight = INIT_MIN_HEIGHT + headerImg.getIconHeight();
+			this.maxHeight = INIT_MAX_HEIGHT + headerImg.getIconHeight();
+			this.minHeight = INIT_MIN_HEIGHT + headerImg.getIconHeight();
 		} else {
-			maxHeight = INIT_MAX_HEIGHT;
-			minHeight = INIT_MIN_HEIGHT;
+			this.maxHeight = INIT_MAX_HEIGHT;
+			this.minHeight = INIT_MIN_HEIGHT;
 		}
 		return super.getNorthPanel();
 	}
@@ -214,32 +210,31 @@ public class PostGISDBConnectionDialog extends AbstractGVWindow {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		super.actionPerformed(e);
-		if (e.getSource() == advCHB) {
-			showAdvancedProperties(advCHB.isSelected());
+		if (e.getSource() == this.advCHB) {
+			showAdvancedProperties(this.advCHB.isSelected());
 		}
 	}
 
 	private void showAdvancedProperties(boolean show) {
 		int height;
 		if (show) {
-			height = maxHeight;
+			height = this.maxHeight;
 		} else {
-			height = minHeight;
+			height = this.minHeight;
 		}
 		setHeight(height);
-		advForm.setVisible(show);
+		this.advForm.setVisible(show);
 	}
 
 	private boolean activeSession() {
 
-		DBSession dbs = DBSession.getCurrentSession();
+		final DBSession dbs = DBSession.getCurrentSession();
 		if (dbs != null) {
-			ProjectExtension pExt = (ProjectExtension) PluginServices
-					.getExtension(ProjectExtension.class);
+			final ProjectExtension pExt = (ProjectExtension) PluginServices.getExtension(ProjectExtension.class);
 			pExt.execute("application-project-new");
 			try {
 				dbs.close();
-			} catch (DataException e) {
+			} catch (final DataException e) {
 				logger.error(e.getMessage(), e);
 			}
 		}
@@ -256,41 +251,39 @@ public class PostGISDBConnectionDialog extends AbstractGVWindow {
 				return;
 			}
 
-			PluginServices.getMDIManager().setWaitCursor();
+			MDIManagerFactory.getManager().setWaitCursor();
 
-			String portS = portTF.getText().trim();
-			int port = Integer.parseInt(portS);
-			String server = serverTF.getText().trim();
-			String username = userTF.getText().trim();
-			String password = passTF.getText();
-			String schema = schemaTF.getText();
-			String database = dbTF.getText();
+			final String portS = this.portTF.getText().trim();
+			final int port = Integer.parseInt(portS);
+			final String server = this.serverTF.getText().trim();
+			final String username = this.userTF.getText().trim();
+			final String password = this.passTF.getText();
+			final String schema = this.schemaTF.getText();
+			final String database = this.dbTF.getText();
 
-			DBSessionPostGIS.createConnection(server, port, database, schema,
-					username, password);
+			DBSessionPostGIS.createConnection(server, port, database, schema, username, password);
 
 			closeWindow();
 
 			saveConfig(server, portS, database, schema, username);
 			PluginServices.getMainFrame().enableControls();
-		} catch (NumberFormatException e2) {
-			JOptionPane.showMessageDialog(this, _("portError"), _("dataError"),
-					JOptionPane.ERROR_MESSAGE);
-		} catch (DataException e1) {
+		} catch (final NumberFormatException e2) {
+			JOptionPane.showMessageDialog(this, _("portError"), _("dataError"), JOptionPane.ERROR_MESSAGE);
+		} catch (final DataException e1) {
 			// Login error
 			logger.error(e1.getMessage(), e1);
-			JOptionPane.showMessageDialog(this, _("databaseConnectionError"),
-					_("connectionError"), JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, _("databaseConnectionError"), _("connectionError"),
+					JOptionPane.ERROR_MESSAGE);
 
 		} finally {
-			PluginServices.getMDIManager().restoreCursor();
-			passTF.setText("");
+			MDIManagerFactory.getManager().restoreCursor();
+			this.passTF.setText("");
 		}
 	}
 
 	@Override
 	protected Component getDefaultFocusComponent() {
-		return passTF;
+		return this.passTF;
 	}
 
 }

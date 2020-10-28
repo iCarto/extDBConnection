@@ -19,6 +19,7 @@ package es.udc.cartolab.gvsig.users;
 
 import org.gvsig.andami.PluginServices;
 import org.gvsig.andami.plugins.Extension;
+import org.gvsig.andami.ui.mdiManager.MDIManagerFactory;
 
 import es.udc.cartolab.gvsig.users.gui.DropUserDialog;
 import es.udc.cartolab.gvsig.users.utils.DBSession;
@@ -27,7 +28,7 @@ public class DropUserExtension extends Extension {
 
 	public void execute(String actionCommand) {
 		DropUserDialog dialog = new DropUserDialog();
-		PluginServices.getMDIManager().addWindow(dialog);
+		MDIManagerFactory.getManager().addWindow(dialog);
 	}
 
 	public void initialize() {	

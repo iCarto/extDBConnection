@@ -35,6 +35,7 @@ import javax.swing.JPanel;
 
 import org.gvsig.andami.PluginServices;
 import org.gvsig.andami.ui.mdiManager.IWindow;
+import org.gvsig.andami.ui.mdiManager.MDIManagerFactory;
 import org.gvsig.andami.ui.mdiManager.WindowInfo;
 
 
@@ -159,11 +160,11 @@ public abstract class AbstractGVWindow extends JPanel implements IWindow,
 	}
 
 	public void closeWindow() {
-		PluginServices.getMDIManager().closeWindow(this);
+		MDIManagerFactory.getManager().closeWindow(this);
 	}
 
 	public void openWindow() {
-		PluginServices.getMDIManager().addCentredWindow(this);
+		MDIManagerFactory.getManager().addCentredWindow(this);
 		getRootPane().setDefaultButton(okButton);
 		getRootPane().setFocusTraversalPolicyProvider(true);
 	if (getDefaultFocusComponent() != null) {
