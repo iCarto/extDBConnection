@@ -173,6 +173,7 @@ public class DBSessionPostGIS extends DBSession {
 		params.setCRS(projection);
 		params.setDynValue("schema", schema);
 		params.setDynValue("table", tableName);
+//		params.setPkFields("gid");
 		if (whereClause.compareTo("") != 0) {
 			params.setBaseFilter(whereClause);
 		}
@@ -896,7 +897,7 @@ public class DBSessionPostGIS extends DBSession {
 		Connection con = conwp.getConnection();
 		DatabaseMetaData metadataDB = con.getMetaData();
 
-		ResultSet columns = metadataDB.getColumns(null, schema, table, "%");
+		ResultSet columns = metadataDB.getColumns(null, schema, table, null);
 		List<String> cols = new ArrayList<String>();
 		while (columns.next()) {
 			String columnName = columns.getString("Column_name");
