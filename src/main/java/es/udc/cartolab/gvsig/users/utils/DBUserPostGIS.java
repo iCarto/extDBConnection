@@ -17,7 +17,6 @@
 package es.udc.cartolab.gvsig.users.utils;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -26,10 +25,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DBUserPostGIS implements DBUser {
-	
-	
-	private static final Logger logger = LoggerFactory
-			.getLogger(DBUserPostGIS.class);
+
+	private static final Logger logger = LoggerFactory.getLogger(DBUserPostGIS.class);
 
 	private String username;
 	private String password;
@@ -63,11 +60,10 @@ public class DBUserPostGIS implements DBUser {
 		return superuser;
 	}
 
-	private boolean checkRoleSuperUserRecursive(Connection con, String memberid) throws SQLException{
+	private boolean checkRoleSuperUserRecursive(Connection con, String memberid) throws SQLException {
 		Statement stat = con.createStatement();
-		String query = "SELECT a.rolname AS rolname, a.oid AS rolid, a.rolsuper AS rolsuper " +
-				"FROM pg_roles a JOIN pg_auth_members b ON a.oid=b.roleid " +
-				"WHERE b.member = " + memberid + ";";
+		String query = "SELECT a.rolname AS rolname, a.oid AS rolid, a.rolsuper AS rolsuper "
+				+ "FROM pg_roles a JOIN pg_auth_members b ON a.oid=b.roleid " + "WHERE b.member = " + memberid + ";";
 		ResultSet rs = stat.executeQuery(query);
 
 		while (rs.next()) {
@@ -88,18 +84,17 @@ public class DBUserPostGIS implements DBUser {
 		boolean isRole = isAdmin;
 		if (!isRole) {
 			Statement stat = con.createStatement();
-			String query = "SELECT member FROM pg_auth_members WHERE member='" +
-			userid + "' AND roleid=(SELECT oid FROM pg_roles WHERE rolname='" +
-			role + "');";
+			String query = "SELECT member FROM pg_auth_members WHERE member='" + userid
+					+ "' AND roleid=(SELECT oid FROM pg_roles WHERE rolname='" + role + "');";
 			ResultSet rs = stat.executeQuery(query);
-			int i=0;
+			int i = 0;
 			while (rs.next()) {
 				i++;
-				if (i>1) {
+				if (i > 1) {
 					break;
 				}
 			}
-			isRole = i==1;
+			isRole = i == 1;
 		}
 		return isRole;
 	}
@@ -122,7 +117,7 @@ public class DBUserPostGIS implements DBUser {
 		Statement st = con.createStatement();
 		st.executeUpdate(sql);
 		if (!con.getAutoCommit()) {
-			con.commit();			
+			con.commit();
 		}
 		st.close();
 	}
@@ -170,8 +165,7 @@ public class DBUserPostGIS implements DBUser {
 		if (isAdmin) {
 			return true;
 		}
-		DBSessionPostGIS dbs = (DBSessionPostGIS) DBSession
-				.getCurrentSession();
+		DBSessionPostGIS dbs = (DBSessionPostGIS) DBSession.getCurrentSession();
 		Connection con = dbs.getJavaConnection();
 		String dbName = dbs.getDatabase();
 		String query = "SELECT has_database_privilege('" + dbName + "', 'create') as can_do";

@@ -23,69 +23,74 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DBAdminUtils {
-	
+
 	private DBAdminUtils() {
-		
+
 	}
+
 	/**
 	 * Creates a new user
-	 * @param con a connection to the database, createrole privilege or administrador membership is required
+	 * 
+	 * @param con      a connection to the database, createrole privilege or
+	 *                 administrador membership is required
 	 * @param username the username to create
 	 * @param password the password
-	 * @throws SQLException if the user has no permission to create user or the username already exists.
+	 * @throws SQLException if the user has no permission to create user or the
+	 *                      username already exists.
 	 */
 	public static void createUser(Connection con, String username, String password) throws SQLException {
 
 		String usernameSanitized = username.replace("'", "''");
 		String passSanitized = password.replace("'", "''");
-		String sql = "CREATE USER " + usernameSanitized +";";
+		String sql = "CREATE USER " + usernameSanitized + ";";
 		Statement stat = con.createStatement();
 		stat.execute(sql);
 		sql = "ALTER ROLE " + usernameSanitized + " WITH ENCRYPTED PASSWORD '" + passSanitized + "'";
 		stat.executeUpdate(sql);
-		
+
 		if (!con.getAutoCommit()) {
 			con.commit();
 		}
 		stat.close();
-		
-
 
 	}
-	
+
 	/**
 	 * Grants role to the given user
-	 * @param con a connection to the database, admin privilege or administrator membership is required.
+	 * 
+	 * @param con      a connection to the database, admin privilege or
+	 *                 administrator membership is required.
 	 * @param username the username that will be granted with the role.
-	 * @param role the role to grant.
+	 * @param role     the role to grant.
 	 * @throws SQLException
 	 */
 	public static void grantRole(Connection con, String username, String role) throws SQLException {
-		
+
 		String sql = "SET ROLE administrador;";
 		Statement stat = con.createStatement();
 		stat.execute(sql);
-		
+
 		sql = "GRANT %s TO %s;";
 		sql = String.format(sql, role, username);
 		stat = con.createStatement();
 		stat.execute(sql);
-		
+
 		sql = "RESET ROLE";
 		stat = con.createStatement();
 		stat.execute(sql);
-		
+
 	}
-	
+
 	/**
 	 * Checks if exists a user on the database.
-	 * @param con the connection to the database.
-	 * @param username the user to check 
+	 * 
+	 * @param con      the connection to the database.
+	 * @param username the user to check
 	 * @return true if exits, false if not.
 	 * @throws SQLException
 	 */
 	public static boolean existsUser(Connection con, String username) throws SQLException {
-		
+
 		String query = "SELECT COUNT(*) AS number FROM pg_user WHERE usename=?";
 		PreparedStatement stat = con.prepareStatement(query);
 		stat.setString(1, username);
@@ -93,14 +98,15 @@ public class DBAdminUtils {
 		rs.next();
 		int numUsers = rs.getInt("number");
 		return numUsers > 0;
-		
+
 	}
-	
+
 	/**
 	 * Drops the given user
-	 * @param con the connection to the database
+	 * 
+	 * @param con      the connection to the database
 	 * @param username the user to be removed
-	 * @throws SQLException 
+	 * @throws SQLException
 	 * 
 	 */
 	public static void dropUser(Connection con, String username) throws SQLException {

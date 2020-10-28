@@ -30,11 +30,9 @@ import es.udc.cartolab.gvsig.users.preferences.UsersPreferencePage;
 import es.udc.cartolab.gvsig.users.utils.DBSession;
 import es.udc.cartolab.gvsig.users.utils.DBSessionPostGIS;
 
-public class PostGISDBConnectionExtension extends Extension implements
-		IPreferenceExtension {
+public class PostGISDBConnectionExtension extends Extension implements IPreferenceExtension {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(PostGISDBConnectionExtension.class);
+	private static final Logger logger = LoggerFactory.getLogger(PostGISDBConnectionExtension.class);
 	private final static UsersPreferencePage usersPreferencesPage = new UsersPreferencePage();
 
 	@Override
@@ -89,8 +87,7 @@ public class PostGISDBConnectionExtension extends Extension implements
 
 		if (p.autoConnectAtStartUp) {
 			try {
-				DBSessionPostGIS.createConnection(p.host, p.portInt,
-						p.database, p.schema, p.user, p.pwd);
+				DBSessionPostGIS.createConnection(p.host, p.portInt, p.database, p.schema, p.user, p.pwd);
 				return;
 			} catch (DataException e) {
 				logger.error(e.getMessage(), e);

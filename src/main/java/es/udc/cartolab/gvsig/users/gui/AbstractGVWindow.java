@@ -33,26 +33,23 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.gvsig.andami.PluginServices;
 import org.gvsig.andami.ui.mdiManager.IWindow;
 import org.gvsig.andami.ui.mdiManager.MDIManagerFactory;
 import org.gvsig.andami.ui.mdiManager.WindowInfo;
 
-
-public abstract class AbstractGVWindow extends JPanel implements IWindow,
-		ActionListener {
+public abstract class AbstractGVWindow extends JPanel implements IWindow, ActionListener {
 
 	protected static ImageIcon headerImg = null;
 	protected static Color headerBgColor = null;
 
-    protected int height, width;
-    protected WindowInfo viewInfo = null;
-    private int windowInfoCode;
+	protected int height, width;
+	protected WindowInfo viewInfo = null;
+	private int windowInfoCode;
 	JPanel northPanel = null;
 	JPanel southPanel = null;
 	private JButton okButton;
 	private JButton cancelButton;
-    protected String title = "Abstract window";
+	protected String title = "Abstract window";
 
 	public static void setHeader(ImageIcon headerImage) {
 		headerImg = headerImage;
@@ -65,30 +62,26 @@ public abstract class AbstractGVWindow extends JPanel implements IWindow,
 	public AbstractGVWindow(int width, int height) {
 		this.height = height;
 		this.width = width;
-	setWindowInfoCode(WindowInfo.MODELESSDIALOG | WindowInfo.PALETTE);
+		setWindowInfoCode(WindowInfo.MODELESSDIALOG | WindowInfo.PALETTE);
 		getWindowInfo(); // to avoid a NullPointerException
 
 		GridBagLayout layout = new GridBagLayout();
 		setLayout(layout);
 
-		add(getNorthPanel(), new GridBagConstraints(0, 0, 1, 1, 0, 0,
-				GridBagConstraints.NORTH, GridBagConstraints.BOTH, new Insets(
-						0, 0, 0, 0), 0, 0));
+		add(getNorthPanel(), new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.NORTH, GridBagConstraints.BOTH,
+				new Insets(0, 0, 0, 0), 0, 0));
 
-		add(getCenterPanel(), new GridBagConstraints(0, 1, 1, 1, 0, 1,
-				GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(
-						0, 0, 0, 0), 0, 0));
+		add(getCenterPanel(), new GridBagConstraints(0, 1, 1, 1, 0, 1, GridBagConstraints.CENTER,
+				GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 
-		add(getSouthPanel(), new GridBagConstraints(0, 2, 1, 1, 10, 0,
-				GridBagConstraints.SOUTH, GridBagConstraints.BOTH, new Insets(
-						0, 0, 0, 0), 0, 0));
+		add(getSouthPanel(), new GridBagConstraints(0, 2, 1, 1, 10, 0, GridBagConstraints.SOUTH,
+				GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 
 		// enables tabbing navigation
 		setFocusCycleRoot(true);
 	}
 
-	public AbstractGVWindow(int width, int height, ImageIcon headerImg,
-			Color headerBgColor) {
+	public AbstractGVWindow(int width, int height, ImageIcon headerImg, Color headerBgColor) {
 		this(width, height);
 
 		setHeader(headerImg);
@@ -96,17 +89,17 @@ public abstract class AbstractGVWindow extends JPanel implements IWindow,
 
 	}
 
-    /**
-     * You should not use this constructor unless you want to make lot of stuff
-     * yourself
-     */
-    public AbstractGVWindow() {
-	super();
-    }
+	/**
+	 * You should not use this constructor unless you want to make lot of stuff
+	 * yourself
+	 */
+	public AbstractGVWindow() {
+		super();
+	}
 
 	public WindowInfo getWindowInfo() {
 		if (viewInfo == null) {
-	    viewInfo = new WindowInfo(windowInfoCode);
+			viewInfo = new WindowInfo(windowInfoCode);
 			viewInfo.setTitle(title);
 			viewInfo.setWidth(width);
 			viewInfo.setHeight(height);
@@ -115,11 +108,12 @@ public abstract class AbstractGVWindow extends JPanel implements IWindow,
 	}
 
 	public Object getWindowProfile() {
-	    /* fpuga: Maybe it should be a DIALOG_PROFILE, but a bug in DockingSkin, makes
-	     * that if we use that the window is not correctly resized when the checkbox of
-	     * advanced option in dbconnectiondialog is pressed
-	     */
-	    
+		/*
+		 * fpuga: Maybe it should be a DIALOG_PROFILE, but a bug in DockingSkin, makes
+		 * that if we use that the window is not correctly resized when the checkbox of
+		 * advanced option in dbconnectiondialog is pressed
+		 */
+
 		return WindowInfo.EDITOR_PROFILE;
 	}
 
@@ -167,9 +161,9 @@ public abstract class AbstractGVWindow extends JPanel implements IWindow,
 		MDIManagerFactory.getManager().addCentredWindow(this);
 		getRootPane().setDefaultButton(okButton);
 		getRootPane().setFocusTraversalPolicyProvider(true);
-	if (getDefaultFocusComponent() != null) {
-	    getDefaultFocusComponent().requestFocusInWindow();
-	}
+		if (getDefaultFocusComponent() != null) {
+			getDefaultFocusComponent().requestFocusInWindow();
+		}
 	}
 
 	protected abstract JPanel getCenterPanel();
@@ -202,7 +196,7 @@ public abstract class AbstractGVWindow extends JPanel implements IWindow,
 
 	protected abstract Component getDefaultFocusComponent();
 
-    protected void setWindowInfoCode(int code) {
-	windowInfoCode = code;
+	protected void setWindowInfoCode(int code) {
+		windowInfoCode = code;
 	}
 }

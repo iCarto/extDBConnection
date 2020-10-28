@@ -48,8 +48,7 @@ public class Persistence {
 	}
 
 	public boolean paramsAreSet() {
-		if (!host.isEmpty() && !port.isEmpty() && !database.isEmpty()
-				&& !user.isEmpty()) {
+		if (!host.isEmpty() && !port.isEmpty() && !database.isEmpty() && !user.isEmpty()) {
 			return true;
 		}
 		return false;

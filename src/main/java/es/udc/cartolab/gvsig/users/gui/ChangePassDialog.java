@@ -28,7 +28,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.gvsig.andami.PluginServices;
 import org.gvsig.fmap.dal.exception.DataException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,10 +46,8 @@ public class ChangePassDialog extends AbstractGVWindow {
 	JButton okButton, cancelButton;
 	JTextField currentPassTF, newPassTF, reNewPassTF;
 
-	
-	private static final Logger logger = LoggerFactory
-			.getLogger(ChangePassDialog.class);
-	
+	private static final Logger logger = LoggerFactory.getLogger(ChangePassDialog.class);
+
 	public ChangePassDialog() {
 		super(425, 160);
 		setTitle(_("change_password"));
@@ -59,13 +56,14 @@ public class ChangePassDialog extends AbstractGVWindow {
 	protected JPanel getCenterPanel() {
 		if (centerPanel == null) {
 			centerPanel = new JPanel();
-			InputStream resourceAsStream = this.getClass().getClassLoader().getResourceAsStream("forms/changePass.jfrm");
+			InputStream resourceAsStream = this.getClass().getClassLoader()
+					.getResourceAsStream("forms/changePass.jfrm");
 			FormPanel form;
 			try {
-			    form = new FormPanel(resourceAsStream);
+				form = new FormPanel(resourceAsStream);
 			} catch (FormException e) {
 				logger.error(e.getMessage(), e);
-			    return centerPanel;
+				return centerPanel;
 			}
 			centerPanel.add(form);
 
@@ -96,18 +94,18 @@ public class ChangePassDialog extends AbstractGVWindow {
 						user.changePassword(newPass);
 						closeWindow();
 					} else {
-						JOptionPane.showMessageDialog(this,_("wrong_password"),"", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(this, _("wrong_password"), "", JOptionPane.ERROR_MESSAGE);
 					}
 				} catch (SQLException e) {
 					logger.error(e.getMessage(), e);
-					JOptionPane.showMessageDialog(this,_("changing_pass_error"),"", JOptionPane.ERROR_MESSAGE);
-					
+					JOptionPane.showMessageDialog(this, _("changing_pass_error"), "", JOptionPane.ERROR_MESSAGE);
+
 					try {
 						dbs = DBSession.reconnect();
 					} catch (DataException e1) {
 						logger.error(e1.getMessage(), e1);
 					}
-					
+
 				}
 			}
 		} else {

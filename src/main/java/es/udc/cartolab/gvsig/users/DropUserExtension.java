@@ -16,8 +16,6 @@
 */
 package es.udc.cartolab.gvsig.users;
 
-
-import org.gvsig.andami.PluginServices;
 import org.gvsig.andami.plugins.Extension;
 import org.gvsig.andami.ui.mdiManager.MDIManagerFactory;
 
@@ -31,7 +29,7 @@ public class DropUserExtension extends Extension {
 		MDIManagerFactory.getManager().addWindow(dialog);
 	}
 
-	public void initialize() {	
+	public void initialize() {
 	}
 
 	public boolean isEnabled() {

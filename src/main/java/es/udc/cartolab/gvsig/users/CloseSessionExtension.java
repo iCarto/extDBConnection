@@ -27,21 +27,19 @@ import org.slf4j.LoggerFactory;
 import es.udc.cartolab.gvsig.users.utils.DBSession;
 
 public class CloseSessionExtension extends Extension {
-	
-	
-	private static final Logger logger = LoggerFactory
-			.getLogger(CloseSessionExtension.class);
+
+	private static final Logger logger = LoggerFactory.getLogger(CloseSessionExtension.class);
 
 	public void execute(String actionCommand) {
 		DBSession dbs = DBSession.getCurrentSession();
-		if (dbs!=null) {
+		if (dbs != null) {
 			ProjectExtension pExt = (ProjectExtension) PluginServices.getExtension(ProjectExtension.class);
 			pExt.execute("application-project-new");
 			try {
 				dbs.close();
 			} catch (DataException e) {
 				logger.error(e.getMessage(), e);
-			}			
+			}
 		}
 	}
 
@@ -60,7 +58,7 @@ public class CloseSessionExtension extends Extension {
 
 	public boolean isVisible() {
 		DBSession dbs = DBSession.getCurrentSession();
-		return dbs!=null;
+		return dbs != null;
 	}
 
 }

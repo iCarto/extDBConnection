@@ -26,13 +26,9 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
 public class ConfigFile {
-	
-	
-	private static final Logger logger = LoggerFactory
-			.getLogger(ConfigFile.class);
+
+	private static final Logger logger = LoggerFactory.getLogger(ConfigFile.class);
 
 	private String preferencesFile;
 	private static ConfigFile instance = null;
@@ -69,15 +65,15 @@ public class ConfigFile {
 		File configFile = new File(preferencesFile);
 		String line;
 		try {
-			//leer el archivo en busca de los datos
+			// leer el archivo en busca de los datos
 			BufferedReader fileReader = new BufferedReader(new FileReader(configFile));
-			while ((line = fileReader.readLine())!=null) {
+			while ((line = fileReader.readLine()) != null) {
 				if (line.charAt(0) != '#') {
 					int spacePos = line.indexOf(" ");
-					if (spacePos>0) {
+					if (spacePos > 0) {
 						String configWord = line.substring(0, spacePos);
-						if (configWord.toLowerCase().compareTo("server")==0) {
-							//get value without the quotation marks
+						if (configWord.toLowerCase().compareTo("server") == 0) {
+							// get value without the quotation marks
 							file = line.substring(line.indexOf('"'));
 							file = file.substring(1);
 							file = file.substring(0, file.indexOf('"'));
@@ -96,7 +92,7 @@ public class ConfigFile {
 	}
 
 	private void saveProperties() throws IOException {
-		//save the file
+		// save the file
 		File configFile = new File(preferencesFile);
 		if (!configFile.exists()) {
 			configFile.createNewFile();
@@ -104,11 +100,11 @@ public class ConfigFile {
 		}
 		if (configFile.canWrite()) {
 			FileWriter fileWriter = new FileWriter(configFile);
-			//TODO: a�adir cabecera o descripci�n de los campos
+			// TODO: a�adir cabecera o descripci�n de los campos
 			String[] lines = new String[5];
 			lines[0] = "file \"" + file + "\"";
-			for (int i = 0; i<lines.length; i++) {
-				fileWriter.write(lines[i]+"\n");
+			for (int i = 0; i < lines.length; i++) {
+				fileWriter.write(lines[i] + "\n");
 			}
 			fileWriter.flush();
 		} else {

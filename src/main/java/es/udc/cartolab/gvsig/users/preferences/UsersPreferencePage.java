@@ -37,8 +37,7 @@ import com.jeta.forms.gui.common.FormException;
 @SuppressWarnings("serial")
 public class UsersPreferencePage extends AbstractPreferencePage {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(UsersPreferencePage.class);
+	private static final Logger logger = LoggerFactory.getLogger(UsersPreferencePage.class);
 	public static String LOGO = "";
 
 	protected String id;
@@ -54,8 +53,7 @@ public class UsersPreferencePage extends AbstractPreferencePage {
 	public UsersPreferencePage() {
 		super();
 		id = this.getClass().getName();
-		icon = new ImageIcon(this.getClass().getClassLoader()
-				.getResource("images/logo.png"));
+		icon = new ImageIcon(this.getClass().getClassLoader().getResource("images/logo.png"));
 		panelStarted = false;
 	}
 
@@ -68,8 +66,7 @@ public class UsersPreferencePage extends AbstractPreferencePage {
 	public void storeValues() throws StoreException {
 		PluginServices ps = PluginServices.getPluginServices(this);
 		XMLEntity xml = ps.getPersistentXML();
-		xml.putProperty(Persistence.OPEN_CONNECTION_DIALOG_AT_STARTUP,
-				connectDBCB.isSelected());
+		xml.putProperty(Persistence.OPEN_CONNECTION_DIALOG_AT_STARTUP, connectDBCB.isSelected());
 	}
 
 	@Override

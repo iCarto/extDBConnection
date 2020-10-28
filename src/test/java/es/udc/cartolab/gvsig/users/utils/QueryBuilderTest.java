@@ -16,8 +16,7 @@ public class QueryBuilderTest {
 
 	@Test
 	public final void testCorrect() {
-		String actual = builder.getOrderByClause(new String[] { "foo", "bar" },
-				true);
+		String actual = builder.getOrderByClause(new String[] { "foo", "bar" }, true);
 		String expected = " ORDER BY foo DESC, bar DESC ";
 		assertEquals(expected, actual);
 	}

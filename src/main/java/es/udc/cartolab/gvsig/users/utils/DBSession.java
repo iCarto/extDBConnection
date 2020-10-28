@@ -47,9 +47,9 @@ public abstract class DBSession {
 	/**
 	 * Creates a new PostGIS DB Connection or changes the current one.
 	 *
-	 * Method created in order to retain compatibility. We should instantiate
-	 * the specific session we need because each one may accept a different set
-	 * of parameters.
+	 * Method created in order to retain compatibility. We should instantiate the
+	 * specific session we need because each one may accept a different set of
+	 * parameters.
 	 *
 	 * @param server
 	 * @param port
@@ -58,27 +58,22 @@ public abstract class DBSession {
 	 * @param username
 	 * @param password
 	 * @return the connection
-	 * @throws DBException
-	 *             if there's any problem (server error or login error)
+	 * @throws DBException if there's any problem (server error or login error)
 	 */
 	@Deprecated
-	public static DBSession createConnection(String server, int port,
-			String database, String schema, String username, String password)
-			throws DataException {
+	public static DBSession createConnection(String server, int port, String database, String schema, String username,
+			String password) throws DataException {
 		if (instance != null) {
 			instance.close();
 		}
-		instance = new DBSessionPostGIS(server, port, database, schema,
-				username, password);
+		instance = new DBSessionPostGIS(server, port, database, schema, username, password);
 		instance.connect();
 		return instance;
 	}
 
-	public static DBSession createConnection(String connString,
-			String username, String password) throws DataException {
+	public static DBSession createConnection(String connString, String username, String password) throws DataException {
 		if (connString.startsWith(DBSessionPostGIS.CONNECTION_STRING_BEGINNING)) {
-			return DBSessionPostGIS.createConnectionFromConnString(connString,
-					username, password);
+			return DBSessionPostGIS.createConnectionFromConnString(connString, username, password);
 		}
 		return null;
 	}
@@ -96,8 +91,8 @@ public abstract class DBSession {
 	}
 
 	/**
-	 * To be used only when there's any error (SQLException) that is not handled
-	 * by gvSIG
+	 * To be used only when there's any error (SQLException) that is not handled by
+	 * gvSIG
 	 *
 	 * @return the session
 	 * @throws DBException
@@ -165,134 +160,111 @@ public abstract class DBSession {
 
 	/* GET LAYER */
 
-	public abstract FLayer getLayer(String layerName, String tableName,
-			String schema, String whereClause, IProjection projection)
-			throws BaseException;
-
-	public abstract FLayer getLayer(String layerName, String tableName,
-			String whereClause, IProjection projection) throws BaseException;
-
-	public abstract FLayer getLayer(String tableName, String whereClause,
+	public abstract FLayer getLayer(String layerName, String tableName, String schema, String whereClause,
 			IProjection projection) throws BaseException;
 
-	public abstract FLayer getLayer(String tableName, IProjection projection)
+	public abstract FLayer getLayer(String layerName, String tableName, String whereClause, IProjection projection)
 			throws BaseException;
+
+	public abstract FLayer getLayer(String tableName, String whereClause, IProjection projection) throws BaseException;
+
+	public abstract FLayer getLayer(String tableName, IProjection projection) throws BaseException;
 
 	/* GET METADATA */
 
-	protected abstract String[] getColumnNames(String tablename, String schema)
-			throws SQLException;
+	protected abstract String[] getColumnNames(String tablename, String schema) throws SQLException;
 
-	protected abstract int getColumnType(String tablename, String schema,
-			String column) throws SQLException;
+	protected abstract int getColumnType(String tablename, String schema, String column) throws SQLException;
 
 	/* GET TABLE AS STRING[][] */
 
-	public abstract String[][] getTable(String tableName, String schema,
-			String whereClause, String[] orderBy, boolean desc)
-			throws SQLException;
-
-	public abstract String[][] getTable(String tableName, String schema,
-			String[] fieldNames, String whereClause, String[] orderBy,
+	public abstract String[][] getTable(String tableName, String schema, String whereClause, String[] orderBy,
 			boolean desc) throws SQLException;
 
-	public abstract String[][] getTable(String tableName, String schema,
+	public abstract String[][] getTable(String tableName, String schema, String[] fieldNames, String whereClause,
 			String[] orderBy, boolean desc) throws SQLException;
 
-	public abstract String[][] getTable(String tableName, String schema,
-			String whereClause) throws SQLException;
-
-	public abstract String[][] getTable(String tableName, String whereClause)
+	public abstract String[][] getTable(String tableName, String schema, String[] orderBy, boolean desc)
 			throws SQLException;
+
+	public abstract String[][] getTable(String tableName, String schema, String whereClause) throws SQLException;
+
+	public abstract String[][] getTable(String tableName, String whereClause) throws SQLException;
 
 	public abstract String[][] getTable(String tableName) throws SQLException;
 
 	/* GET TABLE AS OBJECT[][] */
 
-	public abstract Object[][] getTableAsObjects(String tableName,
-			String schema, String whereClause, String[] orderBy, boolean desc)
+	public abstract Object[][] getTableAsObjects(String tableName, String schema, String whereClause, String[] orderBy,
+			boolean desc) throws SQLException;
+
+	public abstract Object[][] getTableAsObjects(String tableName, String schema, String[] fieldNames,
+			String whereClause, String[] orderBy, boolean desc) throws SQLException;
+
+	public abstract Object[][] getTableAsObjects(String tableName, String schema, String[] orderBy, boolean desc)
 			throws SQLException;
 
-	public abstract Object[][] getTableAsObjects(String tableName,
-			String schema, String[] fieldNames, String whereClause,
-			String[] orderBy, boolean desc) throws SQLException;
-
-	public abstract Object[][] getTableAsObjects(String tableName,
-			String schema, String[] orderBy, boolean desc) throws SQLException;
-
-	public abstract Object[][] getTableAsObjects(String tableName,
-			String schema, String whereClause) throws SQLException;
-
-	public abstract Object[][] getTableAsObjects(String tableName,
-			String whereClause) throws SQLException;
-
-	public abstract Object[][] getTableAsObjects(String tableName)
+	public abstract Object[][] getTableAsObjects(String tableName, String schema, String whereClause)
 			throws SQLException;
+
+	public abstract Object[][] getTableAsObjects(String tableName, String whereClause) throws SQLException;
+
+	public abstract Object[][] getTableAsObjects(String tableName) throws SQLException;
 
 	/* GET TABLE AS RESULTSET */
 
-	public abstract ResultSet getTableAsResultSet(String tableName,
-			String schema, String whereClause, String[] orderBy, boolean desc)
+	public abstract ResultSet getTableAsResultSet(String tableName, String schema, String whereClause, String[] orderBy,
+			boolean desc) throws SQLException;
+
+	public abstract ResultSet getTableAsResultSet(String tableName, String schema, String[] fieldNames,
+			String whereClause, String[] orderBy, boolean desc) throws SQLException;
+
+	public abstract ResultSet getTableAsResultSet(String tableName, String schema, String[] orderBy, boolean desc)
 			throws SQLException;
 
-	public abstract ResultSet getTableAsResultSet(String tableName,
-			String schema, String[] fieldNames, String whereClause,
-			String[] orderBy, boolean desc) throws SQLException;
-
-	public abstract ResultSet getTableAsResultSet(String tableName,
-			String schema, String[] orderBy, boolean desc) throws SQLException;
-
-	public abstract ResultSet getTableAsResultSet(String tableName,
-			String schema, String whereClause) throws SQLException;
-
-	public abstract ResultSet getTableAsResultSet(String tableName,
-			String whereClause) throws SQLException;
-
-	public abstract ResultSet getTableAsResultSet(String tableName)
+	public abstract ResultSet getTableAsResultSet(String tableName, String schema, String whereClause)
 			throws SQLException;
+
+	public abstract ResultSet getTableAsResultSet(String tableName, String whereClause) throws SQLException;
+
+	public abstract ResultSet getTableAsResultSet(String tableName) throws SQLException;
 
 	/* GET BINARY STREAM */
 
-	public abstract InputStream getBinaryStream(String tableName,
-			String schema, String fieldName, String whereClause)
+	public abstract InputStream getBinaryStream(String tableName, String schema, String fieldName, String whereClause)
 			throws SQLException;
 
 	/* SET BINARY STREAM */
 
-	public abstract void updateWithBinaryStream(String tableName,
-			String schema, String fieldName, InputStream is, int length,
-			String[] columns, Object[] values, String whereClause)
-			throws SQLException;
+	public abstract void updateWithBinaryStream(String tableName, String schema, String fieldName, InputStream is,
+			int length, String[] columns, Object[] values, String whereClause) throws SQLException;
 
-	public abstract void insertWithBinaryStream(String tableName,
-			String schema, String fieldName, InputStream is, int length,
-			String[] columns, Object[] values) throws SQLException;
+	public abstract void insertWithBinaryStream(String tableName, String schema, String fieldName, InputStream is,
+			int length, String[] columns, Object[] values) throws SQLException;
 
 	/* GET TABLES WITH JOIN */
 
 	/*
 	 * NOTES ONTO ALL THE JOIN RELATED METHODS:
 	 * 
-	 * Inside tableNames we must put all the tables we want to join, which will
-	 * be assigned the alphabet letters in order as alias (a, b, c...) so we can
-	 * avoid field names conflicts in all the other parameters (mainly
-	 * joinFields, the whereClause and the fields we retrieve). Then we pass the
-	 * schemas for all those tables in the same order. And inside joinFields we
-	 * must put the fields we want to use for joining the tables. We must
-	 * specify two fields for each table besides the first one, which will be
-	 * the base. Field names will probably repeat in this case, so remember that
-	 * we can use the aliases inside them as well (e.g. "a.cod_com",
-	 * "b.cod_com").
+	 * Inside tableNames we must put all the tables we want to join, which will be
+	 * assigned the alphabet letters in order as alias (a, b, c...) so we can avoid
+	 * field names conflicts in all the other parameters (mainly joinFields, the
+	 * whereClause and the fields we retrieve). Then we pass the schemas for all
+	 * those tables in the same order. And inside joinFields we must put the fields
+	 * we want to use for joining the tables. We must specify two fields for each
+	 * table besides the first one, which will be the base. Field names will
+	 * probably repeat in this case, so remember that we can use the aliases inside
+	 * them as well (e.g. "a.cod_com", "b.cod_com").
 	 * 
 	 * To summarize, if we have N table names we must have N schemas and (N-1)*2
 	 * join fields.
 	 * 
 	 * 
 	 * EXAMPLE: we want to join the tables 'viviendas', 'parcelas' and
-	 * 'comunidades', being the three in the same schema, 'data'. Both
-	 * 'viviendas' and 'parcelas' are related by 'cod_viv', and 'comunidades'
-	 * and 'viviendas' by 'cod_com'. We must pass the next parameters (in its
-	 * precise order):
+	 * 'comunidades', being the three in the same schema, 'data'. Both 'viviendas'
+	 * and 'parcelas' are related by 'cod_viv', and 'comunidades' and 'viviendas' by
+	 * 'cod_com'. We must pass the next parameters (in its precise order):
 	 * 
 	 * 
 	 * tableNames = {"viviendas", "parcelas", "comunidades"}
@@ -302,64 +274,49 @@ public abstract class DBSession {
 	 * joinFields = {"a.cod_viv", "b.cod_viv", "a.cod_com", "c.cod_com"}
 	 */
 
-	public abstract String[][] getTableWithJoin(String[] tableNames,
-			String[] schemas, String[] joinFields, String whereClause,
+	public abstract String[][] getTableWithJoin(String[] tableNames, String[] schemas, String[] joinFields,
+			String whereClause, String[] orderBy, boolean desc) throws SQLException;
+
+	public abstract String[][] getTableWithJoin(String[] tableNames, String[] schemas, String[] joinFields,
+			String[] fieldNames, String whereClause, String[] orderBy, boolean desc) throws SQLException;
+
+	public abstract String[][] getTableWithJoin(String[] tableNames, String[] schemas, String[] joinFields,
 			String[] orderBy, boolean desc) throws SQLException;
 
-	public abstract String[][] getTableWithJoin(String[] tableNames,
-			String[] schemas, String[] joinFields, String[] fieldNames,
-			String whereClause, String[] orderBy, boolean desc)
+	public abstract String[][] getTableWithJoin(String[] tableNames, String[] schemas, String[] joinFields,
+			String whereClause) throws SQLException;
+
+	public abstract String[][] getTableWithJoin(String[] tableNames, String[] joinFields, String whereClause)
 			throws SQLException;
 
-	public abstract String[][] getTableWithJoin(String[] tableNames,
-			String[] schemas, String[] joinFields, String[] orderBy,
-			boolean desc) throws SQLException;
-
-	public abstract String[][] getTableWithJoin(String[] tableNames,
-			String[] schemas, String[] joinFields, String whereClause)
-			throws SQLException;
-
-	public abstract String[][] getTableWithJoin(String[] tableNames,
-			String[] joinFields, String whereClause) throws SQLException;
-
-	public abstract String[][] getTableWithJoin(String[] tableNames,
-			String[] joinFields) throws SQLException;
+	public abstract String[][] getTableWithJoin(String[] tableNames, String[] joinFields) throws SQLException;
 
 	/* GET DISTINCT VALUES FROM A COLUMN */
 
-	public abstract String[] getDistinctValues(String tableName, String schema,
-			String fieldName, boolean sorted, boolean desc, String whereClause)
-			throws SQLException;
+	public abstract String[] getDistinctValues(String tableName, String schema, String fieldName, boolean sorted,
+			boolean desc, String whereClause) throws SQLException;
 
-	public abstract String[] getDistinctValues(String tableName, String schema,
-			String fieldName, boolean sorted, boolean desc) throws SQLException;
+	public abstract String[] getDistinctValues(String tableName, String schema, String fieldName, boolean sorted,
+			boolean desc) throws SQLException;
 
-	public abstract String[] getDistinctValues(String tableName, String schema,
-			String fieldName) throws SQLException;
+	public abstract String[] getDistinctValues(String tableName, String schema, String fieldName) throws SQLException;
 
-	public abstract String[] getDistinctValues(String tableName,
-			String fieldName) throws SQLException;
+	public abstract String[] getDistinctValues(String tableName, String fieldName) throws SQLException;
 
-	public abstract String[] getTables(boolean onlyGeospatial)
-			throws SQLException;
+	public abstract String[] getTables(boolean onlyGeospatial) throws SQLException;
 
 	public abstract String[] getColumns(String table) throws SQLException;
 
-	public abstract String[] getColumns(String schema, String table)
-			throws SQLException;
+	public abstract String[] getColumns(String schema, String table) throws SQLException;
 
-	public abstract void deleteRows(String schema, String table,
-			String whereClause);
+	public abstract void deleteRows(String schema, String table, String whereClause);
 
-	public abstract void insertRow(String schema, String table, Object[] values)
-			throws SQLException;
+	public abstract void insertRow(String schema, String table, Object[] values) throws SQLException;
 
-	public abstract void insertRow(String schema, String table,
-			String[] columns, Object[] values);
+	public abstract void insertRow(String schema, String table, String[] columns, Object[] values);
 
-	public abstract void updateRows(String schema, String tablename,
-			String[] columns, Object[] values, String whereClause)
-			throws SQLException;
+	public abstract void updateRows(String schema, String tablename, String[] columns, Object[] values,
+			String whereClause) throws SQLException;
 
 	public abstract boolean tableExists(String schema, String tablename);
 
@@ -375,7 +332,6 @@ public abstract class DBSession {
 		return i > 0 && i < 27 ? String.valueOf((char) (i + 96)) : null;
 	}
 
-	public abstract List<String> getColumnsWithNotNulls(String schema,
-			String table) throws SQLException;
+	public abstract List<String> getColumnsWithNotNulls(String schema, String table) throws SQLException;
 
 }

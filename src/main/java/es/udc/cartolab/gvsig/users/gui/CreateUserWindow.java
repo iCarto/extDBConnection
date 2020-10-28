@@ -30,7 +30,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.gvsig.andami.PluginServices;
 import org.gvsig.fmap.dal.exception.DataException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,11 +49,8 @@ public class CreateUserWindow extends AbstractGVWindow {
 	// JCheckBox adminCHB;
 	protected JComboBox typeCB;
 
-	
-	
-	private static final Logger logger = LoggerFactory
-			.getLogger(CreateUserWindow.class);
-	
+	private static final Logger logger = LoggerFactory.getLogger(CreateUserWindow.class);
+
 	public CreateUserWindow() {
 		super(425, 200);
 		setTitle(_("new_user"));
@@ -66,10 +62,10 @@ public class CreateUserWindow extends AbstractGVWindow {
 			InputStream resourceAsStream = this.getClass().getClassLoader().getResourceAsStream("forms/newUser.jfrm");
 			FormPanel form;
 			try {
-			    form = new FormPanel(resourceAsStream);
+				form = new FormPanel(resourceAsStream);
 			} catch (FormException e) {
 				logger.error(e.getMessage(), e);
-			    return centerPanel;
+				return centerPanel;
 			}
 			centerPanel.add(form);
 			userTF = form.getTextField("userTF");
@@ -101,9 +97,7 @@ public class CreateUserWindow extends AbstractGVWindow {
 		boolean cont = true;
 		if (typeCB.getSelectedIndex() == 2) {
 			Object[] options = { _("ok"), _("cancel") };
-			int n = JOptionPane.showOptionDialog(this,
-					_("create_admin_question"), "",
-					JOptionPane.YES_NO_CANCEL_OPTION,
+			int n = JOptionPane.showOptionDialog(this, _("create_admin_question"), "", JOptionPane.YES_NO_CANCEL_OPTION,
 					JOptionPane.WARNING_MESSAGE, null, options, options[1]);
 			if (n != 0) {
 				cont = false;
@@ -126,13 +120,14 @@ public class CreateUserWindow extends AbstractGVWindow {
 							} catch (SQLException e2) {
 								logger.error(e2.getMessage(), e2);
 
-								JOptionPane.showMessageDialog(this, _("creating_user_error"), _("creating_user_error"), JOptionPane.ERROR_MESSAGE);
+								JOptionPane.showMessageDialog(this, _("creating_user_error"), _("creating_user_error"),
+										JOptionPane.ERROR_MESSAGE);
 								try {
 									dbs = DBSession.reconnect();
 								} catch (DataException e) {
 									logger.error(e.getMessage(), e);
 								}
-								
+
 							}
 						}
 					} catch (SQLException e1) {
@@ -144,13 +139,13 @@ public class CreateUserWindow extends AbstractGVWindow {
 					}
 				}
 			} else {
-				JOptionPane.showMessageDialog(this, _("passwords_dont_match"), _("creating_user_error"), JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this, _("passwords_dont_match"), _("creating_user_error"),
+						JOptionPane.ERROR_MESSAGE);
 			}
 		}
 	}
 
-	protected void grantRole(Connection con, String username)
-			throws SQLException {
+	protected void grantRole(Connection con, String username) throws SQLException {
 		// TODO Auto-generated method stub
 		int selectedIndex = typeCB.getSelectedIndex();
 		switch (selectedIndex) {

@@ -33,7 +33,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.gvsig.andami.PluginServices;
 import org.gvsig.andami.ui.mdiManager.IWindow;
 import org.gvsig.andami.ui.mdiManager.MDIManagerFactory;
 import org.gvsig.andami.ui.mdiManager.WindowInfo;
@@ -50,31 +49,25 @@ import es.udc.cartolab.gvsig.users.utils.DBSessionPostGIS;
 
 public class DropUserDialog extends JPanel implements IWindow, ActionListener {
 
-    
 	private JPanel southPanel = null, centerPanel = null;
 	private JButton okButton, cancelButton;
 	private JTextField userTF;
 	private WindowInfo viewInfo;
 
-	
-	
-	private static final Logger logger = LoggerFactory
-			.getLogger(DropUserDialog.class);
-	
+	private static final Logger logger = LoggerFactory.getLogger(DropUserDialog.class);
+
 	public DropUserDialog() {
 
 		GridBagLayout layout = new GridBagLayout();
 		setLayout(layout);
 
-		add(getCenterPanel(), new GridBagConstraints(0, 0, 1, 1, 0, 1,
-				GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-				new Insets(0, 0, 0, 0), 0, 0));
+		add(getCenterPanel(), new GridBagConstraints(0, 0, 1, 1, 0, 1, GridBagConstraints.CENTER,
+				GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 
-		add(getSouthPanel(), new GridBagConstraints(0, 1, 1, 1, 10, 0,
-				GridBagConstraints.SOUTH, GridBagConstraints.BOTH,
-				new Insets(0, 0, 0, 0), 0, 0));
+		add(getSouthPanel(), new GridBagConstraints(0, 1, 1, 1, 10, 0, GridBagConstraints.SOUTH,
+				GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 
-		//enables tabbing navigation
+		// enables tabbing navigation
 		setFocusCycleRoot(true);
 	}
 
@@ -85,10 +78,10 @@ public class DropUserDialog extends JPanel implements IWindow, ActionListener {
 			InputStream resourceAsStream = this.getClass().getClassLoader().getResourceAsStream("forms/dropUser.jfrm");
 			FormPanel form;
 			try {
-			    form = new FormPanel(resourceAsStream);
+				form = new FormPanel(resourceAsStream);
 			} catch (FormException e) {
 				logger.error(e.getMessage(), e);
-			    return centerPanel;
+				return centerPanel;
 			}
 			form.setFocusTraversalPolicyProvider(true);
 			centerPanel.add(form);
@@ -139,43 +132,31 @@ public class DropUserDialog extends JPanel implements IWindow, ActionListener {
 			String username = userTF.getText();
 			if ((dbs != null) && (dbs instanceof DBSessionPostGIS)) {
 				try {
-					if (!username.equalsIgnoreCase(((DBSessionPostGIS) dbs)
-							.getUserName())
+					if (!username.equalsIgnoreCase(((DBSessionPostGIS) dbs).getUserName())
 							&& !username.equalsIgnoreCase("postgres")) {
 						if (DBAdminUtils.existsUser(dbs.getJavaConnection(), username)) {
-							
-							Object[] options = {_("ok"), _("cancel")};
-							int n = JOptionPane.showOptionDialog(this,
-									_("dropping_user_question", username),
-									"",
-									JOptionPane.YES_NO_CANCEL_OPTION,
-									JOptionPane.WARNING_MESSAGE,
-									null,
-									options,
+
+							Object[] options = { _("ok"), _("cancel") };
+							int n = JOptionPane.showOptionDialog(this, _("dropping_user_question", username), "",
+									JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, options,
 									options[1]);
-							if (n==0) {
+							if (n == 0) {
 								DBAdminUtils.dropUser(dbs.getJavaConnection(), username);
 							}
 						} else {
-							
-							JOptionPane.showMessageDialog(this,
-									_("user_doesnt_exist", username),
-									"",
+
+							JOptionPane.showMessageDialog(this, _("user_doesnt_exist", username), "",
 									JOptionPane.ERROR_MESSAGE);
 						}
 					} else {
-						JOptionPane.showMessageDialog(this,
-								_("user_cant_be_dropped", username),
-								"",
+						JOptionPane.showMessageDialog(this, _("user_cant_be_dropped", username), "",
 								JOptionPane.ERROR_MESSAGE);
 					}
 				} catch (SQLException e) {
 					logger.error(e.getMessage(), e);
-					JOptionPane.showMessageDialog(this,
-							_("dropping_user_error_message"),
-							"",
+					JOptionPane.showMessageDialog(this, _("dropping_user_error_message"), "",
 							JOptionPane.ERROR_MESSAGE);
-					
+
 					try {
 						dbs = DBSession.reconnect();
 					} catch (DataException e1) {
@@ -189,7 +170,5 @@ public class DropUserDialog extends JPanel implements IWindow, ActionListener {
 	public Object getWindowProfile() {
 		return WindowInfo.DIALOG_PROFILE;
 	}
-
-
 
 }
